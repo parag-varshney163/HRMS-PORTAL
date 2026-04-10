@@ -125,7 +125,31 @@ export default function MyAttendance() {
         });
 
         const history = data.data.history || [];
-        setAttendanceHistory(history);
+        // setAttendanceHistory(history);
+        setAttendanceHistory((prev) => {
+          const today = new Date();
+
+          const hasToday = history.some((r) => {
+            const d = new Date(r.date);
+            return (
+              d.getDate() === today.getDate() &&
+              d.getMonth() === today.getMonth() &&
+              d.getFullYear() === today.getFullYear()
+            );
+          });
+
+          if (!hasToday) {
+            return [
+              ...history,
+              {
+                date: today,
+                status: "present",
+              },
+            ];
+          }
+
+          return history;
+        });
 
         const sortedHistory = [...history].sort(
           (a, b) =>
