@@ -1,13 +1,8 @@
+import { Calendar, MessageSquare, Paperclip, Edit2, Trash2, Eye, } from "lucide-react";
 import React from "react";
-import {
-  Calendar,
-  MessageSquare,
-  Paperclip,
-  Edit2,
-  Trash2,
-} from "lucide-react";
 
-export default function TaskCard({ task, onEdit, onDelete }) {
+
+export default function TaskCard({ task, onEdit, onDelete,onCommentClick,onView }) {
   // ─── 1. SAFE DATA FALLBACKS ───
   const title = task?.title || "Untitled Task";
   const description = task?.description || "No description provided.";
@@ -27,7 +22,7 @@ export default function TaskCard({ task, onEdit, onDelete }) {
 
   // Handle numerical fallbacks safely (0 if null)
   const attachmentCount = task?.attachments ? 1 : 0;
-  const commentCount = task?.comments || 0;
+  const commentCount = task?.commentsCount || 0;
 
   // Priority styling
   const priority = (task?.priority || "medium").toLowerCase();
@@ -55,6 +50,16 @@ export default function TaskCard({ task, onEdit, onDelete }) {
 
         {/* Right: ALWAYS VISIBLE Edit & Delete Buttons */}
         <div className="flex items-center gap-1 shrink-0 bg-card border border-card-border/50 rounded-lg p-0.5 shadow-sm">
+          <button
+  onClick={(e) => {
+    e.stopPropagation();
+    onView?.(task);
+  }}
+  className="p-1.5 text-text-secondary hover:text-indigo-400 hover:bg-indigo-500/10 rounded-md transition-colors"
+  title="View Task"
+>
+  <Eye size={14} />
+</button>
           <button
             onClick={(e) => {
               e.preventDefault();
@@ -114,10 +119,18 @@ export default function TaskCard({ task, onEdit, onDelete }) {
               {dueDate}
             </span>
           </div>
-          <div className="flex items-center gap-1 text-xs" title="Comments">
+          {/* <div className="flex items-center gap-1 text-xs" title="Comments">
             <MessageSquare size={12} />
             <span>{commentCount}</span>
-          </div>
+          </div> */}
+          <div
+  className="flex items-center gap-1 text-xs cursor-pointer hover:text-btn"
+  title="Comments"
+  onClick={() => onCommentClick?.(task)}
+>
+  <MessageSquare size={12} />
+  <span>{commentCount}</span>
+</div>
           <div className="flex items-center gap-1 text-xs" title="Attachments">
             <Paperclip size={12} />
             <span>{attachmentCount}</span>

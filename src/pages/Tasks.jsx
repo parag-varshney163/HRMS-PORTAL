@@ -1,22 +1,18 @@
+import { ListTodo, PlayCircle, Eye, CheckSquare, Plus, Inbox, } from "lucide-react";
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  ListTodo,
-  PlayCircle,
-  Eye,
-  CheckSquare,
-  Plus,
-  Inbox,
-} from "lucide-react";
-import axiosInstance from "../api/axiosInstance";
-import useNotification from "../hooks/useNotification.jsx";
 
+import TaskViewModal from "../components/Tasks/TaskViewModal.jsx";
+import CommentsModal from "../components/Tasks/CommentsModal.jsx";
+import useNotification from "../hooks/useNotification.jsx";
+import TaskModal from "../components/Tasks/TaskModal";
 // Components
 import StatsCard from "../components/ui/StatsCard";
 import SearchBar from "../components/ui/SearchBar";
-import Button from "../components/ui/Button";
 import TaskCard from "../components/ui/TaskCard";
-import TaskModal from "../components/Tasks/TaskModal";
+import axiosInstance from "../api/axiosInstance";
+import Button from "../components/ui/Button";
+
 
 // ─── CONFIGURATION (Keys match API payload perfectly) ───
 const COLUMNS_CONFIG = [
@@ -49,6 +45,10 @@ export default function Tasks() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [viewTaskId, setViewTaskId] = useState(null);
 
   // ─── DEBOUNCE SEARCH ───
   useEffect(() => {
@@ -108,14 +108,41 @@ export default function Tasks() {
         }
       } else {
         // Status-Wise API (Returns grouped object)
-        tasksRes = await axiosInstance.get("/api/v1/task/status-wise");
-        if (tasksRes.data?.success && tasksRes.data.data) {
-          const d = tasksRes.data.data;
+        // tasksRes = await axiosInstance.get("/api/v1/task/status-wise");
+        // if (tasksRes.data?.success && tasksRes.data.data) {
+        //   const d = tasksRes.data.data;
+        //   setBoardData({
+        //     to_do: d.to_do?.tasks || [],
+        //     in_progress: d.in_progress?.tasks || [],
+        //     under_review: d.under_review?.tasks || [],
+        //     done: d.done?.tasks || [],
+        //   });
+        // }
+        tasksRes = await axiosInstance.get("/api/v1/task");
+
+        if (tasksRes.data?.success && tasksRes.data?.data?.tasks) {
+          const tasks = tasksRes.data.data.tasks;
+
+          const grouped = {
+            to_do: [],
+            in_progress: [],
+            under_review: [],
+            done: [],
+          };
+
+          tasks.forEach((task) => {
+            if (grouped[task.status]) {
+              grouped[task.status].push(task);
+            }
+          });
+
+          setBoardData(grouped);
+        } else {
           setBoardData({
-            to_do: d.to_do?.tasks || [],
-            in_progress: d.in_progress?.tasks || [],
-            under_review: d.under_review?.tasks || [],
-            done: d.done?.tasks || [],
+            to_do: [],
+            in_progress: [],
+            under_review: [],
+            done: [],
           });
         }
       }
@@ -299,6 +326,14 @@ export default function Tasks() {
                         setIsModalOpen(true);
                       }}
                       onDelete={() => handleDeleteTask(task._id)}
+                      onCommentClick={(task) => {
+                        setSelectedTask(task);
+                        setIsCommentModalOpen(true);
+                      }}
+                      onView={(task) => {
+                        setViewTaskId(task._id);
+                        setIsViewModalOpen(true);
+                      }}
                     />
                   ))}
                   {columnTasks.length === 0 && (
@@ -325,6 +360,16 @@ export default function Tasks() {
         }}
         onSubmit={handleSaveTask}
         initialData={editingTask}
+      />
+      <CommentsModal
+        open={isCommentModalOpen}
+        onClose={() => setIsCommentModalOpen(false)}
+        task={selectedTask}
+      />
+      <TaskViewModal
+        open={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        taskId={viewTaskId}
       />
     </div>
   );
