@@ -1,6 +1,7 @@
+import { Mail, Phone, Building2, MoreHorizontal, Calendar, Eye } from "lucide-react";
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import { Mail, Phone, Building2, MoreHorizontal, Calendar } from "lucide-react";
+
 
 const statusStyles = {
   // Common statuses
@@ -19,6 +20,7 @@ export default function ProfileCard({
   variant = "employee",
   onEdit,
   onDelete,
+  onView
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -139,16 +141,36 @@ export default function ProfileCard({
 
       {/* ─── Footer: Only for Employee View ─── */}
       {variant === "employee" && (
+        // <div className="flex items-center justify-between pt-3 border-t border-card-border mt-auto">
+        //   <span className="text-xs text-text-secondary font-mono">
+        //     {data.empId}
+        //   </span>
+        //   <span
+        //     className={`text-xs font-medium px-2.5 py-0.5 rounded-full border ${badgeStyle}`}
+        //   >
+        //     {data.status}
+        //   </span>
+        // </div>
         <div className="flex items-center justify-between pt-3 border-t border-card-border mt-auto">
-          <span className="text-xs text-text-secondary font-mono">
-            {data.empId}
-          </span>
-          <span
-            className={`text-xs font-medium px-2.5 py-0.5 rounded-full border ${badgeStyle}`}
-          >
-            {data.status}
-          </span>
-        </div>
+  <span className="text-xs text-text-secondary font-mono">
+    {data.empId}
+  </span>
+
+  <div className="flex items-center gap-2">
+    <button
+      onClick={() => onView?.(data)}
+      className="w-8 h-8 rounded-lg bg-btn/10 hover:bg-btn/20 text-btn flex items-center justify-center transition"
+    >
+      <Eye size={16} />
+    </button>
+
+    <span
+      className={`text-xs font-medium px-2.5 py-0.5 rounded-full border ${badgeStyle}`}
+    >
+      {data.status}
+    </span>
+  </div>
+</div>
       )}
     </div>
   );

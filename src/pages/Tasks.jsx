@@ -2,6 +2,7 @@ import { ListTodo, PlayCircle, Eye, CheckSquare, Plus, Inbox, } from "lucide-rea
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useCallback } from "react";
 
+import OtherEmployeesTasks from "../components/Tasks/OtherEmployeesTasks.jsx";
 import TaskViewModal from "../components/Tasks/TaskViewModal.jsx";
 import CommentsModal from "../components/Tasks/CommentsModal.jsx";
 import useNotification from "../hooks/useNotification.jsx";
@@ -12,14 +13,41 @@ import SearchBar from "../components/ui/SearchBar";
 import TaskCard from "../components/ui/TaskCard";
 import axiosInstance from "../api/axiosInstance";
 import Button from "../components/ui/Button";
+import colors from "../constants/colors.js";
 
 
 // ─── CONFIGURATION (Keys match API payload perfectly) ───
+// const COLUMNS_CONFIG = [
+//   { key: "to_do", label: "To Do", icon: ListTodo },
+//   { key: "in_progress", label: "In Progress", icon: PlayCircle },
+//   { key: "under_review", label: "Under Review", icon: Eye },
+//   { key: "done", label: "Done", icon: CheckSquare },
+// ];
 const COLUMNS_CONFIG = [
-  { key: "to_do", label: "To Do", icon: ListTodo },
-  { key: "in_progress", label: "In Progress", icon: PlayCircle },
-  { key: "under_review", label: "Under Review", icon: Eye },
-  { key: "done", label: "Done", icon: CheckSquare },
+  {
+    key: "to_do",
+    label: "To Do",
+    icon: ListTodo,
+    color: colors.Blue,
+  },
+  {
+    key: "in_progress",
+    label: "In Progress",
+    icon: PlayCircle,
+    color: colors.warning,
+  },
+  {
+    key: "under_review",
+    label: "Under Review",
+    icon: Eye,
+    color: colors.accent,
+  },
+  {
+    key: "done",
+    label: "Done",
+    icon: CheckSquare,
+    color: colors.success,
+  },
 ];
 
 export default function Tasks() {
@@ -265,6 +293,7 @@ export default function Tasks() {
           value={loading ? "..." : stats.overdue || 0}
         />
       </div>
+      <OtherEmployeesTasks />
 
       {/* ─── SEARCH BAR ─── */}
       <div className="bg-card border border-card-border rounded-xl p-4 mb-6">
@@ -307,8 +336,16 @@ export default function Tasks() {
                 className="flex flex-col gap-4 bg-input/20 p-3 rounded-2xl border border-card-border/50 min-h-[300px]"
               >
                 <div className="flex items-center gap-2 text-text-secondary mb-1 px-1">
-                  <ColIcon size={18} />
+                  {/* <ColIcon size={18} />
                   <h3 className="font-semibold text-sm text-text-primary">
+                    {col.label}
+                  </h3> */}
+                  <ColIcon size={18} style={{ color: col.color }} />
+
+                  <h3
+                    className="font-semibold text-sm !text-white"
+                    style={{ color: col.color }}
+                  >
                     {col.label}
                   </h3>
                   <span className="text-xs bg-btn/10 text-btn px-2 py-0.5 rounded-full ml-auto">

@@ -2,7 +2,7 @@ import { Calendar, MessageSquare, Paperclip, Edit2, Trash2, Eye, } from "lucide-
 import React from "react";
 
 
-export default function TaskCard({ task, onEdit, onDelete,onCommentClick,onView }) {
+export default function TaskCard({ task, onEdit, onDelete, onCommentClick, onView }) {
   // ─── 1. SAFE DATA FALLBACKS ───
   const title = task?.title || "Untitled Task";
   const description = task?.description || "No description provided.";
@@ -15,9 +15,9 @@ export default function TaskCard({ task, onEdit, onDelete,onCommentClick,onView 
   // Handle dates safely
   const dueDate = task?.due_date
     ? new Date(task.due_date).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })
+      month: "short",
+      day: "numeric",
+    })
     : "No Date";
 
   // Handle numerical fallbacks safely (0 if null)
@@ -51,15 +51,15 @@ export default function TaskCard({ task, onEdit, onDelete,onCommentClick,onView 
         {/* Right: ALWAYS VISIBLE Edit & Delete Buttons */}
         <div className="flex items-center gap-1 shrink-0 bg-card border border-card-border/50 rounded-lg p-0.5 shadow-sm">
           <button
-  onClick={(e) => {
-    e.stopPropagation();
-    onView?.(task);
-  }}
-  className="p-1.5 text-text-secondary hover:text-indigo-400 hover:bg-indigo-500/10 rounded-md transition-colors"
-  title="View Task"
->
-  <Eye size={14} />
-</button>
+            onClick={(e) => {
+              e.stopPropagation();
+              onView?.(task);
+            }}
+            className="p-1.5 text-text-secondary hover:text-indigo-400 hover:bg-indigo-500/10 rounded-md transition-colors"
+            title="View Task"
+          >
+            <Eye size={14} />
+          </button>
           <button
             onClick={(e) => {
               e.preventDefault();
@@ -124,13 +124,13 @@ export default function TaskCard({ task, onEdit, onDelete,onCommentClick,onView 
             <span>{commentCount}</span>
           </div> */}
           <div
-  className="flex items-center gap-1 text-xs cursor-pointer hover:text-btn"
-  title="Comments"
-  onClick={() => onCommentClick?.(task)}
->
-  <MessageSquare size={12} />
-  <span>{commentCount}</span>
-</div>
+            className="flex items-center gap-1 text-xs cursor-pointer hover:text-btn"
+            title="Comments"
+            onClick={() => onCommentClick?.(task)}
+          >
+            <MessageSquare size={12} />
+            <span>{commentCount}</span>
+          </div>
           <div className="flex items-center gap-1 text-xs" title="Attachments">
             <Paperclip size={12} />
             <span>{attachmentCount}</span>

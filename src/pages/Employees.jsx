@@ -1,18 +1,19 @@
+import { Plus, Users, UserCheck, Clock, UserX } from "lucide-react";
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useCallback } from "react";
-import { Plus, Users, UserCheck, Clock, UserX } from "lucide-react";
+import { Wallet } from "lucide-react"; // Import Wallet icon
 
+import ManageCompensationModal from "../components/Employee/ManageCompansationModal.jsx";
+import EmployeeDetailsModal from "../components/Employee/EmployeeDetailsModal.jsx";
+import AddEmployeeModal from "../components/Employee/AddEmployeeModal";
+import useNotification from "../hooks/useNotification.jsx";
+import ProfileCard from "../components/ui/ProfileCard";
 // Components
 import StatsCard from "../components/ui/StatsCard";
 import SearchBar from "../components/ui/SearchBar";
-import Button from "../components/ui/Button";
-import ProfileCard from "../components/ui/ProfileCard";
-import AddEmployeeModal from "../components/Employee/AddEmployeeModal";
 import axiosInstance from "../api/axiosInstance";
-import useNotification from "../hooks/useNotification.jsx";
-import ManageCompensationModal from "../components/Employee/ManageCompansationModal.jsx";
+import Button from "../components/ui/Button";
 
-import { Wallet } from "lucide-react"; // Import Wallet icon
 
 const STATS_CONFIG = [
   {
@@ -67,6 +68,8 @@ const Employees = () => {
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const [compModalOpen, setCompModalOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const [selectedDepartment, setSelectedDepartment] =
     useState("All Departments");
@@ -149,6 +152,21 @@ const Employees = () => {
   useEffect(() => {
     fetchEmployees();
   }, [fetchEmployees]);
+
+  const handleViewEmployee = async (employee) => {
+  try {
+    const res = await axiosInstance.get(
+      `/api/v1/user/profile/${employee._id}`,
+    );
+
+    if (res.data.success) {
+      setSelectedEmployee(res.data.data.data);
+      setDetailsOpen(true);
+    }
+  } catch (err) {
+    notify.error("Failed", "Unable to fetch employee details");
+  }
+};
 
   // ─── API: TWO-STEP SAVE EMPLOYEE ───
   // ─── API: TWO-STEP SAVE EMPLOYEE (STRICT MODE) ───
@@ -385,6 +403,7 @@ const Employees = () => {
               variant="employee"
               onEdit={() => handleEditEmployee(emp)}
               onDelete={() => handleDeleteEmployee(emp._id)}
+              onView={() => handleViewEmployee(emp)}
             />
           ))}
         </div>
@@ -412,6 +431,11 @@ const Employees = () => {
         onSave={handleSaveEmployee}
         initialData={editingEmployee}
       />
+      <EmployeeDetailsModal
+  open={detailsOpen}
+  onClose={() => setDetailsOpen(false)}
+  employee={selectedEmployee}
+/>
     </div>
   );
 };

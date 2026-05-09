@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import axiosInstance from "../../api/axiosInstance";
+import colors from "../../constants/colors";
 
 
 export default function TaskViewModal({ open, onClose, taskId }) {
@@ -16,70 +17,153 @@ export default function TaskViewModal({ open, onClose, taskId }) {
 
   if (!open) return null;
 
+  // 🎨 Status Color Mapping
+  const statusColor = (status) => {
+    switch (status) {
+      case "done":
+        return colors.success;
+      case "in_progress":
+        return colors.warning;
+      case "under_review":
+        return colors.accent;
+      default:
+        return colors.Blue;
+    }
+  };
+
+  // 🎨 Priority Color Mapping
+  const priorityColor = (priority) => {
+    switch (priority) {
+      case "high":
+        return colors.danger;
+      case "medium":
+        return colors.warning;
+      default:
+        return colors.Blue;
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
-      <div className="bg-card p-5 rounded-xl w-full max-w-lg">
-        <div className="flex justify-between mb-4">
-          <h3>Task Details</h3>
-          <button onClick={onClose}>✕</button>
+    <div
+      className="fixed inset-0 flex justify-center items-center z-50"
+      style={{ background: "rgba(0,0,0,0.6)" }}
+    >
+      <div
+        className="p-6 rounded-2xl w-full max-w-xl shadow-xl"
+        style={{
+          background: colors.cardBg,
+          border: `1px solid ${colors.cardBorder}`,
+        }}
+      >
+        {/* 🔷 Header */}
+        <div className="flex justify-between items-center mb-4">
+          <h3
+            className="text-lg font-bold"
+            style={{ color: colors.textPrimary }}
+          >
+            Task Details
+          </h3>
+
+          <button
+            onClick={onClose}
+            className="text-sm px-2 py-1 rounded-md"
+            style={{
+              background: colors.hover,
+              color: colors.textPrimary,
+            }}
+          >
+            ✕
+          </button>
         </div>
 
         {!task ? (
-  "Loading..."
-) : (
-  <div className="space-y-2 text-sm">
+          <p style={{ color: colors.textSecondary }}>Loading...</p>
+        ) : (
+          <div className="space-y-3 text-sm">
 
-    <p><b>Title:</b> {task.title}</p>
+            {/* 🔹 Title */}
+            <h2
+              className="text-base font-semibold"
+              style={{ color: colors.accent }}
+            >
+              {task.title}
+            </h2>
 
-    <p><b>Description:</b> {task.description}</p>
+            {/* 🔹 Description */}
+            <p style={{ color: colors.textSecondary }}>
+              {task.description}
+            </p>
 
-    <p><b>Status:</b> 
-      <span className="ml-1 capitalize">{task.status.replace("_", " ")}</span>
-    </p>
+            {/* 🔥 Status + Priority */}
+            <div className="flex gap-3">
+              <span
+                className="px-2 py-1 rounded text-xs capitalize"
+                style={{
+                  background: statusColor(task.status) + "20",
+                  color: statusColor(task.status),
+                }}
+              >
+                {task.status.replace("_", " ")}
+              </span>
 
-    <p><b>Priority:</b> 
-      <span className="ml-1 capitalize">{task.priority}</span>
-    </p>
+              <span
+                className="px-2 py-1 rounded text-xs capitalize"
+                style={{
+                  background: priorityColor(task.priority) + "20",
+                  color: priorityColor(task.priority),
+                }}
+              >
+                {task.priority}
+              </span>
+            </div>
 
-    <p><b>Team:</b> {task.team || "N/A"}</p>
+            {/* 🔹 Info Grid */}
+            <div className="grid grid-cols-2 gap-3 mt-3">
 
-    <p><b>Department:</b> {task.department?.name || "N/A"}</p>
+              <p style={{ color: colors.textSecondary }}>
+                <b style={{ color: colors.textPrimary }}>Team:</b> {task.team || "N/A"}
+              </p>
 
-    <p><b>Assigned To:</b> 
-      {" "}
-      {task.assignTo
-        ? `${task.assignTo.firstName} ${task.assignTo.lastName}`
-        : "Unassigned"}
-    </p>
+              <p style={{ color: colors.textSecondary }}>
+                <b style={{ color: colors.textPrimary }}>Department:</b> {task.department?.name || "N/A"}
+              </p>
 
-    <p><b>Created By:</b> 
-      {" "}
-      {task.createdBy
-        ? `${task.createdBy.firstName} ${task.createdBy.lastName}`
-        : "N/A"}
-    </p>
+              <p style={{ color: colors.textSecondary }}>
+                <b style={{ color: colors.textPrimary }}>Assigned To:</b>{" "}
+                {task.assignTo
+                  ? `${task.assignTo.firstName} ${task.assignTo.lastName}`
+                  : "Unassigned"}
+              </p>
 
-    <p><b>Created At:</b> 
-      {" "}
-      {new Date(task.createdAt).toLocaleString()}
-    </p>
+              <p style={{ color: colors.textSecondary }}>
+                <b style={{ color: colors.textPrimary }}>Created By:</b>{" "}
+                {task.createdBy
+                  ? `${task.createdBy.firstName} ${task.createdBy.lastName}`
+                  : "N/A"}
+              </p>
 
-    <p><b>Due Date:</b> 
-      {" "}
-      {task.due_date
-        ? new Date(task.due_date).toLocaleDateString()
-        : "No Date"}
-    </p>
+              <p style={{ color: colors.textSecondary }}>
+                <b style={{ color: colors.textPrimary }}>Due Date:</b>{" "}
+                {task.due_date
+                  ? new Date(task.due_date).toLocaleDateString()
+                  : "No Date"}
+              </p>
 
-    <p><b>Attachments:</b> 
-      {" "}
-      {task.attachments ? "Available" : "None"}
-    </p>
+              <p style={{ color: colors.textSecondary }}>
+                <b style={{ color: colors.textPrimary }}>Comments:</b>{" "}
+                {task.commentsCount || 0}
+              </p>
+            </div>
 
-    <p><b>Total Comments:</b> {task.commentsCount || 0}</p>
-
-  </div>
-)}
+            {/* 🔹 Footer Info */}
+            <div
+              className="mt-4 pt-3 border-t text-xs"
+              style={{ borderColor: colors.cardBorder, color: colors.textSecondary }}
+            >
+              Created At: {new Date(task.createdAt).toLocaleString()}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
