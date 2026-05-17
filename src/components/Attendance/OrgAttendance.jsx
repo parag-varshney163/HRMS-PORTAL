@@ -1,3 +1,6 @@
+import { CheckCircle, XCircle, AlertCircle, Users, Sunrise, Edit2, // 🚨 Imported Edit icon
+X, // Imported X for Modal
+ } from "lucide-react";
 /* eslint-disable react-hooks/set-state-in-effect */
 // import React, { useState, useEffect, useCallback } from "react";
 // import { CheckCircle, XCircle, AlertCircle, Users } from "lucide-react";
@@ -5,7 +8,6 @@
 // import StatsCard from "../ui/StatsCard";
 // import DataTable from "../ui/DataTable";
 // import SearchBar from "../ui/SearchBar";
-
 // export default function OrgAttendance() {
 //   const [orgStats, setOrgStats] = useState({
 //     present: { count: 0 },
@@ -15,7 +17,6 @@
 //   });
 //   const [allRecords, setAllRecords] = useState([]);
 //   const [loadingOrg, setLoadingOrg] = useState(false);
-
 //   const [page, setPage] = useState(1);
 //   const [totalPages, setTotalPages] = useState(1);
 //   const [searchQuery, setSearchQuery] = useState("");
@@ -25,7 +26,6 @@
 //     const now = new Date();
 //     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 //   });
-
 //   useEffect(() => {
 //     const handler = setTimeout(() => {
 //       setDebouncedSearch(searchQuery);
@@ -33,12 +33,10 @@
 //     }, 500);
 //     return () => clearTimeout(handler);
 //   }, [searchQuery]);
-
 //   const fetchOrgData = useCallback(async () => {
 //     try {
 //       setLoadingOrg(true);
 //       const [year, monthNum] = monthFilter.split("-");
-
 //       const [statsRes, listRes] = await Promise.allSettled([
 //         axiosInstance.get(
 //           `/api/v1/attendance/stats?month=${parseInt(monthNum)}&year=${year}`,
@@ -47,7 +45,6 @@
 //           `/api/v1/attendance/all?page=${page}&limit=10&search=${debouncedSearch}&month=${monthFilter}&status=${statusFilter}`,
 //         ),
 //       ]);
-
 //       if (statsRes.status === "fulfilled" && statsRes.value.data.success) {
 //         setOrgStats(statsRes.value.data.data);
 //       }
@@ -61,11 +58,9 @@
 //       setLoadingOrg(false);
 //     }
 //   }, [page, debouncedSearch, monthFilter, statusFilter]);
-
 //   useEffect(() => {
 //     fetchOrgData();
 //   }, [fetchOrgData]);
-
 //   const columns = [
 //     {
 //       key: "employee",
@@ -118,7 +113,6 @@
 //           style = "bg-red-500/10 text-red-400 border-red-500/30";
 //         else if (val === "late" || val === "half-day")
 //           style = "bg-yellow-500/10 text-yellow-400 border-yellow-500/30";
-
 //         return (
 //           <span
 //             className={`text-[10px] font-semibold px-2.5 py-1 rounded-md border uppercase tracking-wider ${style}`}
@@ -140,7 +134,6 @@
 //       ),
 //     },
 //   ];
-
 //   return (
 //     <div className="pt-8 border-t border-card-border mt-4 w-full">
 //       <div className="mb-6">
@@ -151,7 +144,6 @@
 //           Manage and track company-wide attendance records.
 //         </p>
 //       </div>
-
 //       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 //         <StatsCard
 //           icon={CheckCircle}
@@ -182,7 +174,6 @@
 //           label="Avg Attendance Rate"
 //         />
 //       </div>
-
 //       {/* 🚨 FIX: Enhanced Unified Filter Bar */}
 //       <div className="flex flex-col xl:flex-row items-center justify-between gap-4 p-4 bg-card/40 border border-card-border rounded-2xl mb-4">
 //         {/* Left Side: Month & Status Filters */}
@@ -204,7 +195,6 @@
 //             <option value="absent">Absent</option>
 //           </select>
 //         </div>
-
 //         {/* Right Side: Search Bar given proper width to prevent wrapping */}
 //         <div className="w-full xl:w-[450px] flex justify-end">
 //           <SearchBar
@@ -215,7 +205,6 @@
 //           />
 //         </div>
 //       </div>
-
 //       <div className="flex-1 -mt-4">
 //         <DataTable
 //           columns={columns}
@@ -230,7 +219,6 @@
 //     </div>
 //   );
 // }
-
 // import React, { useState, useEffect, useCallback } from "react";
 // import {
 //   CheckCircle,
@@ -243,7 +231,6 @@
 // import StatsCard from "../ui/StatsCard";
 // import DataTable from "../ui/DataTable";
 // import SearchBar from "../ui/SearchBar";
-
 // export default function OrgAttendance() {
 //   const [orgStats, setOrgStats] = useState({
 //     present: { count: 0 },
@@ -254,7 +241,6 @@
 //   });
 //   const [allRecords, setAllRecords] = useState([]);
 //   const [loadingOrg, setLoadingOrg] = useState(false);
-
 //   const [page, setPage] = useState(1);
 //   const [totalPages, setTotalPages] = useState(1);
 //   const [searchQuery, setSearchQuery] = useState("");
@@ -264,7 +250,6 @@
 //     const now = new Date();
 //     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 //   });
-
 //   useEffect(() => {
 //     const handler = setTimeout(() => {
 //       setDebouncedSearch(searchQuery);
@@ -272,12 +257,10 @@
 //     }, 500);
 //     return () => clearTimeout(handler);
 //   }, [searchQuery]);
-
 //   const fetchOrgData = useCallback(async () => {
 //     try {
 //       setLoadingOrg(true);
 //       const [year, monthNum] = monthFilter.split("-");
-
 //       const [statsRes, listRes] = await Promise.allSettled([
 //         axiosInstance.get(
 //           `/api/v1/attendance/stats?month=${parseInt(monthNum)}&year=${year}`,
@@ -286,7 +269,6 @@
 //           `/api/v1/attendance/all?page=${page}&limit=10&search=${debouncedSearch}&month=${monthFilter}&status=${statusFilter}`,
 //         ),
 //       ]);
-
 //       if (statsRes.status === "fulfilled" && statsRes.value.data.success) {
 //         setOrgStats(statsRes.value.data.data);
 //       }
@@ -300,11 +282,9 @@
 //       setLoadingOrg(false);
 //     }
 //   }, [page, debouncedSearch, monthFilter, statusFilter]);
-
 //   useEffect(() => {
 //     fetchOrgData();
 //   }, [fetchOrgData]);
-
 //   const columns = [
 //     {
 //       key: "employee",
@@ -352,7 +332,6 @@
 //       render: (val) => {
 //         let style = "bg-gray-500/10 text-gray-400 border-gray-500/20";
 //         const currentVal = val?.toLowerCase() || "";
-
 //         if (currentVal === "present")
 //           style = "bg-green-500/10 text-green-400 border-green-500/30";
 //         else if (currentVal === "absent")
@@ -362,10 +341,8 @@
 //         // 🚨 Added Half-Day coloring styling
 //         else if (currentVal === "halfday" || currentVal === "half-day")
 //           style = "bg-orange-500/10 text-orange-400 border-orange-500/30";
-
 //         let displayText = val || "Unknown";
 //         if (currentVal === "halfday") displayText = "Half Day";
-
 //         return (
 //           <span
 //             className={`text-[10px] font-semibold px-2.5 py-1 rounded-md border uppercase tracking-wider ${style}`}
@@ -387,7 +364,6 @@
 //       ),
 //     },
 //   ];
-
 //   return (
 //     <div className="pt-8 border-t border-card-border mt-4 w-full">
 //       <div className="mb-6">
@@ -398,7 +374,6 @@
 //           Manage and track company-wide attendance records.
 //         </p>
 //       </div>
-
 //       {/* 🚨 FIX: 5-Column Grid with the New Half Day stat mapped directly from your API payload */}
 //       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
 //         <StatsCard
@@ -438,7 +413,6 @@
 //           label="Avg Rate"
 //         />
 //       </div>
-
 //       <div className="flex flex-col xl:flex-row items-center justify-between gap-4 p-4 bg-card/40 border border-card-border rounded-2xl mb-4">
 //         <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
 //           <input
@@ -460,7 +434,6 @@
 //             <option value="absent">Absent</option>
 //           </select>
 //         </div>
-
 //         <div className="w-full xl:w-[450px] flex justify-end">
 //           <SearchBar
 //             placeholder="Search employee..."
@@ -470,7 +443,6 @@
 //           />
 //         </div>
 //       </div>
-
 //       <div className="flex-1 -mt-4">
 //         <DataTable
 //           columns={columns}
@@ -485,24 +457,20 @@
 //     </div>
 //   );
 // }
-
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Users,
-  Sunrise,
-  Edit2, // 🚨 Imported Edit icon
-  X, // Imported X for Modal
-} from "lucide-react";
-import axiosInstance from "../../api/axiosInstance";
-import StatsCard from "../ui/StatsCard";
-import DataTable from "../ui/DataTable";
-import SearchBar from "../ui/SearchBar";
-import Button from "../ui/Button"; // Reusable Button component
+
+import EmployeeAttendanceHistoryModal from "./EmployeeAttendanceHistoryModal.jsx";
 import useNotification from "../../hooks/useNotification.jsx";
 import EditAttendanceModal from "./EditAttendenceModal.jsx";
+import axiosInstance from "../../api/axiosInstance";
+import StatsCard from "../ui/StatsCard";
+import SearchBar from "../ui/SearchBar";
+import DataTable from "../ui/DataTable";
+import Button from "../ui/Button"; // Reusable Button component
+
+
+// Reusable Button component
+
 
 // 2. MAIN COMPONENT: ORG ATTENDANCE
 // ─────────────────────────────────────────────────────────────────────────────
@@ -534,6 +502,8 @@ export default function OrgAttendance() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
 
   // Debounce Search
   useEffect(() => {
@@ -718,25 +688,61 @@ export default function OrgAttendance() {
         );
       },
     },
+    // {
+    //   key: "actions",
+    //   label: "Action",
+    //   width: "0.5fr",
+    //   align: "right",
+    //   render: (_, row) => (
+    //     <button
+    //       onClick={(e) => {
+    //         e.stopPropagation();
+    //         setEditingRecord(row);
+    //         setIsModalOpen(true);
+    //       }}
+    //       className="p-1.5 text-text-secondary hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
+    //       title="Edit Timesheet"
+    //     >
+    //       <Edit2 size={16} />
+    //     </button>
+    //   ),
+    // },
+
     {
       key: "actions",
       label: "Action",
-      width: "0.5fr",
+      width: "1fr",
       align: "right",
       render: (_, row) => (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setEditingRecord(row);
-            setIsModalOpen(true);
-          }}
-          className="p-1.5 text-text-secondary hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
-          title="Edit Timesheet"
-        >
-          <Edit2 size={16} />
-        </button>
+        <div className="flex items-center justify-end gap-2">
+          {/* EDIT */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditingRecord(row);
+              setIsModalOpen(true);
+            }}
+            className="p-1.5 text-text-secondary hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
+            title="Edit Timesheet"
+          >
+            <Edit2 size={16} />
+          </button>
+
+          {/* VIEW ALL */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+
+              setSelectedEmployeeId(row.user?._id);
+              setHistoryModalOpen(true);
+            }}
+            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20 transition"
+          >
+            View All
+          </button>
+        </div>
       ),
-    },
+    }
   ];
   return (
     <div className="pt-8 border-t border-card-border mt-4 w-full">
@@ -844,6 +850,14 @@ export default function OrgAttendance() {
         }}
         onSave={handleSaveTimes}
         record={editingRecord}
+      />
+      <EmployeeAttendanceHistoryModal
+        open={historyModalOpen}
+        employeeId={selectedEmployeeId}
+        onClose={() => {
+          setHistoryModalOpen(false);
+          setSelectedEmployeeId(null);
+        }}
       />
     </div>
   );
