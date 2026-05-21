@@ -69,7 +69,7 @@ const Employees = () => {
 
   const [compModalOpen, setCompModalOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
-const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const [selectedDepartment, setSelectedDepartment] =
     useState("All Departments");
@@ -154,19 +154,19 @@ const [selectedEmployee, setSelectedEmployee] = useState(null);
   }, [fetchEmployees]);
 
   const handleViewEmployee = async (employee) => {
-  try {
-    const res = await axiosInstance.get(
-      `/api/v1/user/profile/${employee._id}`,
-    );
+    try {
+      const res = await axiosInstance.get(
+        `/api/v1/user/profile/${employee._id}`,
+      );
 
-    if (res.data.success) {
-      setSelectedEmployee(res.data.data.data);
-      setDetailsOpen(true);
+      if (res.data.success) {
+        setSelectedEmployee(res.data.data.data);
+        setDetailsOpen(true);
+      }
+    } catch (err) {
+      notify.error("Failed", "Unable to fetch employee details");
     }
-  } catch (err) {
-    notify.error("Failed", "Unable to fetch employee details");
-  }
-};
+  };
 
   // ─── API: TWO-STEP SAVE EMPLOYEE ───
   // ─── API: TWO-STEP SAVE EMPLOYEE (STRICT MODE) ───
@@ -297,6 +297,29 @@ const [selectedEmployee, setSelectedEmployee] = useState(null);
       );
     }
   };
+  const handleDeactivateEmployee = async (employee) => {
+    try {
+      const confirmDeactivate = window.confirm(
+        `Deactivate ${employee.name}?`
+      );
+
+      if (!confirmDeactivate) return;
+
+      const response = await axiosInstance.patch(
+        `/api/v1/user/${employee._id}/deactivate`
+      );
+
+      if (response.data.success) {
+        notify.success("Success", "Employee deactivated successfully");
+        fetchEmployees();
+      }
+    } catch (error) {
+      notify.error(
+        "Failed",
+        error.response?.data?.message || "Failed to deactivate employee"
+      );
+    }
+  };
 
   // ─── HANDLER: OPEN EDIT MODAL ───
   const handleEditEmployee = (employee) => {
@@ -404,6 +427,7 @@ const [selectedEmployee, setSelectedEmployee] = useState(null);
               onEdit={() => handleEditEmployee(emp)}
               onDelete={() => handleDeleteEmployee(emp._id)}
               onView={() => handleViewEmployee(emp)}
+              onDeactivate={() => handleDeactivateEmployee(emp)}
             />
           ))}
         </div>
@@ -432,10 +456,10 @@ const [selectedEmployee, setSelectedEmployee] = useState(null);
         initialData={editingEmployee}
       />
       <EmployeeDetailsModal
-  open={detailsOpen}
-  onClose={() => setDetailsOpen(false)}
-  employee={selectedEmployee}
-/>
+        open={detailsOpen}
+        onClose={() => setDetailsOpen(false)}
+        employee={selectedEmployee}
+      />
     </div>
   );
 };

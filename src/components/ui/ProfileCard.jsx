@@ -20,7 +20,8 @@ export default function ProfileCard({
   variant = "employee",
   onEdit,
   onDelete,
-  onView
+  onView,
+  onDeactivate
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -103,6 +104,16 @@ export default function ProfileCard({
                   >
                     Delete
                   </button>
+                      <button
+      onClick={() => {
+        onDeactivate?.(data);
+        setMenuOpen(false);
+      }}
+      className="w-full text-left px-4 py-2 text-sm text-yellow-400 hover:bg-hover transition-colors bg-transparent border-none cursor-pointer"
+    >
+      Deactivate
+    </button>
+
                 </div>
               )}
             </div>
