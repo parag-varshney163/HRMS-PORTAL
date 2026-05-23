@@ -1,65 +1,127 @@
-import React, { useState, useCallback } from "react";
 import { X, UploadCloud, UserPlus, Clock } from "lucide-react";
+import React, { useState, useCallback } from "react";
+
 import useNotification from "../../hooks/useNotification.jsx";
 
+
+// const initialForm = {
+//   fullName: "",
+//   email: "",
+//   phoneNumber: "",
+//   experience: "",
+//   positionApplied: "",
+//   source: "",
+//   currentCompany: "",
+//   currentSalary: "",
+//   expectedSalary: "",
+//   notes: "",
+//   status: "screening", // Default status
+//   interviewTimeline: [], // Initialize empty for new candidates
+// };
 const initialForm = {
   fullName: "",
   email: "",
   phoneNumber: "",
+  dateOfBirth: "",
+
   experience: "",
+  currentDesignation: "",
+  currentCompany: "",
+  employmentType: "full_time",
+
+  skills: "",
+  noticePeriod: "",
+
   positionApplied: "",
   source: "",
-  currentCompany: "",
+
   currentSalary: "",
   expectedSalary: "",
-  notes: "",
-  status: "screening", // Default status
-  interviewTimeline: [], // Initialize empty for new candidates
-};
 
+  notes: "",
+  hrRemarks: "",
+
+  status: "screening",
+  profileImage: "",
+  interviewTimeline: [],
+};
 export default function CandidateModal({ open, onClose, onSave, initialData }) {
   // ─── LAZY INITIALIZATION ───
   const getInitialState = () => {
     if (initialData) {
+      // return {
+      //   fullName: initialData.fullName || "",
+      //   email: initialData.email || "",
+      //   phoneNumber: initialData.phoneNumber || "",
+      //   experience: initialData.experience || "",
+      //   positionApplied: initialData.positionApplied || "",
+      //   source: initialData.source || "",
+      //   currentCompany: initialData.currentCompany || "",
+      //   currentSalary: initialData.currentSalary || "",
+      //   expectedSalary: initialData.expectedSalary || "",
+      //   notes: initialData.notes || "",
+      //   status: initialData.status || "screening",
+      //   // Safely map timeline if it exists
+      //   interviewTimeline: initialData.interviewTimeline || [],
+      // };
       return {
         fullName: initialData.fullName || "",
         email: initialData.email || "",
         phoneNumber: initialData.phoneNumber || "",
+        dateOfBirth: initialData.dateOfBirth
+          ? new Date(initialData.dateOfBirth).toISOString().split("T")[0]
+          : "",
+
         experience: initialData.experience || "",
+        currentDesignation: initialData.currentDesignation || "",
+        currentCompany: initialData.currentCompany || "",
+        employmentType: initialData.employmentType || "full_time",
+        profileImage: initialData.profileImage || "",
+
+        skills: Array.isArray(initialData.skills)
+          ? initialData.skills.join(", ")
+          : initialData.skills || "",
+
+        noticePeriod: initialData.noticePeriod || "",
+
         positionApplied: initialData.positionApplied || "",
         source: initialData.source || "",
-        currentCompany: initialData.currentCompany || "",
+
         currentSalary: initialData.currentSalary || "",
         expectedSalary: initialData.expectedSalary || "",
+
         notes: initialData.notes || "",
+        hrRemarks: initialData.hrRemarks || "",
+
         status: initialData.status || "screening",
-        // Safely map timeline if it exists
+
         interviewTimeline: initialData.interviewTimeline || [],
       };
     }
     return initialForm;
   };
-
   const [form, setForm] = useState(getInitialState);
   const [resumeFile, setResumeFile] = useState(null);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
   const notify = useNotification();
-
   const isEditMode = !!initialData;
-
   // ─── HANDLERS ───
   const handleChange = useCallback((field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => ({ ...prev, [field]: "" }));
   }, []);
-
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setResumeFile(e.target.files[0]);
     }
   };
-
+  const handleProfileImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setProfileImage(e.target.files[0]);
+    }
+  };
   // Specific handler for nested interview timeline array
   const handleTimelineChange = (index, field, value) => {
     setForm((prev) => {
@@ -68,7 +130,6 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
       return { ...prev, interviewTimeline: newTimeline };
     });
   };
-
   // ─── VALIDATION ───
   const validate = useCallback(() => {
     const newErrors = {};
@@ -78,12 +139,45 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
       newErrors.positionApplied = "Position is required";
     return newErrors;
   }, [form]);
-
   if (!open) return null;
-
   // ─── SUBMISSION ───
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   const validationErrors = validate();
+  //   if (Object.keys(validationErrors).length > 0) {
+  //     setErrors(validationErrors);
+  //     return;
+  //   }
+  //   setIsSubmitting(true);
+  //   // 🚨 IMPORTANT: Build FormData for multipart/form-data API
+  //   const formData = new FormData();
+  //   Object.keys(form).forEach((key) => {
+  //     if (key === "interviewTimeline") {
+  //       // API requires interviewTimeline to be sent as a JSON string
+  //       if (isEditMode && form.interviewTimeline.length > 0) {
+  //         formData.append(
+  //           "interviewTimeline",
+  //           JSON.stringify(form.interviewTimeline),
+  //         );
+  //       }
+  //     } else if (form[key]) {
+  //       // Prevent appending literal "undefined" or "null" strings
+  //       formData.append(key, form[key]);
+  //     }
+  //   });
+  //   if (resumeFile) {
+  //     formData.append("resume", resumeFile);
+  //   }
+  //   const result = await onSave?.(formData);
+  //   setIsSubmitting(false);
+  //   if (result && !result.success) {
+  //     notify.error("Save Failed", result.message || "Failed to save candidate.");
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const validationErrors = validate();
 
     if (Object.keys(validationErrors).length > 0) {
@@ -93,20 +187,30 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
 
     setIsSubmitting(true);
 
-    // 🚨 IMPORTANT: Build FormData for multipart/form-data API
     const formData = new FormData();
 
     Object.keys(form).forEach((key) => {
       if (key === "interviewTimeline") {
-        // API requires interviewTimeline to be sent as a JSON string
-        if (isEditMode && form.interviewTimeline.length > 0) {
+        if (form.interviewTimeline?.length > 0) {
           formData.append(
             "interviewTimeline",
             JSON.stringify(form.interviewTimeline),
           );
         }
-      } else if (form[key]) {
-        // Prevent appending literal "undefined" or "null" strings
+      } else if (key === "skills") {
+        formData.append(
+          "skills",
+          form.skills
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+            .join(","),
+        );
+      } else if (
+        form[key] !== undefined &&
+        form[key] !== null &&
+        form[key] !== ""
+      ) {
         formData.append(key, form[key]);
       }
     });
@@ -115,14 +219,22 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
       formData.append("resume", resumeFile);
     }
 
+    // if (profileImage) {
+    //   formData.append("profileImage", profileImage);
+    // }
+
+
     const result = await onSave?.(formData);
+
     setIsSubmitting(false);
 
     if (result && !result.success) {
-      notify.error("Save Failed", result.message || "Failed to save candidate.");
+      notify.error(
+        "Save Failed",
+        result.message || "Failed to save candidate."
+      );
     }
   };
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
@@ -151,7 +263,6 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
             <X size={20} />
           </button>
         </div>
-
         {/* ─── Scrollable Form Area ─── */}
         <div className="p-5 sm:p-6 overflow-y-auto custom-scrollbar flex-1">
           <form
@@ -192,7 +303,6 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
                 )}
               </div>
             </div>
-
             {/* ROW 2: Contact & Role */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
@@ -204,6 +314,18 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
                   placeholder="+1 234 567 8900"
                   value={form.phoneNumber}
                   onChange={(e) => handleChange("phoneNumber", e.target.value)}
+                  className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-text-primary mb-1.5">
+                  Date Of Birth
+                </label>
+
+                <input
+                  type="date"
+                  value={form.dateOfBirth}
+                  onChange={(e) => handleChange("dateOfBirth", e.target.value)}
                   className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
                 />
               </div>
@@ -235,7 +357,6 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
                 />
               </div>
             </div>
-
             {/* ROW 3: Status & Source */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -266,7 +387,6 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
                 />
               </div>
             </div>
-
             {/* ROW 4: Financials */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-xl border border-card-border bg-input/30">
               <div>
@@ -283,6 +403,121 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
                   className="w-full bg-card text-text-primary px-3 py-2 rounded-md border border-card-border text-sm outline-none focus:border-btn transition-colors"
                 />
               </div>
+              <div>
+                <label className="block text-xs font-semibold text-text-secondary mb-1">
+                  Current Designation
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="Senior Developer"
+                  value={form.currentDesignation}
+                  onChange={(e) =>
+                    handleChange("currentDesignation", e.target.value)
+                  }
+                  className="w-full bg-card text-text-primary px-3 py-2 rounded-md border border-card-border text-sm outline-none focus:border-btn transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-text-primary mb-1.5">
+                  Employment Type
+                </label>
+
+                <select
+                  value={form.employmentType}
+                  onChange={(e) =>
+                    handleChange("employmentType", e.target.value)
+                  }
+                  className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
+                >
+                  <option value="full_time">Full Time</option>
+                  <option value="part_time">Part Time</option>
+                  <option value="internship">Internship</option>
+                  <option value="contract">Contract</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-text-primary mb-1.5">
+                  Skills
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="React, Node.js, MongoDB"
+                  value={form.skills}
+                  onChange={(e) => handleChange("skills", e.target.value)}
+                  className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-text-primary mb-1.5">
+                  Notice Period
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="30 Days"
+                  value={form.noticePeriod}
+                  onChange={(e) =>
+                    handleChange("noticePeriod", e.target.value)
+                  }
+                  className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-text-primary mb-1.5">
+                  HR Remarks
+                </label>
+
+                <textarea
+                  rows="2"
+                  placeholder="Internal HR remarks..."
+                  value={form.hrRemarks}
+                  onChange={(e) => handleChange("hrRemarks", e.target.value)}
+                  className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors resize-none"
+                />
+              </div>
+              {/* <div>
+                <label className="block text-sm font-semibold text-text-primary mb-1.5">
+                 
+                  <input
+                    type="text"
+                    placeholder="Image URL"
+                    value={form.profileImage}
+                    onChange={(e) => handleChange("profileImage", e.target.value)}
+                  />
+
+                  <div className="flex flex-col items-center gap-1">
+                    <UploadCloud
+                      size={20}
+                      className="text-text-secondary group-hover:text-btn transition-colors"
+                    />
+
+                    <span className="text-sm text-text-secondary">
+                      {profileImage ? (
+                        <span className="text-text-primary font-medium">
+                          {profileImage.name}
+                        </span>
+                      ) : (
+                        "Upload profile image"
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </div> */}
+              <div>
+  <label className="block text-sm font-semibold text-text-primary mb-1.5">
+    Profile Image URL
+  </label>
+
+  <input
+    type="text"
+    placeholder="https://example.com/profile.jpg"
+    value={form.profileImage}
+    onChange={(e) => handleChange("profileImage", e.target.value)}
+    className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
+  />
+</div>
               <div>
                 <label className="block text-xs font-semibold text-text-secondary mb-1">
                   Current Salary
@@ -312,7 +547,6 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
                 />
               </div>
             </div>
-
             {/* Notes */}
             <div>
               <label className="block text-sm font-semibold text-text-primary mb-1.5">
@@ -326,7 +560,6 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
                 className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors resize-none custom-scrollbar"
               />
             </div>
-
             {/* Resume Upload */}
             <div>
               <label className="block text-sm font-semibold text-text-primary mb-1.5">
@@ -358,7 +591,6 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
                 </div>
               </div>
             </div>
-
             {/* ─── INTERVIEW TIMELINE (EDIT MODE ONLY) ─── */}
             {isEditMode &&
               form.interviewTimeline &&
@@ -380,7 +612,6 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
                             {stage.stageName}
                           </span>
                         </div>
-
                         {/* Status Dropdown */}
                         <div className="w-full sm:w-1/4">
                           <select
@@ -400,7 +631,6 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
                             <option value="Rejected">Rejected</option>
                           </select>
                         </div>
-
                         {/* Date Picker */}
                         <div className="w-full sm:w-1/4">
                           <input
@@ -409,8 +639,8 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
                             value={
                               stage.date
                                 ? new Date(stage.date)
-                                    .toISOString()
-                                    .split("T")[0]
+                                  .toISOString()
+                                  .split("T")[0]
                                 : ""
                             }
                             onChange={(e) =>
@@ -419,7 +649,6 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
                             className="w-full bg-card text-text-primary px-3 py-2 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
                           />
                         </div>
-
                         {/* Remarks */}
                         <div className="w-full sm:w-1/4">
                           <input
@@ -443,7 +672,6 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
               )}
           </form>
         </div>
-
         {/* ─── Footer Buttons ─── */}
         <div className="p-5 sm:p-6 border-t border-card-border bg-card rounded-b-2xl flex gap-3 shrink-0">
           <button
@@ -471,3 +699,4 @@ export default function CandidateModal({ open, onClose, onSave, initialData }) {
     </div>
   );
 }
+
