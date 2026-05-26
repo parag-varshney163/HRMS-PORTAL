@@ -1,22 +1,15 @@
+import { Plus, Users, UserCheck, Clock, XCircle, Edit2, Trash2, Eye, X, } from "lucide-react";
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  Plus,
-  Users,
-  UserCheck,
-  Clock,
-  XCircle,
-  Edit2,
-  Trash2,
-} from "lucide-react";
-import axiosInstance from "../api/axiosInstance";
 
-// Components
-import Button from "../components/ui/Button";
+import CandidateModal from "../components/Recruitment/CandidateModal";
+import useNotification from "../hooks/useNotification.jsx";
 import StatsCard from "../components/ui/StatsCard";
 import SearchBar from "../components/ui/SearchBar";
 import DataTable from "../components/ui/DataTable";
-import CandidateModal from "../components/Recruitment/CandidateModal";
-import useNotification from "../hooks/useNotification.jsx";
+import axiosInstance from "../api/axiosInstance";
+// Components
+import Button from "../components/ui/Button";
+
 
 const Recruitment = () => {
   // ─── STATE ───
@@ -39,6 +32,9 @@ const Recruitment = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingCandidate, setEditingCandidate] = useState(null);
   const notify = useNotification();
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [viewLoading, setViewLoading] = useState(false);
+  const [candidateDetails, setCandidateDetails] = useState(null);
 
   // ─── DEBOUNCED SEARCH ───
   useEffect(() => {
@@ -109,6 +105,31 @@ const Recruitment = () => {
         success: false,
         message: error.response?.data?.message || "Operation failed",
       };
+    }
+  };
+  const handleViewCandidate = async (id) => {
+    try {
+      setViewLoading(true);
+      setViewModalOpen(true);
+
+      const response = await axiosInstance.get(
+        `/api/v1/recruitment/view/${id}`
+      );
+
+      if (response.data.success) {
+        setCandidateDetails(response.data.data.candidate);
+      }
+    } catch (error) {
+      console.error(error);
+
+      notify.error(
+        "Failed",
+        "Unable to fetch candidate details"
+      );
+
+      setViewModalOpen(false);
+    } finally {
+      setViewLoading(false);
     }
   };
 
@@ -247,6 +268,16 @@ const Recruitment = () => {
           <button
             onClick={(e) => {
               e.stopPropagation();
+              handleViewCandidate(row._id);
+            }}
+            className="p-1.5 text-text-secondary hover:text-cyan-400 hover:bg-cyan-500/10 rounded transition-colors"
+            title="View Candidate"
+          >
+            <Eye size={16} />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
               setEditingCandidate(row);
               setModalOpen(true);
             }}
@@ -371,6 +402,201 @@ const Recruitment = () => {
         onSave={handleSaveCandidate}
         initialData={editingCandidate}
       />
+      {viewModalOpen && (
+        <div className="fixed inset-0 z-[999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-4xl rounded-3xl border border-card-border bg-primary overflow-hidden">
+
+            <div className="flex items-center justify-between px-6 py-5 border-b border-card-border">
+              <div>
+                <h2 className="text-2xl font-bold text-text-primary">
+                  Candidate Details
+                </h2>
+
+                <p className="text-sm text-text-secondary mt-1">
+                  Complete recruitment profile information
+                </p>
+              </div>
+
+              <button
+                onClick={() => {
+                  setViewModalOpen(false);
+                  setCandidateDetails(null);
+                }}
+                className="p-2 rounded-xl hover:bg-white/10 transition-colors"
+              >
+                <X size={22} className="text-text-secondary" />
+              </button>
+            </div>
+
+            <div className="p-6 max-h-[85vh] overflow-y-auto">
+              {viewLoading ? (
+                <div className="text-center py-20 text-text-secondary">
+                  Loading candidate details...
+                </div>
+              ) : candidateDetails ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                  <div>
+                    <p className="text-xs text-text-secondary mb-1">
+                      Full Name
+                    </p>
+
+                    <p className="text-sm font-semibold text-text-primary">
+                      {candidateDetails.fullName || "-"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-text-secondary mb-1">
+                      Email
+                    </p>
+
+                    <p className="text-sm font-semibold text-text-primary">
+                      {candidateDetails.email || "-"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-text-secondary mb-1">
+                      Phone Number
+                    </p>
+
+                    <p className="text-sm font-semibold text-text-primary">
+                      {candidateDetails.phoneNumber || "-"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-text-secondary mb-1">
+                      Position Applied
+                    </p>
+
+                    <p className="text-sm font-semibold text-text-primary">
+                      {candidateDetails.positionApplied || "-"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-text-secondary mb-1">
+                      Current Company
+                    </p>
+
+                    <p className="text-sm font-semibold text-text-primary">
+                      {candidateDetails.currentCompany || "-"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-text-secondary mb-1">
+                      Experience
+                    </p>
+
+                    <p className="text-sm font-semibold text-text-primary">
+                      {candidateDetails.experience || "-"} Years
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-text-secondary mb-1">
+                      Employment Type
+                    </p>
+
+                    <p className="text-sm font-semibold text-text-primary">
+                      {candidateDetails.employmentType || "-"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-text-secondary mb-1">
+                      Notice Period
+                    </p>
+
+                    <p className="text-sm font-semibold text-text-primary">
+                      {candidateDetails.noticePeriod || "-"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-text-secondary mb-1">
+                      Current Salary
+                    </p>
+
+                    <p className="text-sm font-semibold text-text-primary">
+                      ₹ {candidateDetails.currentSalary || "-"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-text-secondary mb-1">
+                      Expected Salary
+                    </p>
+
+                    <p className="text-sm font-semibold text-text-primary">
+                      ₹ {candidateDetails.expectedSalary || "-"}
+                    </p>
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <p className="text-xs text-text-secondary mb-2">
+                      Skills
+                    </p>
+
+                    <div className="flex flex-wrap gap-2">
+                      {candidateDetails.skills?.map((skill, idx) => (
+                        <span
+                          key={idx}
+                          className="px-3 py-1 rounded-lg bg-blue-500/10 text-blue-400 text-xs font-medium"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <p className="text-xs text-text-secondary mb-2">
+                      Interview Timeline
+                    </p>
+
+                    <div className="space-y-3">
+                      {candidateDetails.interviewTimeline?.map((stage, idx) => (
+                        <div
+                          key={idx}
+                          className="p-4 rounded-2xl border border-card-border bg-secondary"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="font-semibold text-text-primary">
+                              {stage.stageName}
+                            </p>
+
+                            <span className="text-xs px-2 py-1 rounded-lg bg-blue-500/10 text-blue-400">
+                              {stage.status}
+                            </span>
+                          </div>
+
+                          <p className="text-sm text-text-secondary">
+                            {stage.remarks || "No remarks"}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <p className="text-xs text-text-secondary mb-1">
+                      HR Remarks
+                    </p>
+
+                    <div className="p-4 rounded-2xl border border-card-border bg-secondary text-sm text-text-primary">
+                      {candidateDetails.hrRemarks || "No remarks available"}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
