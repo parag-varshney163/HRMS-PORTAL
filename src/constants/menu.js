@@ -1,21 +1,5 @@
-import { 
-  LayoutDashboard, 
-  Users, 
-  CalendarOff, 
-  Clock, 
-  Wallet, 
-  FileSignature, 
-  Receipt, 
-  Megaphone, 
-  Banknote, 
-  ClipboardList, 
-  Files, 
-  Network, 
-  Settings, 
-  LogOut, 
-  UserMinus, 
-  UserPlus 
-} from "lucide-react";
+import { LayoutDashboard, Users, CalendarOff, Clock, Wallet, FileSignature, Receipt, Megaphone, Banknote, ClipboardList, Files, Network, Settings, LogOut, UserMinus, UserPlus } from "lucide-react";
+
 
 const MENU_ITEMS = [
   {
@@ -34,7 +18,7 @@ const MENU_ITEMS = [
     name: "Resignation",
     icon: UserMinus,
     path: "/resignations",
-    allowedRoles: ["admin", "hr", "employee"],
+    allowedRoles: ["admin", "hr", "employee","manager"],
   },
   {
     name: "Recruitment",

@@ -1,30 +1,20 @@
+import { UserMinus, CheckCircle, Clock, XCircle, Calendar, Check, X, ChevronLeft, ChevronRight, Inbox, } from "lucide-react";
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  UserMinus,
-  CheckCircle,
-  Clock,
-  XCircle,
-  Calendar,
-  Check,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  Inbox,
-} from "lucide-react";
 
+import useNotification from "../../hooks/useNotification.jsx";
+import ResignationActionModal from "./ResignationActionModal";
+import ApplyResignationModal from "./ApplyResignationModal";
 import axiosInstance from "../../api/axiosInstance.js";
-
 import Button from "../../components/ui/Button.jsx";
 import StatsCard from "../ui/StatsCard.jsx";
 import SearchBar from "../ui/SearchBar.jsx";
-import ApplyResignationModal from "./ApplyResignationModal";
-import ResignationActionModal from "./ResignationActionModal";
-import useNotification from "../../hooks/useNotification.jsx";
+
 
 const AdminResignations = () => {
   const userRole = localStorage.getItem("roleName")?.toLowerCase() || "manager";
   const isManager = userRole === "manager";
   const isAdmin = userRole === "admin";
+  const isHR = userRole === "hr";
   const notify = useNotification();
 
   const [stats, setStats] = useState({});
@@ -105,7 +95,12 @@ const AdminResignations = () => {
 
   const handleConfirmAction = async ({ action, comments }) => {
     try {
-      const endpointRole = isAdmin ? "admin" : "manager";
+      // const endpointRole = isAdmin ? "admin" : "manager";
+      const endpointRole = isAdmin
+        ? "admin"
+        : isHR
+          ? "hr"
+          : "manager";
       const { data } = await axiosInstance.put(
         `/api/v1/resignation/${endpointRole}/${actionModal.resignationId}`,
         { action, comments },
@@ -346,7 +341,7 @@ const AdminResignations = () => {
                         )}
 
                         {/* ADMIN: GOD MODE. Can see/act on anything not yet fully resolved! */}
-                        {isAdmin && isPending && (
+                        {(isAdmin || isHR) && isPending && (
                           <>
                             <Button
                               variant="custom"
@@ -363,9 +358,14 @@ const AdminResignations = () => {
                               }
                               className="flex-1 font-bold"
                             >
-                              {isPendingManager
-                                ? "Force Approve"
-                                : "Final Approve"}
+
+                              {isAdmin
+                                ? isPendingManager
+                                  ? "Force Approve"
+                                  : "Final Approve"
+                                : isHR
+                                  ? "HR Approve"
+                                  : "Approve"}
                             </Button>
                             <Button
                               variant="custom"

@@ -1,9 +1,11 @@
+import { X, Loader2, User, Briefcase } from "lucide-react";
 /* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from "react";
-import { X, Loader2, User, Briefcase } from "lucide-react";
+
 import useNotification from "../../hooks/useNotification.jsx";
 import axiosInstance from "../../api/axiosInstance";
 import FilterDropDown from "../ui/FilterDropDown";
+
 
 // Formatter: "human_resource" -> "Human Resource"
 const formatName = (name) => {
@@ -406,6 +408,7 @@ export default function AddEmployeeModal({
                     <option value="employee">Employee</option>
                     <option value="manager">Manager</option>
                     <option value="admin">Admin</option>
+                    <option value={"hr"}>HR</option>
                   </select>
                 </div>
               </div>
