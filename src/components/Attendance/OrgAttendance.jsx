@@ -1,5 +1,5 @@
 import { CheckCircle, XCircle, AlertCircle, Users, Sunrise, Edit2, // 🚨 Imported Edit icon
-X, // Imported X for Modal
+X, UserX, // Imported X for Modal
  } from "lucide-react";
 /* eslint-disable react-hooks/set-state-in-effect */
 // import React, { useState, useEffect, useCallback } from "react";
@@ -462,11 +462,24 @@ import React, { useState, useEffect, useCallback } from "react";
 import EmployeeAttendanceHistoryModal from "./EmployeeAttendanceHistoryModal.jsx";
 import useNotification from "../../hooks/useNotification.jsx";
 import EditAttendanceModal from "./EditAttendenceModal.jsx";
+import ForceAbsentModal from "./ForceAbsentModal.jsx";
 import axiosInstance from "../../api/axiosInstance";
 import StatsCard from "../ui/StatsCard";
 import SearchBar from "../ui/SearchBar";
 import DataTable from "../ui/DataTable";
 import Button from "../ui/Button"; // Reusable Button component
+
+
+// Reusable Button component
+
+
+// Reusable Button component
+
+
+// Reusable Button component
+
+
+// Reusable Button component
 
 
 // Reusable Button component
@@ -504,6 +517,9 @@ export default function OrgAttendance() {
   const [editingRecord, setEditingRecord] = useState(null);
   const [historyModalOpen, setHistoryModalOpen] = useState(false);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+
+  const [forceAbsentModal, setForceAbsentModal] = useState(false);
+  const [selecteEmployeeId, setSelecteEmployeeId] = useState(null);
 
   // Debounce Search
   useEffect(() => {
@@ -717,6 +733,16 @@ export default function OrgAttendance() {
         <div className="flex items-center justify-end gap-2">
           {/* EDIT */}
           <button
+            onClick={() => {
+              setSelecteEmployeeId(row.userId || row.employeeId || row.user?._id);
+              setForceAbsentModal(true);
+            }}
+            className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 transition"
+            title="Force Mark Absent"
+          >
+            <UserX size={18} />
+          </button>
+          <button
             onClick={(e) => {
               e.stopPropagation();
               setEditingRecord(row);
@@ -858,6 +884,12 @@ export default function OrgAttendance() {
           setHistoryModalOpen(false);
           setSelectedEmployeeId(null);
         }}
+      />
+      <ForceAbsentModal
+        open={forceAbsentModal}
+        onClose={() => setForceAbsentModal(false)}
+        employeeId={selecteEmployeeId}
+        onSuccess={fetchOrgData}
       />
     </div>
   );

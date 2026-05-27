@@ -1,15 +1,10 @@
+import { Calendar, Clock, CheckCircle2, AlertCircle, XCircle, TrendingUp, } from "lucide-react";
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
-import {
-  Calendar,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
-  XCircle,
-  TrendingUp,
-} from "lucide-react";
+
 import axiosInstance from "../../api/axiosInstance";
 import DataTable from "../ui/DataTable";
+
 
 // ─── 🚨 FIXED: UTC to IST Converter (Adds 5:30) ───
 const convertUtcToIst = (timeString) => {
@@ -48,6 +43,7 @@ const EmployeeAttendanceRecords = () => {
     year: new Date().getFullYear(),
     status: "",
   });
+  
 
   const fetchData = async () => {
     try {

@@ -1,4 +1,4 @@
-import { X, CalendarDays, Clock3, User2, Mail, Phone, ShieldCheck, } from "lucide-react";
+import { X, CalendarDays, Clock3, User2, Mail, Phone, ShieldCheck, Download, } from "lucide-react";
 // EmployeeAttendanceHistoryModal.jsx
 import React, { useEffect, useState } from "react";
 
@@ -25,12 +25,52 @@ export default function EmployeeAttendanceHistoryModal({
 }) {
   const [loading, setLoading] = useState(false);
   const [attendanceData, setAttendanceData] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState("");
+const [selectedMonth, setSelectedMonth] = useState("");
+const [selectedYear, setSelectedYear] = useState("");
 
   useEffect(() => {
     if (!open || !employeeId) return;
 
     fetchEmployeeAttendance();
   }, [open, employeeId]);
+ const handleDownloadAttendance = async () => {
+  try {
+    const response = await axiosInstance.get(
+      `/api/v1/attendance/employee-attendance/download/${employeeId}`,
+      {
+        params: {
+          ...(selectedStatus && { status: selectedStatus }),
+          ...(selectedMonth && { month: selectedMonth }),
+          ...(selectedYear && { year: selectedYear }),
+        },
+        responseType: "blob",
+      }
+    );
+
+    const blob = new Blob([response.data], {
+      type: "text/csv",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+
+    link.setAttribute(
+      "download",
+      `${employee?.firstName || "employee"}-attendance.csv`
+    );
+
+    document.body.appendChild(link);
+    link.click();
+
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Download failed", error);
+  }
+};
 
   const fetchEmployeeAttendance = async () => {
     try {
@@ -101,6 +141,7 @@ const convertUtcToIst = (timeString) => {
               Last 90 days attendance records
             </p>
           </div>
+        
 
           <button
             onClick={onClose}
@@ -109,6 +150,52 @@ const convertUtcToIst = (timeString) => {
             <X className="text-white" size={20} />
           </button>
         </div>
+        {/* FILTERS */}
+<div className="px-6 py-4 border-b border-white/10 bg-white/[0.02]">
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+    {/* STATUS */}
+    <select
+      value={selectedStatus}
+      onChange={(e) => setSelectedStatus(e.target.value)}
+      className="bg-[#1F2937] border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-cyan-500"
+    >
+      <option value="">All Status</option>
+      <option value="present">Present</option>
+      <option value="absent">Absent</option>
+      <option value="late">Late</option>
+      <option value="half_day">Half Day</option>
+      <option value="on_leave">On Leave</option>
+    </select>
+
+    {/* MONTH */}
+    <input
+      type="month"
+      value={selectedMonth}
+      onChange={(e) => setSelectedMonth(e.target.value)}
+      className="bg-[#1F2937] border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-cyan-500"
+    />
+
+    {/* YEAR */}
+    <input
+      type="number"
+      placeholder="Year"
+      value={selectedYear}
+      onChange={(e) => setSelectedYear(e.target.value)}
+      className="bg-[#1F2937] border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-cyan-500"
+    />
+
+    {/* DOWNLOAD */}
+    <button
+      onClick={handleDownloadAttendance}
+      className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white text-sm font-semibold transition"
+    >
+      <Download size={18} />
+      Download CSV
+    </button>
+
+  </div>
+</div>
 
         {/* BODY */}
         <div className="overflow-y-auto flex-1 p-6">

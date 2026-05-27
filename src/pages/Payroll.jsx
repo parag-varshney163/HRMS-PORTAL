@@ -1,22 +1,15 @@
+import { Wallet, Users, Calendar, DollarSign, Plus, X, Search, IndianRupee, } from "lucide-react";
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  Wallet,
-  Users,
-  Calendar,
-  DollarSign,
-  Plus,
-  X,
-  Search,
-  IndianRupee,
-} from "lucide-react";
-import axiosInstance from "../api/axiosInstance";
-import useNotification from "../hooks/useNotification.jsx";
 
+import SalaryHistoryModal from "../components/payroll/SalaryHistoryModal.jsx";
+import useNotification from "../hooks/useNotification.jsx";
 // Components
 import StatsCard from "../components/ui/StatsCard";
-import DataTable from "../components/ui/DataTable";
-import Button from "../components/ui/Button";
 import SearchBar from "../components/ui/SearchBar";
+import DataTable from "../components/ui/DataTable";
+import axiosInstance from "../api/axiosInstance";
+import Button from "../components/ui/Button";
+
 
 // 1. IN-FILE MODAL: GENERATE PAYROLL
 const GeneratePayrollModal = ({ open, onClose, onGenerate }) => {
@@ -25,6 +18,7 @@ const GeneratePayrollModal = ({ open, onClose, onGenerate }) => {
     month: new Date().getMonth() + 1, // Current month (1-12)
     year: new Date().getFullYear(), // Current year
   });
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -153,6 +147,7 @@ export default function Finance() {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [salaryHistoryOpen, setSalaryHistoryOpen] = useState(false);
 
   // Table Filters & Pagination
   const [page, setPage] = useState(1);
@@ -186,11 +181,12 @@ export default function Finance() {
 
       if (listRes.status === "fulfilled" && listRes.value.data?.success) {
         // Adjust these keys based on your specific pagination payload structure
-        setRecords(
-          listRes.value.data.data.records ||
-            listRes.value.data.data.payrolls ||
-            [],
-        );
+        // setRecords(
+        //   listRes.value.data.data.records ||
+        //     listRes.value.data.data.payrolls ||
+        //     [],
+        // );
+        setRecords(listRes.value.data.data.data || []);
         setTotalPages(listRes.value.data.data.totalPages || 1);
       } else {
         setRecords([]);
@@ -231,68 +227,217 @@ export default function Finance() {
   };
 
   // ─── TABLE COLUMNS ───
+  // const columns = [
+  //   {
+  //     key: "employee",
+  //     label: "Employee",
+  //     width: "2fr",
+  //     align: "left",
+  //     render: (_, row) => (
+  //       <div className="min-w-0">
+  //         <p className="text-sm font-bold text-text-primary truncate">
+  //           {row.user?.firstName} {row.user?.lastName}
+  //         </p>
+  //         <p className="text-xs text-text-secondary font-mono truncate">
+  //           {row.user?.employeeId || "N/A"}
+  //         </p>
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     key: "period",
+  //     label: "Period",
+  //     width: "1fr",
+  //     align: "left",
+  //     render: (_, row) => (
+  //       <span className="text-sm font-medium text-text-secondary">
+  //         {row.month && row.year ? `${row.month}/${row.year}` : "-"}
+  //       </span>
+  //     ),
+  //   },
+  //   {
+  //     key: "gross",
+  //     label: "Gross Pay",
+  //     width: "1fr",
+  //     align: "right",
+  //     render: (_, row) => (
+  //       <span className="text-sm text-text-primary font-medium">
+  //         ${(row.grossPay || row.grossPayroll || 0).toLocaleString()}
+  //       </span>
+  //     ),
+  //   },
+  //   {
+  //     key: "net",
+  //     label: "Net Payout",
+  //     width: "1fr",
+  //     align: "right",
+  //     render: (_, row) => (
+  //       <span className="text-sm font-bold text-green-400">
+  //         ${(row.netPay || row.netPayout || 0).toLocaleString()}
+  //       </span>
+  //     ),
+  //   },
+  //   {
+  //     key: "status",
+  //     label: "Status",
+  //     width: "1fr",
+  //     align: "center",
+  //     render: (val) => {
+  //       const currentVal = (val || "pending").toLowerCase();
+  //       let style = "bg-yellow-500/10 text-yellow-400 border-yellow-500/30";
+  //       if (currentVal === "paid")
+  //         style = "bg-green-500/10 text-green-400 border-green-500/30";
+  //       else if (currentVal === "generated")
+  //         style = "bg-blue-500/10 text-blue-400 border-blue-500/30";
+
+  //       return (
+  //         <span
+  //           className={`text-[10px] font-semibold px-2.5 py-1 rounded-md border uppercase tracking-wider ${style}`}
+  //         >
+  //           {val || "Pending"}
+  //         </span>
+  //       );
+  //     },
+  //   },
+  // ];
   const columns = [
     {
-      key: "employee",
-      label: "Employee",
-      width: "2fr",
+      key: "employeeName",
+      label: "Employee Name",
+      width: "1.8fr",
       align: "left",
       render: (_, row) => (
-        <div className="min-w-0">
-          <p className="text-sm font-bold text-text-primary truncate">
-            {row.user?.firstName} {row.user?.lastName}
-          </p>
-          <p className="text-xs text-text-secondary font-mono truncate">
-            {row.user?.employeeId || "N/A"}
-          </p>
-        </div>
+        <span className="text-sm font-bold text-text-primary">
+          {row.employeeName || "-"}
+        </span>
       ),
     },
+
+    {
+      key: "employeeId",
+      label: "Employee ID",
+      width: "1.4fr",
+      align: "left",
+      render: (val) => (
+        <span className="text-xs font-mono text-text-secondary">
+          {val || "-"}
+        </span>
+      ),
+    },
+
     {
       key: "period",
       label: "Period",
       width: "1fr",
-      align: "left",
+      align: "center",
       render: (_, row) => (
-        <span className="text-sm font-medium text-text-secondary">
-          {row.month && row.year ? `${row.month}/${row.year}` : "-"}
+        <span className="text-sm text-text-primary">
+          {row.period || `${row.month}/${row.year}`}
         </span>
       ),
     },
+
     {
-      key: "gross",
+      key: "daysWorked",
+      label: "Working Days",
+      width: "1fr",
+      align: "center",
+      render: (val) => (
+        <span className="text-sm text-green-400 font-semibold">
+          {val || 0}
+        </span>
+      ),
+    },
+
+    {
+      key: "absentDays",
+      label: "Absent Days",
+      width: "1fr",
+      align: "center",
+      render: (val) => (
+        <span className="text-sm text-red-400 font-semibold">
+          {val || 0}
+        </span>
+      ),
+    },
+
+    {
+      key: "grossPay",
       label: "Gross Pay",
-      width: "1fr",
+      width: "1.2fr",
       align: "right",
-      render: (_, row) => (
-        <span className="text-sm text-text-primary font-medium">
-          ${(row.grossPay || row.grossPayroll || 0).toLocaleString()}
+      render: (val) => (
+        <span className="text-sm font-medium text-text-primary">
+          ₹{Number(val || 0).toLocaleString("en-IN")}
         </span>
       ),
     },
+
     {
-      key: "net",
+      key: "reimbursement",
+      label: "Reimbu..",
+      width: "1.2fr",
+      align: "right",
+      render: (val) => (
+        <span className="text-sm text-cyan-400">
+          ₹{Number(val || 0).toLocaleString("en-IN")}
+        </span>
+      ),
+    },
+
+    {
+      key: "netPayout",
       label: "Net Payout",
-      width: "1fr",
+      width: "1.2fr",
       align: "right",
-      render: (_, row) => (
+      render: (val) => (
         <span className="text-sm font-bold text-green-400">
-          ${(row.netPay || row.netPayout || 0).toLocaleString()}
+          ₹{Number(val || 0).toLocaleString("en-IN")}
         </span>
       ),
     },
+
     {
-      key: "status",
-      label: "Status",
-      width: "1fr",
+      key: "employmentStatus",
+      label: "Employment Status",
+      width: "1.2fr",
+      align: "center",
+      render: (_, row) => {
+        const status =
+          row.employmentStatus ||
+          row.employeeStatus ||
+          "working";
+
+        const isWorking = status.toLowerCase() === "working";
+
+        return (
+          <span
+            className={`text-[10px] font-semibold px-2.5 py-1 rounded-md border uppercase tracking-wider ${isWorking
+                ? "bg-green-500/10 text-green-400 border-green-500/30"
+                : "bg-red-500/10 text-red-400 border-red-500/30"
+              }`}
+          >
+            {isWorking ? "Working" : "Resigned"}
+          </span>
+        );
+      },
+    },
+
+    {
+      key: "salaryPaidStatus",
+      label: "Salary Status",
+      width: "1.2fr",
       align: "center",
       render: (val) => {
         const currentVal = (val || "pending").toLowerCase();
-        let style = "bg-yellow-500/10 text-yellow-400 border-yellow-500/30";
-        if (currentVal === "paid")
-          style = "bg-green-500/10 text-green-400 border-green-500/30";
-        else if (currentVal === "generated")
-          style = "bg-blue-500/10 text-blue-400 border-blue-500/30";
+
+        let style =
+          "bg-yellow-500/10 text-yellow-400 border-yellow-500/30";
+
+        if (currentVal === "paid") {
+          style =
+            "bg-green-500/10 text-green-400 border-green-500/30";
+        }
 
         return (
           <span
@@ -304,7 +449,6 @@ export default function Finance() {
       },
     },
   ];
-
   return (
     <div className="py-2 pb-10 h-full flex flex-col gap-6">
       {/* ─── Header ─── */}
@@ -367,17 +511,24 @@ export default function Finance() {
 
       {/* ─── Table Controls & DataTable ─── */}
       <div className="bg-card border border-card-border rounded-xl flex-1 flex flex-col overflow-hidden mt-2">
-        <div className="p-4 border-b border-card-border flex items-center justify-between bg-input/20">
-          {/* <h3 className="text-lg font-bold text-text-primary">
-            Payroll History
-          </h3> */}
-          <div className="w-full">
+        <div className="p-4 border-b border-card-border flex flex-col sm:flex-row items-center gap-3 justify-between bg-input/20">
+
+          <div className="w-full sm:max-w-md">
             <SearchBar
               placeholder="Search employee..."
               value={searchQuery}
               onChange={setSearchQuery}
             />
           </div>
+
+          <Button
+
+            size="sm"
+            onClick={() => setSalaryHistoryOpen(true)}
+          >
+            Salary History
+          </Button>
+
         </div>
 
         <div className="flex-1 p-4">
@@ -398,6 +549,10 @@ export default function Finance() {
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onGenerate={handleGeneratePayroll}
+      />
+      <SalaryHistoryModal
+        open={salaryHistoryOpen}
+        onClose={() => setSalaryHistoryOpen(false)}
       />
     </div>
   );

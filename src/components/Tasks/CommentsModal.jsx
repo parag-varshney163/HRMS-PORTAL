@@ -173,7 +173,7 @@ export default function CommentsModal({ open, onClose, task }) {
         </div>
 
         {/* ─── COMMENTS LIST ─── */}
-        <div className="max-h-60 overflow-y-auto space-y-3 mb-4 pr-1">
+        {/* <div className="max-h-60 overflow-y-auto space-y-3 mb-4 pr-1">
           {comments.length === 0 ? (
             <p className="text-sm text-text-secondary text-center py-4">
               No comments yet
@@ -193,7 +193,70 @@ export default function CommentsModal({ open, onClose, task }) {
               </div>
             ))
           )}
+        </div> */}
+        {/* ─── COMMENTS LIST ─── */}
+<div className="max-h-60 overflow-y-auto space-y-3 mb-4 pr-1">
+  {comments.length === 0 ? (
+    <p className="text-sm text-text-secondary text-center py-4">
+      No comments yet
+    </p>
+  ) : (
+    comments.map((c) => {
+      // Adjust role key based on your API response
+      const role =
+        c.commentedBy?.role?.toLowerCase() || "employee";
+
+      // Role based styles
+      const roleStyles = {
+        manager: {
+          border: "border-blue-500/40",
+          bg: "bg-blue-500/10",
+          badge: "bg-blue-500 text-white",
+          text: "text-blue-400",
+        },
+        hr: {
+          border: "border-green-500/40",
+          bg: "bg-green-500/10",
+          badge: "bg-green-500 text-white",
+          text: "text-green-400",
+        },
+        employee: {
+          border: "border-gray-500/30",
+          bg: "bg-gray-500/10",
+          badge: "bg-gray-500 text-white",
+          text: "text-gray-300",
+        },
+      };
+
+      const style =
+        roleStyles[role] || roleStyles.employee;
+
+      return (
+        <div
+          key={c._id}
+          className={`${style.bg} ${style.border} p-3 rounded-xl border transition-all`}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <p className={`text-sm font-semibold ${style.text}`}>
+              {c.commentedBy?.firstName}{" "}
+              {c.commentedBy?.lastName}
+            </p>
+
+            <span
+              className={`text-[10px] px-2 py-1 rounded-full uppercase tracking-wide ${style.badge}`}
+            >
+              {role}
+            </span>
+          </div>
+
+          <p className="text-sm text-text-primary break-words leading-relaxed">
+            {c.content}
+          </p>
         </div>
+      );
+    })
+  )}
+</div>
 
         {/* ─── PAGINATION ─── */}
         <div className="flex justify-between items-center mb-4">
