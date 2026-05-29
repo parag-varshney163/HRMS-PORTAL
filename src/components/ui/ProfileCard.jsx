@@ -104,15 +104,15 @@ export default function ProfileCard({
                   >
                     Delete
                   </button>
-                      <button
-      onClick={() => {
-        onDeactivate?.(data);
-        setMenuOpen(false);
-      }}
-      className="w-full text-left px-4 py-2 text-sm text-yellow-400 hover:bg-hover transition-colors bg-transparent border-none cursor-pointer"
-    >
-      Deactivate
-    </button>
+                  <button
+                    onClick={() => {
+                      onDeactivate?.(data);
+                      setMenuOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-yellow-400 hover:bg-hover transition-colors bg-transparent border-none cursor-pointer"
+                  >
+                    Deactivate
+                  </button>
 
                 </div>
               )}
@@ -122,7 +122,7 @@ export default function ProfileCard({
 
         {/* ─── Body: Info List ─── */}
         <div className="space-y-2.5 mb-4">
-          <div className="flex items-center gap-2 text-text-secondary">
+          {/* <div className="flex items-center gap-2 text-text-secondary">
             <Mail size={14} className="shrink-0" />
             <span className="text-xs truncate">{data.email}</span>
           </div>
@@ -130,6 +130,52 @@ export default function ProfileCard({
           <div className="flex items-center gap-2 text-text-secondary">
             <Phone size={14} className="shrink-0" />
             <span className="text-xs">{data.phone}</span>
+          </div> */}
+          <div className="space-y-2.5 mb-4">
+
+            {/* Email + Utilisation */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-text-secondary min-w-0">
+                <Mail size={14} className="shrink-0" />
+                <span className="text-xs truncate">{data.email}</span>
+              </div>
+
+              {variant === "employee" && (
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 whitespace-nowrap">
+                  {data.utilisationRate || "0%"}
+                </span>
+              )}
+            </div>
+
+            {/* Phone + Leave Balance */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-text-secondary">
+                <Phone size={14} className="shrink-0" />
+                <span className="text-xs">{data.phone}</span>
+              </div>
+
+              {variant === "employee" && (
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 whitespace-nowrap">
+                  CL: {data.leaveBalance?.casualLeave ?? 0}
+                </span>
+              )}
+            </div>
+
+            {/* Department */}
+            {/* {variant === "employee" && data.department && (
+    <div className="flex items-center gap-2 text-text-secondary">
+      <Building2 size={14} className="shrink-0" />
+      <span className="text-xs">{data.department}</span>
+    </div>
+  )} */}
+
+            {/* Candidate Applied Date */}
+            {variant === "candidate" && data.appliedDate && (
+              <div className="flex items-center gap-2 text-text-secondary">
+                <Calendar size={14} className="shrink-0" />
+                <span className="text-xs">Applied: {data.appliedDate}</span>
+              </div>
+            )}
           </div>
 
           {/* Employee Specific: Department */}
@@ -163,25 +209,25 @@ export default function ProfileCard({
         //   </span>
         // </div>
         <div className="flex items-center justify-between pt-3 border-t border-card-border mt-auto">
-  <span className="text-xs text-text-secondary font-mono">
-    {data.empId}
-  </span>
+          <span className="text-xs text-text-secondary font-mono">
+            {data.empId}
+          </span>
 
-  <div className="flex items-center gap-2">
-    <button
-      onClick={() => onView?.(data)}
-      className="w-8 h-8 rounded-lg bg-btn/10 hover:bg-btn/20 text-btn flex items-center justify-center transition"
-    >
-      <Eye size={16} />
-    </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onView?.(data)}
+              className="w-8 h-8 rounded-lg bg-btn/10 hover:bg-btn/20 text-btn flex items-center justify-center transition"
+            >
+              <Eye size={16} />
+            </button>
 
-    <span
-      className={`text-xs font-medium px-2.5 py-0.5 rounded-full border ${badgeStyle}`}
-    >
-      {data.status}
-    </span>
-  </div>
-</div>
+            <span
+              className={`text-xs font-medium px-2.5 py-0.5 rounded-full border ${badgeStyle}`}
+            >
+              {data.status}
+            </span>
+          </div>
+        </div>
       )}
     </div>
   );
