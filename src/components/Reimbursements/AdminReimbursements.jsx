@@ -1,22 +1,14 @@
+import { Plus, DollarSign, Clock, CheckCircle, FileText, User, ChevronLeft, ChevronRight, Inbox, } from "lucide-react";
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  Plus,
-  DollarSign,
-  Clock,
-  CheckCircle,
-  FileText,
-  User,
-  ChevronLeft,
-  ChevronRight,
-  Inbox,
-} from "lucide-react";
-import axiosInstance from "../../api/axiosInstance.js";
 
-import Button from "../../components/ui/Button.jsx";
-import StatsCard from "../ui/StatsCard.jsx";
 import ApplyReimbursementModal from "../Reimbursements/ApplyReimbursementModal.jsx";
 import useNotification from "../../hooks/useNotification.jsx";
+import axiosInstance from "../../api/axiosInstance.js";
+import FilterDropDown from "../ui/FilterDropDown.jsx";
+import Button from "../../components/ui/Button.jsx";
+import StatsCard from "../ui/StatsCard.jsx";
+
 
 const AdminReimbursements = () => {
   const userRole = localStorage.getItem("roleName")?.toLowerCase() || "manager";
@@ -33,6 +25,7 @@ const AdminReimbursements = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("pending");
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -42,13 +35,20 @@ const AdminReimbursements = () => {
     return () => clearTimeout(handler);
   }, [searchQuery]);
 
-  const fetchData = useCallback(async () => {
+  /* Update fetchData API */
+  /* Update fetchData API */
+  const fetchData = async () => {
     try {
       setLoading(true);
+
+      const statusQuery = statusFilter
+        ? `&status=${statusFilter}`
+        : "";
+
       const [statsRes, listRes] = await Promise.allSettled([
         axiosInstance.get("/api/v1/reimbursement/stats"),
         axiosInstance.get(
-          `/api/v1/reimbursement/pagination?page=${page}&limit=10&search=${debouncedSearch}`,
+          `/api/v1/reimbursement/pagination?page=${page}&limit=10&search=${debouncedSearch}${statusQuery}`,
         ),
       ]);
 
@@ -59,10 +59,11 @@ const AdminReimbursements = () => {
       if (listRes.status === "fulfilled" && listRes.value.data.success) {
         setRequests(
           listRes.value.data.data.reimbursements ||
-            listRes.value.data.data.docs ||
-            listRes.value.data.data ||
-            [],
+          listRes.value.data.data.docs ||
+          listRes.value.data.data ||
+          [],
         );
+
         setTotalPages(listRes.value.data.data.totalPages || 1);
       }
     } catch (error) {
@@ -71,11 +72,11 @@ const AdminReimbursements = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, debouncedSearch, notify]);
+  };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [page, debouncedSearch, statusFilter]);
 
   const handleApplyReimbursement = async (formData) => {
     try {
@@ -228,11 +229,38 @@ const AdminReimbursements = () => {
         />
       </div>
 
+
+
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-card-border pb-3 mb-4">
         <h3 className="text-lg font-bold text-text-primary">
           All Team Requests
         </h3>
+
+        <div className="w-[220px]">
+          <FilterDropDown
+            width="220px"
+            defaultLabel="Pending"
+            options={[
+              "Pending",
+              "Approved",
+              "Rejected",
+              "All Requests",
+            ]}
+            onSelect={(value) => {
+              const statusMap = {
+                Pending: "pending",
+                Approved: "approved",
+                Rejected: "rejected",
+                "All Requests": "",
+              };
+
+              setStatusFilter(statusMap[value] || "");
+              setPage(1);
+            }}
+          />
+        </div>
       </div>
+
 
       <div className="flex-1">
         {loading ? (

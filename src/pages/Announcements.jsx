@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Megaphone, Plus } from "lucide-react";
-import axiosInstance from "../api/axiosInstance";
 
+import PublishAnnouncementModal from "../components/Announcements/PublishAnnouncementModal";
+import CreateTemplateModal from "../components/Announcements/CreateTemplateModal";
+import AnnouncementCard from "../components/ui/AnnouncementCard";
+import useNotification from "../hooks/useNotification.jsx";
+import axiosInstance from "../api/axiosInstance";
 // Components
 import Button from "../components/ui/Button";
-import AnnouncementCard from "../components/ui/AnnouncementCard";
-import CreateTemplateModal from "../components/Announcements/CreateTemplateModal";
-import PublishAnnouncementModal from "../components/Announcements/PublishAnnouncementModal";
-import useNotification from "../hooks/useNotification.jsx";
+
 
 const AnnouncementsPage = () => {
   // ─── STATE ───
@@ -26,42 +27,85 @@ const AnnouncementsPage = () => {
   const notify = useNotification();
 
   // ─── API: FETCH DATA (WITH FIX) ───
+  // const fetchData = useCallback(async () => {
+  //   try {
+  //     setLoading(true);
+  //     const [historyRes, templatesRes] = await Promise.allSettled([
+  //       axiosInstance.get("/api/v1/announcements"),
+  //       axiosInstance.get("/api/v1/announcement-template"),
+  //     ]);
+
+  //     let fetchedTemplates = [];
+
+  //     // 1. Set Templates
+  //     if (
+  //       templatesRes.status === "fulfilled" &&
+  //       templatesRes.value.data.success
+  //     ) {
+  //       fetchedTemplates = templatesRes.value.data.data;
+  //       setTemplates(fetchedTemplates);
+  //     }
+
+  //     // 2. Set Announcements (Filtered)
+  //     if (historyRes.status === "fulfilled" && historyRes.value.data.success) {
+  //       const fetchedHistory = historyRes.value.data.data;
+
+  //       // 🚨 FRONTEND FIX: Filter out templates from the live announcements list 🚨
+  //       // We create a Set of template IDs for fast lookup
+  //       const templateIds = new Set(fetchedTemplates.map((t) => t._id));
+
+  //       // Keep only the announcements that are NOT in the templates list
+  //       const liveAnnouncements = fetchedHistory.filter(
+  //         (item) => !templateIds.has(item._id),
+  //       );
+
+  //       setAnnouncements(liveAnnouncements);
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to fetch announcements data:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, []);
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
+
       const [historyRes, templatesRes] = await Promise.allSettled([
         axiosInstance.get("/api/v1/announcements"),
         axiosInstance.get("/api/v1/announcement-template"),
       ]);
 
-      let fetchedTemplates = [];
-
-      // 1. Set Templates
+      // ─── Templates ───
       if (
         templatesRes.status === "fulfilled" &&
-        templatesRes.value.data.success
+        templatesRes.value?.data?.success
       ) {
-        fetchedTemplates = templatesRes.value.data.data;
-        setTemplates(fetchedTemplates);
+        setTemplates(templatesRes.value.data.data || []);
+      } else {
+        setTemplates([]);
       }
 
-      // 2. Set Announcements (Filtered)
-      if (historyRes.status === "fulfilled" && historyRes.value.data.success) {
-        const fetchedHistory = historyRes.value.data.data;
+      // ─── Announcements ───
+      if (
+        historyRes.status === "fulfilled" &&
+        historyRes.value?.data?.success
+      ) {
+        const fetchedAnnouncements =
+          historyRes.value.data.data || [];
 
-        // 🚨 FRONTEND FIX: Filter out templates from the live announcements list 🚨
-        // We create a Set of template IDs for fast lookup
-        const templateIds = new Set(fetchedTemplates.map((t) => t._id));
+        console.log("Announcements:", fetchedAnnouncements);
 
-        // Keep only the announcements that are NOT in the templates list
-        const liveAnnouncements = fetchedHistory.filter(
-          (item) => !templateIds.has(item._id),
-        );
-
-        setAnnouncements(liveAnnouncements);
+        // 🚨 DIRECTLY SET ANNOUNCEMENTS
+        setAnnouncements(fetchedAnnouncements);
+      } else {
+        setAnnouncements([]);
       }
     } catch (error) {
-      console.error("Failed to fetch announcements data:", error);
+      console.error(
+        "Failed to fetch announcements data:",
+        error,
+      );
     } finally {
       setLoading(false);
     }
@@ -218,21 +262,19 @@ const AnnouncementsPage = () => {
       <div className="flex gap-6 border-b border-card-border mb-6">
         <button
           onClick={() => setActiveTab("history")}
-          className={`pb-3 text-sm font-medium transition-colors ${
-            activeTab === "history"
+          className={`pb-3 text-sm font-medium transition-colors ${activeTab === "history"
               ? "text-accent border-b-2 border-accent"
               : "text-text-secondary hover:text-text-primary"
-          }`}
+            }`}
         >
           Sent Announcements
         </button>
         <button
           onClick={() => setActiveTab("templates")}
-          className={`pb-3 text-sm font-medium transition-colors ${
-            activeTab === "templates"
+          className={`pb-3 text-sm font-medium transition-colors ${activeTab === "templates"
               ? "text-accent border-b-2 border-accent"
               : "text-text-secondary hover:text-text-primary"
-          }`}
+            }`}
         >
           Message Templates
         </button>

@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { X, Send, Loader2 } from "lucide-react";
+
 import useNotification from "../../hooks/useNotification.jsx";
 import axiosInstance from "../../api/axiosInstance";
+
 
 const initialForm = {
   title: "",
@@ -9,6 +11,7 @@ const initialForm = {
   audienceType: "all",
   departments: [],
   recipients: [],
+  expiryDate: "",
 };
 
 // Helper to format department names (e.g., "testing" -> "Testing", "human_resource" -> "Human Resource")
@@ -198,6 +201,22 @@ export default function PublishAnnouncementModal({
                 {errors.message && (
                   <p className="text-xs text-danger mt-1">{errors.message}</p>
                 )}
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-text-primary mb-1.5">
+                  Expiry Date
+                </label>
+
+                <input
+                  type="datetime-local"
+                  value={form.expiryDate}
+                  onChange={(e) => handleChange("expiryDate", e.target.value)}
+                  className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
+                />
+
+                <p className="text-[10px] text-text-secondary mt-1 italic">
+                  Announcement will automatically expire on this date.
+                </p>
               </div>
             </div>
 

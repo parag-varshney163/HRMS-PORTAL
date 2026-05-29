@@ -2,6 +2,7 @@ import { Wallet, Users, Calendar, DollarSign, Plus, X, Search, IndianRupee, } fr
 import React, { useState, useEffect, useCallback } from "react";
 
 import SalaryHistoryModal from "../components/payroll/SalaryHistoryModal.jsx";
+import FilterDropDown from "../components/ui/FilterDropDown.jsx";
 import useNotification from "../hooks/useNotification.jsx";
 // Components
 import StatsCard from "../components/ui/StatsCard";
@@ -154,6 +155,10 @@ export default function Finance() {
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
+  const [departmentFilter, setDepartmentFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
 
   // Debounce search input
   useEffect(() => {
@@ -165,14 +170,57 @@ export default function Finance() {
   }, [searchQuery]);
 
   // ─── API: FETCH STATS & TABLE DATA ───
+  // const fetchData = useCallback(async () => {
+  //   try {
+  //     setLoading(true);
+  //     const [statsRes, listRes] = await Promise.allSettled([
+  //       axiosInstance.get("/api/v1/payroll/stats"),
+  //       axiosInstance.get(
+  //         `/api/v1/payroll?page=${page}&limit=10&search=${debouncedSearch}`,
+  //       ),
+  //     ]);
+
+  //     if (statsRes.status === "fulfilled" && statsRes.value.data?.success) {
+  //       setStats(statsRes.value.data.data || {});
+  //     }
+
+  //     if (listRes.status === "fulfilled" && listRes.value.data?.success) {
+  //       // Adjust these keys based on your specific pagination payload structure
+  //       // setRecords(
+  //       //   listRes.value.data.data.records ||
+  //       //     listRes.value.data.data.payrolls ||
+  //       //     [],
+  //       // );
+  //       setRecords(listRes.value.data.data.data || []);
+  //       setTotalPages(listRes.value.data.data.totalPages || 1);
+  //     } else {
+  //       setRecords([]);
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to fetch payroll data:", error);
+  //     setRecords([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, [page, debouncedSearch]);
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
+
+      const queryParams = new URLSearchParams({
+        page,
+        limit: 10,
+        search: debouncedSearch,
+      });
+
+      if (roleFilter) queryParams.append("role", roleFilter);
+      if (departmentFilter)
+        queryParams.append("department", departmentFilter);
+      if (statusFilter) queryParams.append("status", statusFilter);
+
       const [statsRes, listRes] = await Promise.allSettled([
         axiosInstance.get("/api/v1/payroll/stats"),
-        axiosInstance.get(
-          `/api/v1/payroll?page=${page}&limit=10&search=${debouncedSearch}`,
-        ),
+        axiosInstance.get(`/api/v1/payroll?${queryParams.toString()}`),
       ]);
 
       if (statsRes.status === "fulfilled" && statsRes.value.data?.success) {
@@ -180,12 +228,6 @@ export default function Finance() {
       }
 
       if (listRes.status === "fulfilled" && listRes.value.data?.success) {
-        // Adjust these keys based on your specific pagination payload structure
-        // setRecords(
-        //   listRes.value.data.data.records ||
-        //     listRes.value.data.data.payrolls ||
-        //     [],
-        // );
         setRecords(listRes.value.data.data.data || []);
         setTotalPages(listRes.value.data.data.totalPages || 1);
       } else {
@@ -197,7 +239,13 @@ export default function Finance() {
     } finally {
       setLoading(false);
     }
-  }, [page, debouncedSearch]);
+  }, [
+    page,
+    debouncedSearch,
+    roleFilter,
+    departmentFilter,
+    statusFilter,
+  ]);
 
   useEffect(() => {
     fetchData();
@@ -222,6 +270,47 @@ export default function Finance() {
       notify.error(
         "Generation Failed",
         error.response?.data?.message || "Failed to generate payroll.",
+      );
+    }
+  };
+  const handleBulkStatusUpdate = async (status) => {
+    try {
+      if (selectedEmployees.length === 0) {
+        notify.error(
+          "No Employees Selected",
+          "Please select employees first."
+        );
+        return;
+      }
+
+      const firstRecord = records[0];
+
+      const payload = {
+        userIds: selectedEmployees,
+        status,
+        month: firstRecord.month,
+        year: firstRecord.year,
+      };
+
+      const { data } = await axiosInstance.patch(
+        "/api/v1/salary-leave/payroll/bulk-status",
+        payload
+      );
+
+      if (data.success) {
+        notify.success(
+          "Success",
+          `Salary status updated to ${status}`
+        );
+
+        setSelectedEmployees([]);
+        fetchData();
+      }
+    } catch (error) {
+      notify.error(
+        "Update Failed",
+        error.response?.data?.message ||
+        "Unable to update salary status."
       );
     }
   };
@@ -301,6 +390,31 @@ export default function Finance() {
   //   },
   // ];
   const columns = [
+    {
+      key: "select",
+      label: "",
+      width: "60px",
+      align: "center",
+      render: (_, row) => (
+        <input
+          type="checkbox"
+          checked={selectedEmployees.includes(row.userId)}
+          onChange={(e) => {
+            if (e.target.checked) {
+              setSelectedEmployees((prev) => [
+                ...prev,
+                row.userId,
+              ]);
+            } else {
+              setSelectedEmployees((prev) =>
+                prev.filter((id) => id !== row.userId)
+              );
+            }
+          }}
+          className="w-4 h-4 cursor-pointer accent-blue-500"
+        />
+      ),
+    },
     {
       key: "employeeName",
       label: "Employee Name",
@@ -413,8 +527,8 @@ export default function Finance() {
         return (
           <span
             className={`text-[10px] font-semibold px-2.5 py-1 rounded-md border uppercase tracking-wider ${isWorking
-                ? "bg-green-500/10 text-green-400 border-green-500/30"
-                : "bg-red-500/10 text-red-400 border-red-500/30"
+              ? "bg-green-500/10 text-green-400 border-green-500/30"
+              : "bg-red-500/10 text-red-400 border-red-500/30"
               }`}
           >
             {isWorking ? "Working" : "Resigned"}
@@ -445,6 +559,57 @@ export default function Finance() {
           >
             {val || "Pending"}
           </span>
+        );
+      },
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      width: "1fr",
+      align: "center",
+      render: (_, row) => {
+        const isPaid =
+          row.salaryPaidStatus?.toLowerCase() === "paid";
+
+        return (
+          <Button
+            size="sm"
+            bg={isPaid ? "#EF4444" : "#22C55E"}
+            text="#FFF"
+            onClick={async () => {
+              try {
+                const payload = {
+                  userIds: [row.userId],
+                  status: isPaid ? "pending" : "paid",
+                  month: row.month,
+                  year: row.year,
+                };
+
+                const { data } = await axiosInstance.patch(
+                  "/api/v1/salary-leave/payroll/bulk-status",
+                  payload
+                );
+
+                if (data.success) {
+                  notify.success(
+                    "Updated",
+                    `Salary marked as ${isPaid ? "Pending" : "Paid"
+                    }`
+                  );
+
+                  fetchData();
+                }
+              } catch (error) {
+                notify.error(
+                  "Update Failed",
+                  error.response?.data?.message ||
+                  "Unable to update status."
+                );
+              }
+            }}
+          >
+            {isPaid ? "Mark Unpaid" : "Mark Paid"}
+          </Button>
         );
       },
     },
@@ -511,9 +676,9 @@ export default function Finance() {
 
       {/* ─── Table Controls & DataTable ─── */}
       <div className="bg-card border border-card-border rounded-xl flex-1 flex flex-col overflow-hidden mt-2">
-        <div className="p-4 border-b border-card-border flex flex-col sm:flex-row items-center gap-3 justify-between bg-input/20">
+        <div className="p-4 border-b border-card-border flex flex-col sm:flex-row items-center gap-4 bg-input/20">
 
-          <div className="w-full sm:max-w-md">
+          {/* <div className="w-full sm:max-w-md">
             <SearchBar
               placeholder="Search employee..."
               value={searchQuery}
@@ -527,7 +692,130 @@ export default function Finance() {
             onClick={() => setSalaryHistoryOpen(true)}
           >
             Salary History
-          </Button>
+          </Button> */}
+          <div className="w-full flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+
+            {/* Search */}
+            <div className="w-full lg:max-w-md">
+              <SearchBar
+                placeholder="Search employee..."
+                value={searchQuery}
+                onChange={setSearchQuery}
+              />
+            </div>
+
+            {/* Filters + Buttons */}
+            <div className="flex flex-wrap items-center gap-3">
+
+              <FilterDropDown
+                width="170px"
+                defaultLabel="Role"
+                options={["Admin", "Manager", "Employee"]}
+                onSelect={(value) => {
+                  setRoleFilter(value.toLowerCase());
+                  setPage(1);
+                }}
+              />
+
+              <FilterDropDown
+                width="170px"
+                defaultLabel="Department"
+                options={["HR", "Sales", "IT", "Finance"]}
+                onSelect={(value) => {
+                  setDepartmentFilter(value);
+                  setPage(1);
+                }}
+              />
+
+              <FilterDropDown
+                width="170px"
+                defaultLabel="Salary Status"
+                options={["Generated", "Paid", "Pending"]}
+                onSelect={(value) => {
+                  setStatusFilter(value.toLowerCase());
+                  setPage(1);
+                }}
+              />
+
+              {/* Download CSV */}
+              <Button
+                size="sm"
+                onClick={async () => {
+                  try {
+                    const queryParams = new URLSearchParams();
+
+                    if (debouncedSearch) {
+                      queryParams.append("search", debouncedSearch);
+                    }
+
+                    if (roleFilter) {
+                      queryParams.append("role", roleFilter);
+                    }
+
+                    if (departmentFilter) {
+                      queryParams.append("department", departmentFilter);
+                    }
+
+                    if (statusFilter) {
+                      queryParams.append("status", statusFilter);
+                    }
+
+                    const response = await axiosInstance.get(
+                      `/api/v1/payroll/download?${queryParams.toString()}`,
+                      {
+                        responseType: "blob",
+                      }
+                    );
+
+                    const blob = new Blob([response.data], {
+                      type: "text/csv",
+                    });
+
+                    const url = window.URL.createObjectURL(blob);
+
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.setAttribute("download", "payroll-report.csv");
+
+                    document.body.appendChild(link);
+                    link.click();
+
+                    link.remove();
+                    window.URL.revokeObjectURL(url);
+
+                    notify.success(
+                      "Downloaded",
+                      "Payroll CSV downloaded successfully"
+                    );
+                  } catch (error) {
+                    notify.error(
+                      "Download Failed",
+                      error.response?.data?.message ||
+                      "Unable to download payroll report."
+                    );
+                  }
+                }}
+              >
+                Download CSV
+              </Button>
+
+              <Button
+                size="sm"
+                onClick={() => setSalaryHistoryOpen(true)}
+              >
+                Salary History
+              </Button>
+              <Button
+                size="sm"
+                bg="#22C55E"
+                text="#FFF"
+                disabled={selectedEmployees.length === 0}
+                onClick={() => handleBulkStatusUpdate("paid")}
+              >
+                Mark Paid ({selectedEmployees.length})
+              </Button>
+            </div>
+          </div>
 
         </div>
 
