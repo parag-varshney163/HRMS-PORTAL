@@ -1,13 +1,6 @@
+import { Building2, Network, ShieldAlert, Bell, Loader2, CalendarDays, Palmtree, } from "lucide-react";
 import React, { useState, Suspense, lazy } from "react";
-import {
-  Building2,
-  Network,
-  ShieldAlert,
-  Bell,
-  Loader2,
-  CalendarDays,
-  Palmtree,
-} from "lucide-react";
+
 
 // LAZY LOADING: Only loads the component file if the user clicks the tab
 const CompanyProfile = lazy(
@@ -37,7 +30,7 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState("company");
 
   return (
-    <div className="py-2 pb-6 w-full h-full flex flex-col gap-6">
+    <div className="py-2 pb-6 w-full min-h-screen flex flex-col gap-6">
       {/* TOP TAB NAVIGATION */}
       <div className="w-full">
         <div className="mb-6">
