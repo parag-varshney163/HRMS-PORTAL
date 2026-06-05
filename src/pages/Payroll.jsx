@@ -819,7 +819,7 @@ export default function Finance() {
 
         </div>
 
-        <div className="flex-1 p-4">
+        {/* <div className="flex-1 p-4">
           <DataTable
             columns={columns}
             data={records}
@@ -829,6 +829,19 @@ export default function Finance() {
             totalPages={totalPages}
             onPageChange={setPage}
           />
+        </div> */}
+        <div className="w-full overflow-x-auto ">
+          <div className="min-w-[2000px]">
+            <DataTable
+              columns={columns}
+              data={records}
+              loading={loading}
+              paginationMode="server"
+              page={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          </div>
         </div>
       </div>
 
