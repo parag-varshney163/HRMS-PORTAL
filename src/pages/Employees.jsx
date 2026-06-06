@@ -102,7 +102,11 @@ const Employees = () => {
     joiningDate: apiData.joiningDate,
     employmentType: apiData.employmentType,
     workLocation: apiData.workLocation,
-    reportingManager: apiData.reportingManager,
+    // reportingManager: apiData.reportingManager,
+    reportingManager:
+  apiData.reportingManager?._id ||
+  apiData.reportingManager ||
+  "",
     systemRole: apiData.role || "employee",
       leaveBalance: apiData.leaveBalance || {},
   utilisationRate: apiData.utilisationRate || "0%",
@@ -207,7 +211,8 @@ const Employees = () => {
           "/api/v1/user/create",
           userPayload,
         );
-        savedUserId = userResponse.data?.data?._id || userResponse.data?._id;
+        // savedUserId = userResponse.data?.data?._id || userResponse.data?._id;
+        savedUserId = userResponse.data.data.user._id;
       }
 
       // 🚨 STRICT CHECK 1: Did User save fail?

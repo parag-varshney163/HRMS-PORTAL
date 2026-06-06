@@ -105,7 +105,11 @@ export default function AddEmployeeModal({
             : "",
           employmentType: initialData.employmentType || "full_time",
           workLocation: initialData.workLocation || "office",
-          reportingManager: initialData.reportingManager || "",
+          // reportingManager: initialData.reportingManager || "",
+          reportingManager:
+  initialData.reportingManager?._id ||
+  initialData.reportingManager ||
+  "",
           systemRole: initialData.systemRole || "employee",
         });
       } else {
@@ -133,6 +137,30 @@ export default function AddEmployeeModal({
     // if (!form.department) newErrors.department = "Required";
     return newErrors;
   };
+  const handleNext = (e) => {
+  e.preventDefault();
+
+  const validationErrors = {};
+
+  if (!form.firstName?.trim())
+    validationErrors.firstName = "Required";
+
+  if (!form.lastName?.trim())
+    validationErrors.lastName = "Required";
+
+  if (!form.email?.trim())
+    validationErrors.email = "Required";
+
+  if (!form.phoneNumber?.trim())
+    validationErrors.phoneNumber = "Required";
+
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
+
+  setActiveTab("employment");
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -213,7 +241,18 @@ export default function AddEmployeeModal({
         </div>
 
         {/* FORM */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        {/* <form onSubmit={handleSubmit} className="p-6 space-y-4"> */}
+        <form
+  onSubmit={(e) => {
+    if (activeTab !== "employment") {
+      e.preventDefault();
+      return;
+    }
+
+    handleSubmit(e);
+  }}
+  className="p-6 space-y-4"
+>
           {/* ========================================== */}
           {/* TAB 1: PERSONAL DETAILS                    */}
           {/* ========================================== */}
@@ -517,13 +556,20 @@ export default function AddEmployeeModal({
             </button>
 
             {activeTab === "personal" ? (
+              // <button
+              //   type="button"
+              //   onClick={() => setActiveTab("employment")}
+              //   className="flex-1 py-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 text-sm font-semibold hover:bg-blue-500/20 transition-colors cursor-pointer"
+              // >
+              //   Next: Job Details ➔
+              // </button>
               <button
-                type="button"
-                onClick={() => setActiveTab("employment")}
-                className="flex-1 py-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 text-sm font-semibold hover:bg-blue-500/20 transition-colors cursor-pointer"
-              >
-                Next: Job Details ➔
-              </button>
+  type="button"
+  onClick={handleNext}
+  className="flex-1 py-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 text-sm font-semibold hover:bg-blue-500/20 transition-colors cursor-pointer"
+>
+  Next: Job Details ➔
+</button>
             ) : (
               <button
                 type="submit"

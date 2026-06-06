@@ -1,18 +1,10 @@
+import { Clock, DollarSign, Calendar, Gift, Megaphone, Briefcase, CheckCircle2, Hourglass, } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import {
-  Clock,
-  DollarSign,
-  Calendar,
-  Gift,
-  Megaphone,
-  Briefcase,
-  CheckCircle2,
-  Hourglass,
-} from "lucide-react";
 
-import StatsCard from "../ui/StatsCard";
-import axiosInstance from "../../api/axiosInstance";
 import MyAttendance from "../Attendance/MyAttendance";
+import axiosInstance from "../../api/axiosInstance";
+import StatsCard from "../ui/StatsCard";
+
 
 export default function EmployeeDashboard() {
   const [loading, setLoading] = useState(true);
@@ -137,7 +129,7 @@ export default function EmployeeDashboard() {
               }
               label="Pending Leaves"
             />
-            <StatsCard
+            {/* <StatsCard
               icon={DollarSign}
               iconBg="bg-green-500/10"
               iconColor="text-green-500"
@@ -147,9 +139,79 @@ export default function EmployeeDashboard() {
                   : `${data.userSummary.remainingDaysForPayroll || 0} Days`
               }
               label="Until Next Payroll"
-            />
+            /> */}
+
           </div>
         </div>
+        {(data.userSummary.directReports?.length > 0 ||
+          data.userSummary.reportingManager) && (
+            <div className="bg-card border border-card-border rounded-xl p-5">
+              {data.userSummary.directReports?.length > 0 ? (
+                <>
+                  <h3 className="font-semibold text-text-primary mb-4">
+                    My Team ({data.userSummary.directReports.length})
+                  </h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {data.userSummary.directReports.map((member) => (
+                      <div
+                        key={member.id}
+                        className="p-4 rounded-xl border border-card-border bg-input/20 hover:bg-input/40 transition"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-11 h-11 rounded-full bg-accent/10 text-accent flex items-center justify-center font-semibold">
+                            {member.name?.charAt(0)?.toUpperCase()}
+                          </div>
+
+                          <div className="min-w-0">
+                            <p className="font-medium text-text-primary truncate">
+                              {member.name}
+                            </p>
+                            <p className="text-xs text-text-secondary truncate">
+                              {member.email}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-3 text-sm text-text-secondary">
+                          📞 {member.phoneNumber}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3 className="font-semibold text-text-primary mb-4">
+                    Reporting Manager
+                  </h3>
+
+                  <div className="max-w-md p-4 rounded-xl border border-card-border bg-input/20 hover:bg-input/40 transition">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center font-semibold">
+                        {data.userSummary.reportingManager?.name
+                          ?.charAt(0)
+                          ?.toUpperCase()}
+                      </div>
+
+                      <div>
+                        <p className="font-medium text-text-primary">
+                          {data.userSummary.reportingManager?.name}
+                        </p>
+                        <p className="text-xs text-text-secondary">
+                          {data.userSummary.reportingManager?.email}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 text-sm text-text-secondary">
+                      📞 {data.userSummary.reportingManager?.phoneNumber}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
