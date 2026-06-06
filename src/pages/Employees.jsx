@@ -104,12 +104,12 @@ const Employees = () => {
     workLocation: apiData.workLocation,
     // reportingManager: apiData.reportingManager,
     reportingManager:
-  apiData.reportingManager?._id ||
-  apiData.reportingManager ||
-  "",
-    systemRole: apiData.role || "employee",
-      leaveBalance: apiData.leaveBalance || {},
-  utilisationRate: apiData.utilisationRate || "0%",
+      apiData.reportingManager?._id ||
+      apiData.reportingManager ||
+      "",
+    systemRole: apiData.systemRole || "employee",
+    leaveBalance: apiData.leaveBalance || {},
+    utilisationRate: apiData.utilisationRate || "0%",
   });
 
   // ─── 400ms DEBOUNCE EFFECT ───

@@ -107,10 +107,15 @@ export default function AddEmployeeModal({
           workLocation: initialData.workLocation || "office",
           // reportingManager: initialData.reportingManager || "",
           reportingManager:
-  initialData.reportingManager?._id ||
-  initialData.reportingManager ||
-  "",
-          systemRole: initialData.systemRole || "employee",
+            initialData.reportingManager?._id ||
+            initialData.reportingManager ||
+            "",
+          // systemRole: initialData.systemRole || "",
+          systemRole:
+            initialData.systemRole ||
+            initialData.employment?.systemRole ||
+            initialData.user?.role ||
+            "employee",
         });
       } else {
         setForm(blankForm);
@@ -138,29 +143,29 @@ export default function AddEmployeeModal({
     return newErrors;
   };
   const handleNext = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const validationErrors = {};
+    const validationErrors = {};
 
-  if (!form.firstName?.trim())
-    validationErrors.firstName = "Required";
+    if (!form.firstName?.trim())
+      validationErrors.firstName = "Required";
 
-  if (!form.lastName?.trim())
-    validationErrors.lastName = "Required";
+    if (!form.lastName?.trim())
+      validationErrors.lastName = "Required";
 
-  if (!form.email?.trim())
-    validationErrors.email = "Required";
+    if (!form.email?.trim())
+      validationErrors.email = "Required";
 
-  if (!form.phoneNumber?.trim())
-    validationErrors.phoneNumber = "Required";
+    if (!form.phoneNumber?.trim())
+      validationErrors.phoneNumber = "Required";
 
-  if (Object.keys(validationErrors).length > 0) {
-    setErrors(validationErrors);
-    return;
-  }
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
 
-  setActiveTab("employment");
-};
+    setActiveTab("employment");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -243,16 +248,16 @@ export default function AddEmployeeModal({
         {/* FORM */}
         {/* <form onSubmit={handleSubmit} className="p-6 space-y-4"> */}
         <form
-  onSubmit={(e) => {
-    if (activeTab !== "employment") {
-      e.preventDefault();
-      return;
-    }
+          onSubmit={(e) => {
+            if (activeTab !== "employment") {
+              e.preventDefault();
+              return;
+            }
 
-    handleSubmit(e);
-  }}
-  className="p-6 space-y-4"
->
+            handleSubmit(e);
+          }}
+          className="p-6 space-y-4"
+        >
           {/* ========================================== */}
           {/* TAB 1: PERSONAL DETAILS                    */}
           {/* ========================================== */}
@@ -564,12 +569,12 @@ export default function AddEmployeeModal({
               //   Next: Job Details ➔
               // </button>
               <button
-  type="button"
-  onClick={handleNext}
-  className="flex-1 py-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 text-sm font-semibold hover:bg-blue-500/20 transition-colors cursor-pointer"
->
-  Next: Job Details ➔
-</button>
+                type="button"
+                onClick={handleNext}
+                className="flex-1 py-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 text-sm font-semibold hover:bg-blue-500/20 transition-colors cursor-pointer"
+              >
+                Next: Job Details ➔
+              </button>
             ) : (
               <button
                 type="submit"

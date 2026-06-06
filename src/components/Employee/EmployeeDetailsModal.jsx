@@ -20,9 +20,9 @@ export default function EmployeeDetailsModal({
       : user.department;
 
   const designationName =
-    typeof user.designation === "object"
-      ? user.designation?.name
-      : user.designation;
+  typeof employee?.employment?.designation === "object"
+    ? employee?.employment?.designation?.name
+    : employee?.employment?.designation;
 
   const statusValue =
     typeof user.status === "object"

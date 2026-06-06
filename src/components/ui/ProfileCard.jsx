@@ -14,6 +14,12 @@ const statusStyles = {
   Offer: "bg-green-500/20 text-green-400 border-green-500/30",
   Rejected: "bg-red-500/20 text-red-400 border-red-500/30",
 };
+const roleStyles = {
+  admin: "bg-red-500/20 text-red-400 border-red-500/30",
+  hr: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+  manager: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+  employee: "bg-green-500/20 text-green-400 border-green-500/30",
+};
 
 export default function ProfileCard({
   data,
@@ -24,6 +30,9 @@ export default function ProfileCard({
   onDeactivate
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const roleBadgeStyle =
+    roleStyles[data.systemRole?.toLowerCase()] ||
+    "bg-gray-500/20 text-gray-400 border-gray-500/30";
 
   // Use status style or default to gray/active if missing
   const badgeStyle =
@@ -69,7 +78,7 @@ export default function ProfileCard({
           </div>
 
           {/* Right Side Action: Candidate = Badge, Employee = Menu */}
-          {variant === "candidate" ? (
+          {/* {variant === "candidate" ? (
             <span
               className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${badgeStyle}`}
             >
@@ -116,6 +125,64 @@ export default function ProfileCard({
 
                 </div>
               )}
+            </div>
+          )} */}
+          {variant === "candidate" ? (
+            <span
+              className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${badgeStyle}`}
+            >
+              {data.status}
+            </span>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span
+                className={`text-[10px] font-semibold px-2 py-1 rounded-full border uppercase tracking-wide ${roleBadgeStyle}`}
+              >
+                {data.systemRole || "Employee"}
+              </span>
+
+              <div className="relative">
+                <button
+                  onClick={() => setMenuOpen(!menuOpen)}
+                  className="text-text-secondary hover:text-text-primary p-1 rounded-lg hover:bg-hover transition-colors bg-transparent border-none cursor-pointer"
+                >
+                  <MoreHorizontal size={18} />
+                </button>
+
+                {menuOpen && (
+                  <div className="absolute right-0 top-8 bg-secondary border border-card-border rounded-lg shadow-xl py-1 z-20 min-w-[120px]">
+                    <button
+                      onClick={() => {
+                        onEdit?.(data);
+                        setMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-hover hover:text-text-primary transition-colors bg-transparent border-none cursor-pointer"
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        onDelete?.(data);
+                        setMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-danger hover:bg-hover transition-colors bg-transparent border-none cursor-pointer"
+                    >
+                      Delete
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        onDeactivate?.(data);
+                        setMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-yellow-400 hover:bg-hover transition-colors bg-transparent border-none cursor-pointer"
+                    >
+                      Deactivate
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
