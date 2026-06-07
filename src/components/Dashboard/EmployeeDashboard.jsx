@@ -1,4 +1,4 @@
-import { Clock, DollarSign, Calendar, Gift, Megaphone, Briefcase, CheckCircle2, Hourglass, } from "lucide-react";
+import { Clock, DollarSign, Calendar, Gift, Megaphone, Briefcase, CheckCircle2, Hourglass, UserCog, } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 import MyAttendance from "../Attendance/MyAttendance";
@@ -100,6 +100,35 @@ export default function EmployeeDashboard() {
             My Overview
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-card border border-card-border rounded-xl p-4 shadow-sm">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                  <UserCog size={20} className="text-indigo-500" />
+                </div>
+
+                <div>
+                  <p className="text-md text-text-secondary">
+                    Reporting Manager
+                  </p>
+                  <p className="font-semibold text-text-primary">
+                    {loading
+                      ? "..."
+                      : data.userSummary.reportingManager?.name || "N/A"}
+                  </p>
+                </div>
+              </div>
+
+              {!loading && data.userSummary.reportingManager && (
+                <div className="space-y-1 text-sm">
+                  <p className="text-text-secondary truncate">
+                    📧 {data.userSummary.reportingManager.email}
+                  </p>
+                  <p className="text-text-secondary">
+                    📞 {data.userSummary.reportingManager.phoneNumber}
+                  </p>
+                </div>
+              )}
+            </div>
             <StatsCard
               icon={Clock}
               iconBg="bg-blue-500/10"
@@ -143,8 +172,7 @@ export default function EmployeeDashboard() {
 
           </div>
         </div>
-        {(data.userSummary.directReports?.length > 0 ||
-          data.userSummary.reportingManager) && (
+        {/* {(data.userSummary.directReports?.length > 0 ) && (
             <div className="bg-card border border-card-border rounded-xl p-5">
               {data.userSummary.directReports?.length > 0 ? (
                 <>
@@ -211,7 +239,42 @@ export default function EmployeeDashboard() {
                 </>
               )}
             </div>
-          )}
+          )} */}
+        {data.userSummary.directReports?.length > 0 && (
+          <div className="bg-card border border-card-border rounded-xl p-5">
+            <h3 className="font-semibold text-text-primary mb-4">
+              My Team ({data.userSummary.directReports.length})
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {data.userSummary.directReports.map((member) => (
+                <div
+                  key={member.id}
+                  className="p-4 rounded-xl border border-card-border bg-input/20 hover:bg-input/40 transition"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-full bg-accent/10 text-accent flex items-center justify-center font-semibold">
+                      {member.name?.charAt(0)?.toUpperCase()}
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="font-medium text-text-primary truncate">
+                        {member.name}
+                      </p>
+                      <p className="text-xs text-text-secondary truncate">
+                        {member.email}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 text-sm text-text-secondary">
+                    📞 {member.phoneNumber}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

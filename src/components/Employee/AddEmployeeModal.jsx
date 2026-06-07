@@ -61,7 +61,7 @@ export default function AddEmployeeModal({
       setLoadingData(true);
       Promise.allSettled([
         axiosInstance.get("/api/v1/department"),
-        axiosInstance.get("/api/v1/user/all-managers"),
+        axiosInstance.get("/api/v1/user/all-users"),
       ])
         .then(([deptRes, mgrRes]) => {
           if (deptRes.status === "fulfilled" && deptRes.value.data?.success) {
@@ -527,7 +527,7 @@ export default function AddEmployeeModal({
                 </div>
               </div>
 
-              <div className="border-t border-card-border pt-4">
+              {/* <div className="border-t border-card-border pt-4">
                 <label className="block text-sm font-semibold text-text-primary mb-1.5">
                   Reporting Manager
                 </label>
@@ -545,7 +545,28 @@ export default function AddEmployeeModal({
                     </option>
                   ))}
                 </select>
-              </div>
+              </div> */}
+              <div className="border-t border-card-border pt-4">
+  <label className="block text-sm font-semibold text-text-primary mb-1.5">
+    Reporting Manager
+  </label>
+
+  <select
+    value={form.reportingManager}
+    onChange={(e) =>
+      handleChange("reportingManager", e.target.value)
+    }
+    className="w-full appearance-none bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none cursor-pointer focus:border-btn transition-colors"
+  >
+    <option value="">No Manager (Top Level)</option>
+
+    {managers.map((manager) => (
+      <option key={manager._id} value={manager._id}>
+        {manager.name} ({manager.userId})
+      </option>
+    ))}
+  </select>
+</div>
             </div>
           )}
 
