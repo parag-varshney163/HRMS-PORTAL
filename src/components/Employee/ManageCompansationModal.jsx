@@ -27,6 +27,43 @@ const blankForm = {
   casualLeave: 0,
   sickLeave: 0,
 };
+function InputField({
+    label,
+    type = "text",
+    required = false,
+    value,
+    onChange,
+  }) {
+    return (
+      <div>
+        <label
+          className="block text-xs font-semibold mb-1"
+          style={{ color: colors.textSecondary }}
+        >
+          {label}
+        </label>
+
+        <input
+          type={type}
+          required={required}
+          value={value}
+          onChange={onChange}
+          className="w-full px-3 py-2.5 rounded-lg text-sm outline-none transition-colors"
+          style={{
+            backgroundColor: colors.inputBg,
+            color: colors.textPrimary,
+            border: `1px solid ${colors.cardBorder}`,
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = colors.accent;
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = colors.cardBorder;
+          }}
+        />
+      </div>
+    );
+  }
 
 export default function ManageCompensationModal({ open, onClose, onSuccess }) {
   const notify = useNotification();
@@ -124,43 +161,7 @@ export default function ManageCompensationModal({ open, onClose, onSuccess }) {
     : "Search Employee...";
 
 
-  function InputField({
-    label,
-    type = "text",
-    required = false,
-    value,
-    onChange,
-  }) {
-    return (
-      <div>
-        <label
-          className="block text-xs font-semibold mb-1"
-          style={{ color: colors.textSecondary }}
-        >
-          {label}
-        </label>
-
-        <input
-          type={type}
-          required={required}
-          value={value}
-          onChange={onChange}
-          className="w-full px-3 py-2.5 rounded-lg text-sm outline-none transition-colors"
-          style={{
-            backgroundColor: colors.inputBg,
-            color: colors.textPrimary,
-            border: `1px solid ${colors.cardBorder}`,
-          }}
-          onFocus={(e) => {
-            e.currentTarget.style.borderColor = colors.accent;
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.borderColor = colors.cardBorder;
-          }}
-        />
-      </div>
-    );
-  }
+  
 
   // return (
   //   <div

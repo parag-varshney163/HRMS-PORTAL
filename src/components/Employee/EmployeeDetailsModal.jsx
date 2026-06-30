@@ -457,7 +457,7 @@ export default function EmployeeDetailsModal({ open, onClose, employee }) {
               <InfoRow
                 icon={CreditCard}
                 label="PAN Number"
-                value={salary?.bankingDetails?.panCardNumber}
+                value={salary?.panDetails?.panCardNumber}
               />
               <InfoRow
                 icon={User}
