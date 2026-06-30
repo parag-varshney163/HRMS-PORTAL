@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import axiosInstance from "../../api/axiosInstance";
 import { Save, CalendarDays, ShieldCheck } from "lucide-react";
+
+import axiosInstance from "../../api/axiosInstance";
+import colors from "../../constants/colors";
 import Toggle from "../ui/Toggle";
 import Button from "../ui/Button";
+
 
 const initialForm = {
   casualLeave: "0",
@@ -98,18 +101,49 @@ export default function LeavePolicy() {
   };
 
   // ─── REUSABLE ROW COMPONENT FOR TOGGLES ───
-  const RuleRow = ({ label, description, checked, onChange }) => (
-    <div className="flex items-center justify-between py-4 border-b border-card-border/50 last:border-0">
-      <div className="pr-6">
-        <h4 className="text-sm font-semibold text-text-primary">{label}</h4>
-        <p className="text-xs text-text-secondary mt-0.5 leading-relaxed">
-          {description}
-        </p>
-      </div>
-      <Toggle checked={checked} onChange={onChange} />
-    </div>
-  );
+  // const RuleRow = ({ label, description, checked, onChange }) => (
+  //   <div className="flex items-center justify-between py-4 border-b border-card-border/50 last:border-0">
+  //     <div className="pr-6">
+  //       <h4 className="text-sm font-semibold text-text-primary">{label}</h4>
+  //       <p className="text-xs text-text-secondary mt-0.5 leading-relaxed">
+  //         {description}
+  //       </p>
+  //     </div>
+  //     <Toggle checked={checked} onChange={onChange} />
+  //   </div>
+  // );
 
+
+const RuleRow = ({ label, description, checked, onChange }) => (
+  <div
+    className="flex items-center justify-between py-4 last:border-0"
+    style={{
+      borderBottom: `1px solid ${colors.cardBorder}`,
+    }}
+  >
+    <div className="pr-6 flex-1">
+      <h4
+        className="text-sm font-semibold"
+        style={{
+          color: colors.textPrimary,
+        }}
+      >
+        {label}
+      </h4>
+
+      <p
+        className="text-xs mt-0.5 leading-relaxed"
+        style={{
+          color: colors.textSecondary,
+        }}
+      >
+        {description}
+      </p>
+    </div>
+
+    <Toggle checked={checked} onChange={onChange} />
+  </div>
+);
   if (loading)
     return (
       <div className="animate-pulse text-text-secondary">
@@ -117,148 +151,391 @@ export default function LeavePolicy() {
       </div>
     );
 
+  // return (
+  //   <div className="animate-in fade-in duration-300 flex flex-col h-full max-w-4xl">
+  //     {/* ─── Header ─── */}
+  //     <div className="flex items-center gap-3 mb-6 pb-4 border-b border-card-border">
+  //       <div className="w-12 h-12 rounded-xl bg-green-500/10 text-green-500 flex items-center justify-center">
+  //         <CalendarDays size={24} />
+  //       </div>
+  //       <div>
+  //         <h3 className="text-xl font-bold text-text-primary">Leave Policy</h3>
+  //         <p className="text-sm text-text-secondary">
+  //           Configure annual leave quotas and company rules.
+  //         </p>
+  //       </div>
+  //     </div>
+
+  //     {/* ─── Status Message ─── */}
+  //     {message.text && (
+  //       <div
+  //         className={`p-4 mb-6 rounded-lg text-sm font-medium border ${
+  //           message.type === "success"
+  //             ? "bg-green-500/10 text-green-400 border-green-500/20"
+  //             : "bg-red-500/10 text-red-400 border-red-500/20"
+  //         }`}
+  //       >
+  //         {message.text}
+  //       </div>
+  //     )}
+
+  //     {/* ─── Settings Form ─── */}
+  //     <form onSubmit={handleSubmit} className="flex flex-col flex-1">
+  //       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mb-8">
+  //         {/* SECTION 1: Annual Leave Allocations */}
+  //         <div className="bg-input/20 border border-card-border rounded-xl p-5 sm:p-6 shadow-sm">
+  //           <h3 className="text-base font-bold text-text-primary mb-4 flex items-center gap-2">
+  //             <CalendarDays size={18} className="text-blue-400" /> Annual Leave
+  //             Quotas (Days)
+  //           </h3>
+
+  //           <div className="grid grid-cols-2 gap-4">
+  //             <div>
+  //               <label className="block text-xs font-semibold text-text-secondary mb-1.5 uppercase tracking-wider">
+  //                 Casual Leave
+  //               </label>
+  //               <input
+  //                 type="number"
+  //                 min="0"
+  //                 value={form.casualLeave}
+  //                 onChange={(e) =>
+  //                   handleInputChange("casualLeave", e.target.value)
+  //                 }
+  //                 className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
+  //               />
+  //             </div>
+  //             <div>
+  //               <label className="block text-xs font-semibold text-text-secondary mb-1.5 uppercase tracking-wider">
+  //                 Sick Leave
+  //               </label>
+  //               <input
+  //                 type="number"
+  //                 min="0"
+  //                 value={form.sickLeave}
+  //                 onChange={(e) =>
+  //                   handleInputChange("sickLeave", e.target.value)
+  //                 }
+  //                 className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
+  //               />
+  //             </div>
+  //             <div>
+  //               <label className="block text-xs font-semibold text-text-secondary mb-1.5 uppercase tracking-wider">
+  //                 Earned Leave
+  //               </label>
+  //               <input
+  //                 type="number"
+  //                 min="0"
+  //                 value={form.earnedLeave}
+  //                 onChange={(e) =>
+  //                   handleInputChange("earnedLeave", e.target.value)
+  //                 }
+  //                 className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
+  //               />
+  //             </div>
+  //             <div>
+  //               <label className="block text-xs font-semibold text-text-secondary mb-1.5 uppercase tracking-wider">
+  //                 Comp-Off
+  //               </label>
+  //               <input
+  //                 type="number"
+  //                 min="0"
+  //                 value={form.compOffLeave}
+  //                 onChange={(e) =>
+  //                   handleInputChange("compOffLeave", e.target.value)
+  //                 }
+  //                 className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
+  //               />
+  //             </div>
+  //           </div>
+  //         </div>
+
+  //         {/* SECTION 2: Leave Rules */}
+  //         <div className="bg-input/20 border border-card-border rounded-xl p-5 sm:p-6 shadow-sm">
+  //           <h3 className="text-base font-bold text-text-primary mb-2 flex items-center gap-2">
+  //             <ShieldCheck size={18} className="text-purple-400" /> Compliance
+  //             Rules
+  //           </h3>
+  //           <div className="flex flex-col">
+  //             <RuleRow
+  //               label="Carry Forward Leaves"
+  //               description="Allow employees to transfer unused earned leaves to the next year."
+  //               checked={form.leaveRules.allowCarryForward}
+  //               onChange={() => handleRuleToggle("allowCarryForward")}
+  //             />
+  //             <RuleRow
+  //               label="Leave Encashment"
+  //               description="Allow employees to cash out unused earned leaves at year-end."
+  //               checked={form.leaveRules.allowEncashment}
+  //               onChange={() => handleRuleToggle("allowEncashment")}
+  //             />
+  //             <RuleRow
+  //               label="Allow Negative Balance"
+  //               description="Permit employees to take leaves even if their balance is zero."
+  //               checked={form.leaveRules.allowNegativeBalance}
+  //               onChange={() => handleRuleToggle("allowNegativeBalance")}
+  //             />
+  //           </div>
+  //         </div>
+  //       </div>
+
+  //       {/* ─── Save Button ─── */}
+  //       <div className="mt-auto pt-4 pb-2 flex justify-end">
+  //         <Button
+  //           type="submit"
+  //           disabled={saving}
+  //           variant="custom"
+  //           bg="#3B82F6"
+  //           text="#FFFFFF"
+  //           icon={Save}
+  //           className={saving ? "opacity-70" : ""}
+  //         >
+  //           {saving ? "Saving Policy..." : "Save Leave Policy"}
+  //         </Button>
+  //       </div>
+  //     </form>
+  //   </div>
+  // );
+
   return (
-    <div className="animate-in fade-in duration-300 flex flex-col h-full max-w-4xl">
-      {/* ─── Header ─── */}
-      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-card-border">
-        <div className="w-12 h-12 rounded-xl bg-green-500/10 text-green-500 flex items-center justify-center">
-          <CalendarDays size={24} />
+  <div className="animate-in fade-in duration-300 flex flex-col h-full max-w-4xl">
+    {/* HEADER */}
+    <div
+      className="flex items-center gap-4 mb-8 pb-5"
+      style={{
+        borderBottom: `1px solid ${colors.cardBorder}`,
+      }}
+    >
+      <div
+        className="w-12 h-12 rounded-xl flex items-center justify-center"
+        style={{
+          backgroundColor: colors.greenLight,
+          color: colors.green,
+        }}
+      >
+        <CalendarDays size={24} />
+      </div>
+
+      <div>
+        <h3
+          className="text-2xl font-bold"
+          style={{ color: colors.textPrimary }}
+        >
+          Leave Policy
+        </h3>
+
+        <p
+          className="text-sm mt-1"
+          style={{ color: colors.textSecondary }}
+        >
+          Configure annual leave quotas and company rules.
+        </p>
+      </div>
+    </div>
+
+    {/* STATUS MESSAGE */}
+    {message.text && (
+      <div
+        className="p-4 mb-6 rounded-xl text-sm font-medium"
+        style={{
+          backgroundColor:
+            message.type === "success"
+              ? colors.successLight
+              : colors.dangerLight,
+          color:
+            message.type === "success"
+              ? colors.success
+              : colors.danger,
+          border: `1px solid ${
+            message.type === "success"
+              ? colors.success
+              : colors.danger
+          }30`,
+        }}
+      >
+        {message.text}
+      </div>
+    )}
+
+    {/* FORM */}
+    <form onSubmit={handleSubmit} className="flex flex-col flex-1">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Annual Leave */}
+        <div
+          className="rounded-2xl p-6 shadow-sm"
+          style={{
+            backgroundColor: colors.cardBg,
+            border: `1px solid ${colors.cardBorder}`,
+          }}
+        >
+          <h3
+            className="text-base font-bold mb-5 flex items-center gap-2"
+            style={{ color: colors.textPrimary }}
+          >
+            <CalendarDays
+              size={18}
+              style={{ color: colors.blue }}
+            />
+            Annual Leave Quotas (Days)
+          </h3>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label
+                className="block text-xs font-semibold uppercase tracking-wider mb-2"
+                style={{ color: colors.textSecondary }}
+              >
+                Casual Leave
+              </label>
+
+              <input
+                type="number"
+                min="0"
+                value={form.casualLeave}
+                onChange={(e) =>
+                  handleInputChange("casualLeave", e.target.value)
+                }
+                className="w-full px-4 py-2.5 rounded-xl outline-none transition-colors"
+                style={{
+                  backgroundColor: colors.inputBg,
+                  border: `1px solid ${colors.cardBorder}`,
+                  color: colors.textPrimary,
+                }}
+              />
+            </div>
+
+            <div>
+              <label
+                className="block text-xs font-semibold uppercase tracking-wider mb-2"
+                style={{ color: colors.textSecondary }}
+              >
+                Sick Leave
+              </label>
+
+              <input
+                type="number"
+                min="0"
+                value={form.sickLeave}
+                onChange={(e) =>
+                  handleInputChange("sickLeave", e.target.value)
+                }
+                className="w-full px-4 py-2.5 rounded-xl outline-none"
+                style={{
+                  backgroundColor: colors.inputBg,
+                  border: `1px solid ${colors.cardBorder}`,
+                  color: colors.textPrimary,
+                }}
+              />
+            </div>
+
+            <div>
+              <label
+                className="block text-xs font-semibold uppercase tracking-wider mb-2"
+                style={{ color: colors.textSecondary }}
+              >
+                Earned Leave
+              </label>
+
+              <input
+                type="number"
+                min="0"
+                value={form.earnedLeave}
+                onChange={(e) =>
+                  handleInputChange("earnedLeave", e.target.value)
+                }
+                className="w-full px-4 py-2.5 rounded-xl outline-none"
+                style={{
+                  backgroundColor: colors.inputBg,
+                  border: `1px solid ${colors.cardBorder}`,
+                  color: colors.textPrimary,
+                }}
+              />
+            </div>
+
+            <div>
+              <label
+                className="block text-xs font-semibold uppercase tracking-wider mb-2"
+                style={{ color: colors.textSecondary }}
+              >
+                Comp-Off
+              </label>
+
+              <input
+                type="number"
+                min="0"
+                value={form.compOffLeave}
+                onChange={(e) =>
+                  handleInputChange("compOffLeave", e.target.value)
+                }
+                className="w-full px-4 py-2.5 rounded-xl outline-none"
+                style={{
+                  backgroundColor: colors.inputBg,
+                  border: `1px solid ${colors.cardBorder}`,
+                  color: colors.textPrimary,
+                }}
+              />
+            </div>
+          </div>
         </div>
-        <div>
-          <h3 className="text-xl font-bold text-text-primary">Leave Policy</h3>
-          <p className="text-sm text-text-secondary">
-            Configure annual leave quotas and company rules.
-          </p>
+
+        {/* Compliance Rules */}
+        <div
+          className="rounded-2xl p-6 shadow-sm"
+          style={{
+            backgroundColor: colors.cardBg,
+            border: `1px solid ${colors.cardBorder}`,
+          }}
+        >
+          <h3
+            className="text-base font-bold mb-5 flex items-center gap-2"
+            style={{ color: colors.textPrimary }}
+          >
+            <ShieldCheck
+              size={18}
+              style={{ color: colors.purple }}
+            />
+            Compliance Rules
+          </h3>
+
+          <div className="flex flex-col">
+            <RuleRow
+              label="Carry Forward Leaves"
+              description="Allow employees to transfer unused earned leaves to the next year."
+              checked={form.leaveRules.allowCarryForward}
+              onChange={() => handleRuleToggle("allowCarryForward")}
+            />
+
+            <RuleRow
+              label="Leave Encashment"
+              description="Allow employees to cash out unused earned leaves at year-end."
+              checked={form.leaveRules.allowEncashment}
+              onChange={() => handleRuleToggle("allowEncashment")}
+            />
+
+            <RuleRow
+              label="Allow Negative Balance"
+              description="Permit employees to take leaves even if their balance is zero."
+              checked={form.leaveRules.allowNegativeBalance}
+              onChange={() => handleRuleToggle("allowNegativeBalance")}
+            />
+          </div>
         </div>
       </div>
 
-      {/* ─── Status Message ─── */}
-      {message.text && (
-        <div
-          className={`p-4 mb-6 rounded-lg text-sm font-medium border ${
-            message.type === "success"
-              ? "bg-green-500/10 text-green-400 border-green-500/20"
-              : "bg-red-500/10 text-red-400 border-red-500/20"
-          }`}
+      {/* SAVE BUTTON */}
+      <div className="mt-auto pt-4 flex justify-end">
+        <Button
+          type="submit"
+          disabled={saving}
+          variant="custom"
+          bg={colors.buttonBg}
+          text="#FFFFFF"
+          icon={Save}
+          className={saving ? "opacity-70" : ""}
         >
-          {message.text}
-        </div>
-      )}
-
-      {/* ─── Settings Form ─── */}
-      <form onSubmit={handleSubmit} className="flex flex-col flex-1">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mb-8">
-          {/* SECTION 1: Annual Leave Allocations */}
-          <div className="bg-input/20 border border-card-border rounded-xl p-5 sm:p-6 shadow-sm">
-            <h3 className="text-base font-bold text-text-primary mb-4 flex items-center gap-2">
-              <CalendarDays size={18} className="text-blue-400" /> Annual Leave
-              Quotas (Days)
-            </h3>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-text-secondary mb-1.5 uppercase tracking-wider">
-                  Casual Leave
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={form.casualLeave}
-                  onChange={(e) =>
-                    handleInputChange("casualLeave", e.target.value)
-                  }
-                  className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-text-secondary mb-1.5 uppercase tracking-wider">
-                  Sick Leave
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={form.sickLeave}
-                  onChange={(e) =>
-                    handleInputChange("sickLeave", e.target.value)
-                  }
-                  className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-text-secondary mb-1.5 uppercase tracking-wider">
-                  Earned Leave
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={form.earnedLeave}
-                  onChange={(e) =>
-                    handleInputChange("earnedLeave", e.target.value)
-                  }
-                  className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-text-secondary mb-1.5 uppercase tracking-wider">
-                  Comp-Off
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={form.compOffLeave}
-                  onChange={(e) =>
-                    handleInputChange("compOffLeave", e.target.value)
-                  }
-                  className="w-full bg-input text-text-primary px-4 py-2.5 rounded-lg border border-card-border text-sm outline-none focus:border-btn transition-colors"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* SECTION 2: Leave Rules */}
-          <div className="bg-input/20 border border-card-border rounded-xl p-5 sm:p-6 shadow-sm">
-            <h3 className="text-base font-bold text-text-primary mb-2 flex items-center gap-2">
-              <ShieldCheck size={18} className="text-purple-400" /> Compliance
-              Rules
-            </h3>
-            <div className="flex flex-col">
-              <RuleRow
-                label="Carry Forward Leaves"
-                description="Allow employees to transfer unused earned leaves to the next year."
-                checked={form.leaveRules.allowCarryForward}
-                onChange={() => handleRuleToggle("allowCarryForward")}
-              />
-              <RuleRow
-                label="Leave Encashment"
-                description="Allow employees to cash out unused earned leaves at year-end."
-                checked={form.leaveRules.allowEncashment}
-                onChange={() => handleRuleToggle("allowEncashment")}
-              />
-              <RuleRow
-                label="Allow Negative Balance"
-                description="Permit employees to take leaves even if their balance is zero."
-                checked={form.leaveRules.allowNegativeBalance}
-                onChange={() => handleRuleToggle("allowNegativeBalance")}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* ─── Save Button ─── */}
-        <div className="mt-auto pt-4 pb-2 flex justify-end">
-          <Button
-            type="submit"
-            disabled={saving}
-            variant="custom"
-            bg="#3B82F6"
-            text="#FFFFFF"
-            icon={Save}
-            className={saving ? "opacity-70" : ""}
-          >
-            {saving ? "Saving Policy..." : "Save Leave Policy"}
-          </Button>
-        </div>
-      </form>
-    </div>
-  );
+          {saving ? "Saving Policy..." : "Save Leave Policy"}
+        </Button>
+      </div>
+    </form>
+  </div>
+);
 }

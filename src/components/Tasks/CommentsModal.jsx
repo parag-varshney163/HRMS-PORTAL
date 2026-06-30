@@ -89,6 +89,7 @@
 import React, { useEffect, useState } from "react";
 
 import axiosInstance from "../../api/axiosInstance";
+import colors from "../../constants/colors";
 import Button from "../ui/Button";
 
 
@@ -155,146 +156,340 @@ export default function CommentsModal({ open, onClose, task }) {
 
   if (!open) return null;
 
+//   return (
+//     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+//       <div className="bg-card border border-card-border w-full max-w-lg rounded-2xl p-5">
+
+//         {/* ─── HEADER ─── */}
+//         <div className="flex justify-between items-center mb-4">
+//           <h3 className="text-lg font-bold text-text-primary">
+//             Comments
+//           </h3>
+//           <button
+//             onClick={onClose}
+//             className="text-text-secondary hover:text-text-primary"
+//           >
+//             ✕
+//           </button>
+//         </div>
+
+//         {/* ─── COMMENTS LIST ─── */}
+//         {/* <div className="max-h-60 overflow-y-auto space-y-3 mb-4 pr-1">
+//           {comments.length === 0 ? (
+//             <p className="text-sm text-text-secondary text-center py-4">
+//               No comments yet
+//             </p>
+//           ) : (
+//             comments.map((c) => (
+//               <div
+//                 key={c._id}
+//                 className="bg-input p-3 rounded-xl border border-card-border"
+//               >
+//                 <p className="text-xs text-text-secondary mb-1">
+//                   {c.commentedBy?.firstName} {c.commentedBy?.lastName}
+//                 </p>
+//                 <p className="text-sm text-text-primary break-words">
+//                   {c.content}
+//                 </p>
+//               </div>
+//             ))
+//           )}
+//         </div> */}
+//         {/* ─── COMMENTS LIST ─── */}
+// <div className="max-h-60 overflow-y-auto space-y-3 mb-4 pr-1">
+//   {comments.length === 0 ? (
+//     <p className="text-sm text-text-secondary text-center py-4">
+//       No comments yet
+//     </p>
+//   ) : (
+//     comments.map((c) => {
+//       // Adjust role key based on your API response
+//       const role =
+//         c.commentedBy?.role?.toLowerCase() || "employee";
+
+//       // Role based styles
+//       const roleStyles = {
+//         manager: {
+//           border: "border-blue-500/40",
+//           bg: "bg-blue-500/10",
+//           badge: "bg-blue-500 text-white",
+//           text: "text-blue-400",
+//         },
+//         hr: {
+//           border: "border-green-500/40",
+//           bg: "bg-green-500/10",
+//           badge: "bg-green-500 text-white",
+//           text: "text-green-400",
+//         },
+//         employee: {
+//           border: "border-gray-500/30",
+//           bg: "bg-gray-500/10",
+//           badge: "bg-gray-500 text-white",
+//           text: "text-gray-300",
+//         },
+//       };
+
+//       const style =
+//         roleStyles[role] || roleStyles.employee;
+
+//       return (
+//         <div
+//           key={c._id}
+//           className={`${style.bg} ${style.border} p-3 rounded-xl border transition-all`}
+//         >
+//           <div className="flex items-center justify-between mb-2">
+//             <p className={`text-sm font-semibold ${style.text}`}>
+//               {c.commentedBy?.firstName}{" "}
+//               {c.commentedBy?.lastName}
+//             </p>
+
+//             <span
+//               className={`text-[10px] px-2 py-1 rounded-full uppercase tracking-wide ${style.badge}`}
+//             >
+//               {role}
+//             </span>
+//           </div>
+
+//           <p className="text-sm text-text-primary break-words leading-relaxed">
+//             {c.content}
+//           </p>
+//         </div>
+//       );
+//     })
+//   )}
+// </div>
+
+//         {/* ─── PAGINATION ─── */}
+//         <div className="flex justify-between items-center mb-4">
+//           <button
+//             disabled={page === 1}
+//             onClick={() => fetchComments(page - 1)}
+//             className="text-xs px-3 py-1 rounded bg-input border border-card-border disabled:opacity-50"
+//           >
+//             Prev
+//           </button>
+
+//           <span className="text-xs text-text-secondary">
+//             Page {page} of {totalPages}
+//           </span>
+
+//           <button
+//             disabled={page === totalPages}
+//             onClick={() => fetchComments(page + 1)}
+//             className="text-xs px-3 py-1 rounded bg-input border border-card-border disabled:opacity-50"
+//           >
+//             Next
+//           </button>
+//         </div>
+
+//         {/* ─── INPUT ─── */}
+//         <div className="flex gap-2">
+//           <input
+//             value={content}
+//             onChange={(e) => setContent(e.target.value)}
+//             placeholder="Write a comment..."
+//             className="flex-1 bg-input border border-card-border rounded-xl px-3 py-2 text-sm text-text-primary outline-none focus:border-btn"
+//           />
+//           <Button onClick={handlePost} disabled={loading}>
+//             {loading ? "..." : "Post"}
+//           </Button>
+//         </div>
+
+//       </div>
+//     </div>
+//   );
+
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-card border border-card-border w-full max-w-lg rounded-2xl p-5">
+  <div
+    className="fixed inset-0 flex items-center justify-center z-50"
+    style={{
+      backgroundColor: "rgba(0,0,0,0.45)",
+    }}
+  >
+    <div
+      className="w-full max-w-lg rounded-2xl p-5"
+      style={{
+        backgroundColor: colors.cardBg,
+        border: `1px solid ${colors.cardBorder}`,
+        boxShadow: "0 20px 40px rgba(0,0,0,.18)",
+      }}
+    >
+      {/* HEADER */}
+      <div
+        className="flex justify-between items-center mb-4 pb-3"
+        style={{
+          borderBottom: `1px solid ${colors.cardBorder}`,
+        }}
+      >
+        <h3
+          className="text-lg font-bold"
+          style={{ color: colors.textPrimary }}
+        >
+          Comments
+        </h3>
 
-        {/* ─── HEADER ─── */}
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold text-text-primary">
-            Comments
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-text-secondary hover:text-text-primary"
+        <button
+          onClick={onClose}
+          style={{
+            color: colors.textSecondary,
+            background: "transparent",
+            border: "none",
+            cursor: "pointer",
+            fontSize: 18,
+          }}
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* COMMENTS */}
+      <div className="max-h-60 overflow-y-auto space-y-3 mb-4 pr-1">
+        {comments.length === 0 ? (
+          <p
+            className="text-center py-4 text-sm"
+            style={{ color: colors.textSecondary }}
           >
-            ✕
-          </button>
-        </div>
+            No comments yet
+          </p>
+        ) : (
+          comments.map((c) => {
+            const role =
+              c.commentedBy?.role?.toLowerCase() || "employee";
 
-        {/* ─── COMMENTS LIST ─── */}
-        {/* <div className="max-h-60 overflow-y-auto space-y-3 mb-4 pr-1">
-          {comments.length === 0 ? (
-            <p className="text-sm text-text-secondary text-center py-4">
-              No comments yet
-            </p>
-          ) : (
-            comments.map((c) => (
+            const roleStyles = {
+              manager: {
+                border: colors.blue,
+                bg: colors.blueLight,
+                badgeBg: colors.blue,
+                badgeColor: "#fff",
+                text: colors.blue,
+              },
+
+              hr: {
+                border: colors.success,
+                bg: colors.successLight,
+                badgeBg: colors.success,
+                badgeColor: "#fff",
+                text: colors.success,
+              },
+
+              employee: {
+                border: colors.cardBorder,
+                bg: colors.inputBg,
+                badgeBg: colors.textSecondary,
+                badgeColor: "#fff",
+                text: colors.textPrimary,
+              },
+            };
+
+            const style =
+              roleStyles[role] || roleStyles.employee;
+
+            return (
               <div
                 key={c._id}
-                className="bg-input p-3 rounded-xl border border-card-border"
+                className="rounded-xl p-3 transition-all"
+                style={{
+                  backgroundColor: style.bg,
+                  border: `1px solid ${style.border}`,
+                }}
               >
-                <p className="text-xs text-text-secondary mb-1">
-                  {c.commentedBy?.firstName} {c.commentedBy?.lastName}
-                </p>
-                <p className="text-sm text-text-primary break-words">
+                <div className="flex items-center justify-between mb-2">
+                  <p
+                    className="text-sm font-semibold"
+                    style={{
+                      color: style.text,
+                    }}
+                  >
+                    {c.commentedBy?.firstName}{" "}
+                    {c.commentedBy?.lastName}
+                  </p>
+
+                  <span
+                    className="text-[10px] px-2 py-1 rounded-full uppercase tracking-wide"
+                    style={{
+                      backgroundColor: style.badgeBg,
+                      color: style.badgeColor,
+                    }}
+                  >
+                    {role}
+                  </span>
+                </div>
+
+                <p
+                  className="text-sm break-words leading-relaxed"
+                  style={{
+                    color: colors.textPrimary,
+                  }}
+                >
                   {c.content}
                 </p>
               </div>
-            ))
-          )}
-        </div> */}
-        {/* ─── COMMENTS LIST ─── */}
-<div className="max-h-60 overflow-y-auto space-y-3 mb-4 pr-1">
-  {comments.length === 0 ? (
-    <p className="text-sm text-text-secondary text-center py-4">
-      No comments yet
-    </p>
-  ) : (
-    comments.map((c) => {
-      // Adjust role key based on your API response
-      const role =
-        c.commentedBy?.role?.toLowerCase() || "employee";
+            );
+          })
+        )}
+      </div>
 
-      // Role based styles
-      const roleStyles = {
-        manager: {
-          border: "border-blue-500/40",
-          bg: "bg-blue-500/10",
-          badge: "bg-blue-500 text-white",
-          text: "text-blue-400",
-        },
-        hr: {
-          border: "border-green-500/40",
-          bg: "bg-green-500/10",
-          badge: "bg-green-500 text-white",
-          text: "text-green-400",
-        },
-        employee: {
-          border: "border-gray-500/30",
-          bg: "bg-gray-500/10",
-          badge: "bg-gray-500 text-white",
-          text: "text-gray-300",
-        },
-      };
-
-      const style =
-        roleStyles[role] || roleStyles.employee;
-
-      return (
-        <div
-          key={c._id}
-          className={`${style.bg} ${style.border} p-3 rounded-xl border transition-all`}
+      {/* PAGINATION */}
+      <div className="flex justify-between items-center mb-4">
+        <button
+          disabled={page === 1}
+          onClick={() => fetchComments(page - 1)}
+          className="text-xs px-3 py-1 rounded disabled:opacity-50"
+          style={{
+            backgroundColor: colors.inputBg,
+            border: `1px solid ${colors.cardBorder}`,
+            color: colors.textPrimary,
+            cursor: page === 1 ? "not-allowed" : "pointer",
+          }}
         >
-          <div className="flex items-center justify-between mb-2">
-            <p className={`text-sm font-semibold ${style.text}`}>
-              {c.commentedBy?.firstName}{" "}
-              {c.commentedBy?.lastName}
-            </p>
+          Prev
+        </button>
 
-            <span
-              className={`text-[10px] px-2 py-1 rounded-full uppercase tracking-wide ${style.badge}`}
-            >
-              {role}
-            </span>
-          </div>
+        <span
+          className="text-xs"
+          style={{
+            color: colors.textSecondary,
+          }}
+        >
+          Page {page} of {totalPages}
+        </span>
 
-          <p className="text-sm text-text-primary break-words leading-relaxed">
-            {c.content}
-          </p>
-        </div>
-      );
-    })
-  )}
-</div>
+        <button
+          disabled={page === totalPages}
+          onClick={() => fetchComments(page + 1)}
+          className="text-xs px-3 py-1 rounded disabled:opacity-50"
+          style={{
+            backgroundColor: colors.inputBg,
+            border: `1px solid ${colors.cardBorder}`,
+            color: colors.textPrimary,
+            cursor:
+              page === totalPages ? "not-allowed" : "pointer",
+          }}
+        >
+          Next
+        </button>
+      </div>
 
-        {/* ─── PAGINATION ─── */}
-        <div className="flex justify-between items-center mb-4">
-          <button
-            disabled={page === 1}
-            onClick={() => fetchComments(page - 1)}
-            className="text-xs px-3 py-1 rounded bg-input border border-card-border disabled:opacity-50"
-          >
-            Prev
-          </button>
+      {/* INPUT */}
+      <div className="flex gap-2">
+        <input
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Write a comment..."
+          className="flex-1 rounded-xl px-3 py-2 text-sm outline-none"
+          style={{
+            backgroundColor: colors.inputBg,
+            border: `1px solid ${colors.cardBorder}`,
+            color: colors.textPrimary,
+          }}
+        />
 
-          <span className="text-xs text-text-secondary">
-            Page {page} of {totalPages}
-          </span>
-
-          <button
-            disabled={page === totalPages}
-            onClick={() => fetchComments(page + 1)}
-            className="text-xs px-3 py-1 rounded bg-input border border-card-border disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-
-        {/* ─── INPUT ─── */}
-        <div className="flex gap-2">
-          <input
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Write a comment..."
-            className="flex-1 bg-input border border-card-border rounded-xl px-3 py-2 text-sm text-text-primary outline-none focus:border-btn"
-          />
-          <Button onClick={handlePost} disabled={loading}>
-            {loading ? "..." : "Post"}
-          </Button>
-        </div>
-
+        <Button onClick={handlePost} disabled={loading}>
+          {loading ? "..." : "Post"}
+        </Button>
       </div>
     </div>
-  );
+  </div>
+);
 }

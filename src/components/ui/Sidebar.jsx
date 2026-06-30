@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import axiosInstance from "../../api/axiosInstance";
 import MENU_ITEMS from "../../constants/menu";
 import { useAuth } from "../../hooks/useAuth";
+import colors from "../../constants/colors";
 import ProfileModal from "./ProfileModal";
 import logo from "../../assets/logo.webp";
 
@@ -43,28 +44,28 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   // const [profileOpen, setProfileOpen] = useState(false);
   // const [profileData, setProfileData] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
-const [profileLoading, setProfileLoading] = useState(false);
-const [profileData, setProfileData] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileData, setProfileData] = useState(null);
 
- const fetchProfile = async () => {
-  try {
-    // Open instantly
-    setProfileOpen(true);
-    setProfileLoading(true);
+  const fetchProfile = async () => {
+    try {
+      // Open instantly
+      setProfileOpen(true);
+      setProfileLoading(true);
 
-    const { data } = await axiosInstance.get(
-      "/api/v1/user/my-profile"
-    );
+      const { data } = await axiosInstance.get(
+        "/api/v1/user/my-profile"
+      );
 
-    if (data.success) {
-      setProfileData(data.data);
+      if (data.success) {
+        setProfileData(data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setProfileLoading(false);
     }
-  } catch (error) {
-    console.error(error);
-  } finally {
-    setProfileLoading(false);
-  }
-};
+  };
 
   // ─── COMPUTE VISIBLE MENUS ───
   const visibleMenuItems = useMemo(() => {
@@ -138,40 +139,129 @@ const [profileData, setProfileData] = useState(null);
   );
 
   // ─── RENDER MENU ITEM ───
+  // const renderMenuItem = (item, isChild = false) => {
+  //   const Icon = item.icon;
+  //   const active = selected === item.name;
+  //   const hasChildren = item.children && item.children.length > 0;
+  //   const isExpanded = expandedMenus[item.name];
+
+  //   return (
+  //     <div key={item.name}>
+  //       <div
+  //         onClick={() => handleClick(item)}
+  //         className={`flex items-center gap-3 cursor-pointer rounded-xl py-3 px-3.5 mb-1 ${isChild ? "ml-8 mr-3 mt-1" : "mx-3"
+  //           } select-none transition-all duration-200 ${active
+  //             ? "bg-btn/10 text-btn font-semibold" // Active state styling
+  //             : "hover:bg-hover text-text-secondary hover:text-text-primary"
+  //           } ${item.isLogout ? "text-red-400 hover:text-red-400 hover:bg-red-400/10" : ""}`}
+  //       >
+  //         {Icon && (
+  //           <Icon
+  //             size={isChild ? 16 : 18}
+  //             className={active ? "text-btn" : ""}
+  //           />
+  //         )}
+
+  //         {isOpen && (
+  //           <>
+  //             <span
+  //               className={`text-[13.5px] flex-1 tracking-wide ${isChild ? "text-[12.5px]" : ""}`}
+  //             >
+  //               {item.name}
+  //             </span>
+  //             {hasChildren && (
+  //               <ChevronDown
+  //                 size={14}
+  //                 className={`transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+  //               />
+  //             )}
+  //           </>
+  //         )}
+  //       </div>
+
+  //       {hasChildren && isOpen && isExpanded && (
+  //         <div className="overflow-hidden animate-in slide-in-from-top-2 duration-200">
+  //           {item.children.map((child) => renderMenuItem(child, true))}
+  //         </div>
+  //       )}
+  //     </div>
+  //   );
+  // };
+
   const renderMenuItem = (item, isChild = false) => {
     const Icon = item.icon;
     const active = selected === item.name;
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedMenus[item.name];
 
+    const itemStyle = {
+      background: active
+        ? colors.activeMenuBg
+        : "transparent",
+
+      color: item.isLogout
+        ? colors.danger
+        : active
+          ? colors.activeMenuText
+          : colors.textSecondary,
+    };
+
     return (
       <div key={item.name}>
         <div
           onClick={() => handleClick(item)}
           className={`flex items-center gap-3 cursor-pointer rounded-xl py-3 px-3.5 mb-1 ${isChild ? "ml-8 mr-3 mt-1" : "mx-3"
-            } select-none transition-all duration-200 ${active
-              ? "bg-btn/10 text-btn font-semibold" // Active state styling
-              : "hover:bg-hover text-text-secondary hover:text-text-primary"
-            } ${item.isLogout ? "text-red-400 hover:text-red-400 hover:bg-red-400/10" : ""}`}
+            } select-none transition-all duration-200`}
+          style={itemStyle}
+          onMouseEnter={(e) => {
+            if (!active && !item.isLogout) {
+              e.currentTarget.style.background = colors.hover;
+              e.currentTarget.style.color = colors.textPrimary;
+            }
+
+            if (item.isLogout) {
+              e.currentTarget.style.background = `${colors.danger}15`;
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = active
+              ? colors.activeMenuBg
+              : "transparent";
+
+            e.currentTarget.style.color = item.isLogout
+              ? colors.danger
+              : active
+                ? colors.activeMenuText
+                : colors.textSecondary;
+          }}
         >
           {Icon && (
             <Icon
               size={isChild ? 16 : 18}
-              className={active ? "text-btn" : ""}
+              style={{
+                color: item.isLogout
+                  ? colors.danger
+                  : active
+                    ? colors.accent
+                    : colors.textSecondary,
+              }}
             />
           )}
 
           {isOpen && (
             <>
               <span
-                className={`text-[13.5px] flex-1 tracking-wide ${isChild ? "text-[12.5px]" : ""}`}
+                className={`text-[13.5px] flex-1 tracking-wide ${isChild ? "text-[12.5px]" : ""
+                  }`}
               >
                 {item.name}
               </span>
+
               {hasChildren && (
                 <ChevronDown
                   size={14}
-                  className={`transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                  className={`transition-transform duration-200 ${isExpanded ? "rotate-180" : ""
+                    }`}
                 />
               )}
             </>
@@ -195,7 +285,7 @@ const [profileData, setProfileData] = useState(null);
       )}
 
       {/* Sidebar Container */}
-      <aside
+      {/* <aside
         ref={sidebarRef}
         className={`
           fixed inset-y-0 left-0 z-50 h-screen
@@ -203,9 +293,25 @@ const [profileData, setProfileData] = useState(null);
           bg-secondary flex flex-col shadow-[0_0_24px_rgba(0,0,0,0.45)] transition-all duration-300 overflow-hidden shrink-0
           ${isOpen ? "w-64 translate-x-0" : "-translate-x-full md:translate-x-0 md:w-20"}
         `}
+      > */}
+      <aside
+        ref={sidebarRef}
+        className={`
+    fixed inset-y-0 left-0 z-50 h-screen
+    md:relative md:h-screen
+    flex flex-col transition-all duration-300 overflow-hidden shrink-0
+    ${isOpen
+            ? "w-64 translate-x-0"
+            : "-translate-x-full md:translate-x-0 md:w-20"
+          }
+  `}
+        style={{
+          background: colors.sidebarBg,
+          boxShadow: "0 0 24px rgba(45, 49, 66, 0.12)",
+        }}
       >
         {/* ─── 1. HEADER (Fixed) ─── */}
-        <div className="flex items-center gap-3 p-5 border-b border-card-border/50 bg-secondary shrink-0 h-20">
+        {/* <div className="flex items-center gap-3 p-5 border-b border-card-border/50 bg-secondary shrink-0 h-20">
           <img
             src={logo}
             onClick={toggleSidebar}
@@ -221,6 +327,41 @@ const [profileData, setProfileData] = useState(null);
                 ChatSpark
               </span>
               <span className="text-[11px] text-text-secondary uppercase tracking-widest font-semibold mt-0.5">
+                HRMS Portal
+              </span>
+            </div>
+          )}
+        </div> */}
+        <div
+          className="flex items-center gap-3 p-5 shrink-0 h-20"
+          style={{
+            borderBottom: `1px solid ${colors.cardBorder}`,
+            background: colors.sidebarBg,
+          }}
+        >
+          <img
+            src={logo}
+            onClick={toggleSidebar}
+            alt="ChatSpark"
+            className="w-10 h-10 object-cover cursor-pointer drop-shadow-md hover:scale-105 transition-transform"
+          />
+
+          {isOpen && (
+            <div
+              className="flex flex-col cursor-pointer"
+              onClick={toggleSidebar}
+            >
+              <span
+                className="text-[18px] font-bold tracking-wide"
+                style={{ color: colors.textPrimary }}
+              >
+                ChatSpark
+              </span>
+
+              <span
+                className="text-[11px] uppercase tracking-widest font-semibold mt-0.5"
+                style={{ color: colors.textSecondary }}
+              >
                 HRMS Portal
               </span>
             </div>
@@ -261,10 +402,76 @@ const [profileData, setProfileData] = useState(null);
             </div>
           ) : (
             // Collapsed Footer View
-            <div className="flex justify-center">
-              <div className="w-10 h-10 rounded-lg bg-[#3B82F6]/20 flex items-center justify-center text-sm font-bold text-[#3B82F6] uppercase border border-[#3B82F6]/20">
-                {user?.firstName ? user.firstName.charAt(0) : "U"}
-              </div>
+            // <div className="flex justify-center">
+            //   <div className="w-10 h-10 rounded-lg bg-[#3B82F6]/20 flex items-center justify-center text-sm font-bold text-[#3B82F6] uppercase border border-[#3B82F6]/20">
+            //     {user?.firstName ? user.firstName.charAt(0) : "U"}
+            //   </div>
+            // </div>
+            <div
+              className="p-4 shrink-0 backdrop-blur-md"
+              style={{
+                borderTop: `1px solid ${colors.cardBorder}`,
+                background: colors.sidebarBg,
+              }}
+            >
+              {isOpen ? (
+                <div
+                  onClick={fetchProfile}
+                  className="flex items-center gap-3 py-2 px-3 rounded-xl cursor-pointer shadow-sm transition-colors"
+                  style={{
+                    background: colors.cardBg,
+                    border: `1px solid ${colors.cardBorder}`,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = colors.accent;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = colors.cardBorder;
+                  }}
+                >
+                  <div
+                    className="w-9 h-9 min-w-9 rounded-lg flex items-center justify-center text-sm font-bold uppercase"
+                    style={{
+                      background: colors.activeMenuBg,
+                      color: colors.accent,
+                      border: `1px solid ${colors.cardBorder}`,
+                    }}
+                  >
+                    {user?.firstName ? user.firstName.charAt(0) : "U"}
+                  </div>
+
+                  <div className="flex flex-col overflow-hidden">
+                    <span
+                      className="text-[13px] font-bold truncate"
+                      style={{ color: colors.textPrimary }}
+                    >
+                      {user?.firstName
+                        ? `${user.firstName} ${user.lastName || ""}`.trim()
+                        : "User"}
+                    </span>
+
+                    <span
+                      className="text-[11px] capitalize truncate font-medium mt-0.5"
+                      style={{ color: colors.textSecondary }}
+                    >
+                      {user?.role || "Employee"}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex justify-center">
+                  <div
+                    className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold uppercase"
+                    style={{
+                      background: colors.activeMenuBg,
+                      color: colors.accent,
+                      border: `1px solid ${colors.cardBorder}`,
+                    }}
+                  >
+                    {user?.firstName ? user.firstName.charAt(0) : "U"}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

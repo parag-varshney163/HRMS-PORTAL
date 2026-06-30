@@ -106,6 +106,8 @@ import { Megaphone, Clock, User, CheckCircle2, CalendarClock, } from "lucide-rea
 // export default React.memo(AnnouncementCard);
 import React, { useMemo } from "react";
 
+import colors from "../../constants/colors";
+
 
 const AnnouncementCard = ({
   data,
@@ -158,112 +160,277 @@ const AnnouncementCard = ({
     }
   };
 
+  // return (
+  //   <div
+  //     className={`w-full bg-card border rounded-xl p-4 sm:p-5 transition-all duration-200 ${
+  //       data.isRead
+  //         ? "border-card-border opacity-70"
+  //         : "border-accent/40 shadow-[0_0_15px_rgba(59,130,246,0.1)]"
+  //     }`}
+  //   >
+  //     {/* Header */}
+  //     <div className="flex items-start justify-between gap-3 mb-2">
+  //       <div className="flex items-start gap-3">
+  //         <div
+  //           className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center ${
+  //             data.isRead
+  //               ? "bg-input text-text-secondary"
+  //               : "bg-accent/20 text-accent"
+  //           }`}
+  //         >
+  //           <Megaphone size={18} />
+  //         </div>
+
+  //         <div>
+  //           <h3 className="text-sm sm:text-base font-bold text-text-primary line-clamp-2 leading-tight">
+  //             {data.title}
+  //           </h3>
+
+  //           <div className="flex flex-wrap items-center gap-2 mt-1.5 text-[10px] sm:text-xs text-text-secondary">
+  //             <span className="flex items-center gap-1">
+  //               <User size={12} />
+  //               {data.createdBy?.firstName || "Admin"}
+  //             </span>
+
+  //             <span>•</span>
+
+  //             <span className="flex items-center gap-1">
+  //               <Clock size={12} />
+  //               {formattedDate}
+  //             </span>
+  //           </div>
+  //         </div>
+  //       </div>
+
+  //       {isAdminView && data.audienceType && (
+  //         <span
+  //           className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide shrink-0 ${getAudienceBadge(
+  //             data.audienceType,
+  //           )}`}
+  //         >
+  //           {data.audienceType}
+  //         </span>
+  //       )}
+  //     </div>
+
+  //     {/* Message */}
+  //     <div className="mt-3 pl-0 sm:pl-13">
+  //       <p className="text-sm text-text-secondary whitespace-pre-wrap leading-relaxed">
+  //         {data.message}
+  //       </p>
+  //     </div>
+
+  //     {/* Expiry Date */}
+  //     {formattedExpiryDate && (
+  //       <div className="mt-3 pl-0 sm:pl-13">
+  //         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-red-500/10 text-red-400 text-xs font-medium">
+  //           <CalendarClock size={14} />
+  //           Expires: {formattedExpiryDate}
+  //         </div>
+  //       </div>
+  //     )}
+
+  //     {/* Footer */}
+  //     <div className="mt-4 pt-3 border-t border-card-border/50 flex items-center justify-between pl-0 sm:pl-13">
+  //       {!isAdminView && !data.isRead ? (
+  //         <button
+  //           onClick={() => onMarkRead?.(data._id)}
+  //           className="flex items-center gap-1.5 text-xs text-accent hover:text-blue-400 font-medium transition-colors"
+  //         >
+  //           <CheckCircle2 size={14} />
+  //           Mark as Read
+  //         </button>
+  //       ) : (
+  //         <span className="text-xs text-text-secondary italic">
+  //           {data.isRead ? "Read" : ""}
+  //         </span>
+  //       )}
+
+  //       {isAdminView && (
+  //         <div className="flex items-center gap-3">
+  //           <button
+  //             onClick={() => onEdit?.(data)}
+  //             className="text-xs text-text-secondary hover:text-text-primary transition-colors"
+  //           >
+  //             Edit
+  //           </button>
+
+  //           <button
+  //             onClick={() => onDelete?.(data._id)}
+  //             className="text-xs text-danger hover:text-red-400 transition-colors"
+  //           >
+  //             Delete
+  //           </button>
+  //         </div>
+  //       )}
+  //     </div>
+  //   </div>
+  // );
+
   return (
-    <div
-      className={`w-full bg-card border rounded-xl p-4 sm:p-5 transition-all duration-200 ${
-        data.isRead
-          ? "border-card-border opacity-70"
-          : "border-accent/40 shadow-[0_0_15px_rgba(59,130,246,0.1)]"
-      }`}
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between gap-3 mb-2">
-        <div className="flex items-start gap-3">
+  <div
+    className="w-full rounded-xl p-4 sm:p-5 transition-all duration-200"
+    style={{
+      backgroundColor: colors.cardBg,
+      border: `1px solid ${
+        data.isRead ? colors.cardBorder : colors.accent
+      }`,
+      opacity: data.isRead ? 0.7 : 1,
+      boxShadow: data.isRead
+        ? "none"
+        : "0 0 15px rgba(247, 200, 66, 0.15)",
+    }}
+  >
+    {/* Header */}
+    <div className="flex items-start justify-between gap-3 mb-2">
+      <div className="flex items-start gap-3">
+        <div
+          className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center"
+          style={{
+            backgroundColor: data.isRead
+              ? colors.inputBg
+              : colors.accentLight,
+            color: data.isRead
+              ? colors.textSecondary
+              : colors.accent,
+          }}
+        >
+          <Megaphone size={18} />
+        </div>
+
+        <div>
+          <h3
+            className="text-sm sm:text-base font-bold line-clamp-2 leading-tight"
+            style={{ color: colors.textPrimary }}
+          >
+            {data.title}
+          </h3>
+
           <div
-            className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center ${
-              data.isRead
-                ? "bg-input text-text-secondary"
-                : "bg-accent/20 text-accent"
-            }`}
+            className="flex flex-wrap items-center gap-2 mt-1.5 text-[10px] sm:text-xs"
+            style={{ color: colors.textSecondary }}
           >
-            <Megaphone size={18} />
-          </div>
+            <span className="flex items-center gap-1">
+              <User size={12} />
+              {data.createdBy?.firstName || "Admin"}
+            </span>
 
-          <div>
-            <h3 className="text-sm sm:text-base font-bold text-text-primary line-clamp-2 leading-tight">
-              {data.title}
-            </h3>
+            <span>•</span>
 
-            <div className="flex flex-wrap items-center gap-2 mt-1.5 text-[10px] sm:text-xs text-text-secondary">
-              <span className="flex items-center gap-1">
-                <User size={12} />
-                {data.createdBy?.firstName || "Admin"}
-              </span>
-
-              <span>•</span>
-
-              <span className="flex items-center gap-1">
-                <Clock size={12} />
-                {formattedDate}
-              </span>
-            </div>
+            <span className="flex items-center gap-1">
+              <Clock size={12} />
+              {formattedDate}
+            </span>
           </div>
         </div>
-
-        {isAdminView && data.audienceType && (
-          <span
-            className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide shrink-0 ${getAudienceBadge(
-              data.audienceType,
-            )}`}
-          >
-            {data.audienceType}
-          </span>
-        )}
       </div>
 
-      {/* Message */}
+      {isAdminView && data.audienceType && (
+        <span
+          className={getAudienceBadge(data.audienceType)}
+        >
+          {data.audienceType}
+        </span>
+      )}
+    </div>
+
+    {/* Message */}
+    <div className="mt-3 pl-0 sm:pl-13">
+      <p
+        className="text-sm whitespace-pre-wrap leading-relaxed"
+        style={{ color: colors.textSecondary }}
+      >
+        {data.message}
+      </p>
+    </div>
+
+    {/* Expiry */}
+    {formattedExpiryDate && (
       <div className="mt-3 pl-0 sm:pl-13">
-        <p className="text-sm text-text-secondary whitespace-pre-wrap leading-relaxed">
-          {data.message}
-        </p>
-      </div>
-
-      {/* Expiry Date */}
-      {formattedExpiryDate && (
-        <div className="mt-3 pl-0 sm:pl-13">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-red-500/10 text-red-400 text-xs font-medium">
-            <CalendarClock size={14} />
-            Expires: {formattedExpiryDate}
-          </div>
+        <div
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-lg text-xs font-medium"
+          style={{
+            backgroundColor: colors.dangerLight,
+            color: colors.danger,
+          }}
+        >
+          <CalendarClock size={14} />
+          Expires: {formattedExpiryDate}
         </div>
+      </div>
+    )}
+
+    {/* Footer */}
+    <div
+      className="mt-4 pt-3 flex items-center justify-between pl-0 sm:pl-13"
+      style={{
+        borderTop: `1px solid ${colors.cardBorder}`,
+      }}
+    >
+      {!isAdminView && !data.isRead ? (
+        <button
+          onClick={() => onMarkRead?.(data._id)}
+          className="flex items-center gap-1.5 text-xs font-medium transition-colors"
+          style={{ color: colors.accent }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = colors.accentDark;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = colors.accent;
+          }}
+        >
+          <CheckCircle2 size={14} />
+          Mark as Read
+        </button>
+      ) : (
+        <span
+          className="text-xs italic"
+          style={{ color: colors.textSecondary }}
+        >
+          {data.isRead ? "Read" : ""}
+        </span>
       )}
 
-      {/* Footer */}
-      <div className="mt-4 pt-3 border-t border-card-border/50 flex items-center justify-between pl-0 sm:pl-13">
-        {!isAdminView && !data.isRead ? (
+      {isAdminView && (
+        <div className="flex items-center gap-3">
           <button
-            onClick={() => onMarkRead?.(data._id)}
-            className="flex items-center gap-1.5 text-xs text-accent hover:text-blue-400 font-medium transition-colors"
+            onClick={() => onEdit?.(data)}
+            className="text-xs transition-colors"
+            style={{ color: colors.textSecondary }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color =
+                colors.textPrimary;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color =
+                colors.textSecondary;
+            }}
           >
-            <CheckCircle2 size={14} />
-            Mark as Read
+            Edit
           </button>
-        ) : (
-          <span className="text-xs text-text-secondary italic">
-            {data.isRead ? "Read" : ""}
-          </span>
-        )}
 
-        {isAdminView && (
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => onEdit?.(data)}
-              className="text-xs text-text-secondary hover:text-text-primary transition-colors"
-            >
-              Edit
-            </button>
-
-            <button
-              onClick={() => onDelete?.(data._id)}
-              className="text-xs text-danger hover:text-red-400 transition-colors"
-            >
-              Delete
-            </button>
-          </div>
-        )}
-      </div>
+          <button
+            onClick={() => onDelete?.(data._id)}
+            className="text-xs transition-colors"
+            style={{ color: colors.danger }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color =
+                colors.danger;
+              e.currentTarget.style.opacity = 0.8;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color =
+                colors.danger;
+              e.currentTarget.style.opacity = 1;
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      )}
     </div>
-  );
+  </div>
+);
 };
 
 export default React.memo(AnnouncementCard);

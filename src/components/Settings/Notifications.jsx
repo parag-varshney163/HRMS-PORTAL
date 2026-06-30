@@ -1,8 +1,14 @@
-import React, { useState, useEffect, useCallback } from "react";
-import axiosInstance from "../../api/axiosInstance";
 import { Save, BellRing, Mail, MonitorSmartphone } from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+
+import axiosInstance from "../../api/axiosInstance";
+import colors from "../../constants/colors";
 import Toggle from "../ui/Toggle";
 import Button from "../ui/Button"; // 👈 Importing your custom Button
+
+
+// 👈 Importing your custom Button
+
 
 export default function Notifications() {
   const [loading, setLoading] = useState(true);
@@ -88,17 +94,48 @@ export default function Notifications() {
   };
 
   // ─── REUSABLE ROW USING YOUR TOGGLE ───
-  const SettingRow = ({ label, description, checked, onChange }) => (
-    <div className="flex items-center justify-between py-5 border-b border-card-border/50 last:border-0">
-      <div className="pr-6">
-        <h4 className="text-[15px] font-semibold text-text-primary">{label}</h4>
-        <p className="text-xs text-text-secondary mt-1 leading-relaxed">
-          {description}
-        </p>
-      </div>
-      <Toggle checked={checked} onChange={onChange} />
+  // const SettingRow = ({ label, description, checked, onChange }) => (
+  //   <div className="flex items-center justify-between py-5 border-b border-card-border/50 last:border-0">
+  //     <div className="pr-6">
+  //       <h4 className="text-[15px] font-semibold text-text-primary">{label}</h4>
+  //       <p className="text-xs text-text-secondary mt-1 leading-relaxed">
+  //         {description}
+  //       </p>
+  //     </div>
+  //     <Toggle checked={checked} onChange={onChange} />
+  //   </div>
+  // );
+
+const SettingRow = ({ label, description, checked, onChange }) => (
+  <div
+    className="flex items-center justify-between py-5 last:border-0"
+    style={{
+      borderBottom: `1px solid ${colors.cardBorder}`,
+    }}
+  >
+    <div className="pr-6 flex-1">
+      <h4
+        className="text-[15px] font-semibold"
+        style={{
+          color: colors.textPrimary,
+        }}
+      >
+        {label}
+      </h4>
+
+      <p
+        className="text-xs mt-1 leading-relaxed"
+        style={{
+          color: colors.textSecondary,
+        }}
+      >
+        {description}
+      </p>
     </div>
-  );
+
+    <Toggle checked={checked} onChange={onChange} />
+  </div>
+);
 
   if (loading)
     return (
@@ -107,121 +144,343 @@ export default function Notifications() {
       </div>
     );
 
-  return (
-    <div className="animate-in fade-in duration-300 flex flex-col h-full">
-      {/* ─── Header ─── */}
-      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-card-border">
-        <div className="w-12 h-12 rounded-xl bg-orange-500/10 text-orange-500 flex items-center justify-center">
-          <BellRing size={24} />
-        </div>
-        <div>
-          <h3 className="text-xl font-bold text-text-primary">Notifications</h3>
-          <p className="text-sm text-text-secondary">
-            Control what alerts HR and Admins receive.
-          </p>
-        </div>
+  // return (
+  //   <div className="animate-in fade-in duration-300 flex flex-col h-full">
+  //     {/* ─── Header ─── */}
+  //     <div className="flex items-center gap-3 mb-6 pb-4 border-b border-card-border">
+  //       <div className="w-12 h-12 rounded-xl bg-orange-500/10 text-orange-500 flex items-center justify-center">
+  //         <BellRing size={24} />
+  //       </div>
+  //       <div>
+  //         <h3 className="text-xl font-bold text-text-primary">Notifications</h3>
+  //         <p className="text-sm text-text-secondary">
+  //           Control what alerts HR and Admins receive.
+  //         </p>
+  //       </div>
+  //     </div>
+
+  //     {/* ─── Status Message ─── */}
+  //     {message.text && (
+  //       <div
+  //         className={`p-4 mb-6 rounded-lg text-sm font-medium border ${
+  //           message.type === "success"
+  //             ? "bg-green-500/10 text-green-400 border-green-500/20"
+  //             : "bg-red-500/10 text-red-400 border-red-500/20"
+  //         }`}
+  //       >
+  //         {message.text}
+  //       </div>
+  //     )}
+
+  //     {/* ─── Settings Form ─── */}
+  //     <form onSubmit={handleSubmit} className="flex flex-col flex-1">
+  //       {/* ─── Responsive Grid Container ─── */}
+  //       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start mb-8">
+  //         {/* SECTION 1: Email Notifications */}
+  //         <div className="bg-input/20 border border-card-border rounded-xl p-5 sm:p-6 shadow-sm h-full">
+  //           <h3 className="text-base font-bold text-text-primary mb-2 flex items-center gap-2">
+  //             <Mail size={18} className="text-blue-400" /> Email Notifications
+  //           </h3>
+  //           <div className="flex flex-col">
+  //             <SettingRow
+  //               label="Leave Requests"
+  //               description="Get an email when an employee applies for leave."
+  //               checked={preferences.emailNotifications.leaveRequests}
+  //               onChange={() =>
+  //                 handleToggle("emailNotifications", "leaveRequests")
+  //               }
+  //             />
+  //             <SettingRow
+  //               label="New Employee Onboarding"
+  //               description="Alerts when a new user profile is created."
+  //               checked={preferences.emailNotifications.newEmployeeOnboarding}
+  //               onChange={() =>
+  //                 handleToggle("emailNotifications", "newEmployeeOnboarding")
+  //               }
+  //             />
+  //             <SettingRow
+  //               label="Payroll Processed"
+  //               description="Receive summaries when payroll is generated."
+  //               checked={preferences.emailNotifications.payrollProcessed}
+  //               onChange={() =>
+  //                 handleToggle("emailNotifications", "payrollProcessed")
+  //               }
+  //             />
+  //             <SettingRow
+  //               label="Document Uploads"
+  //               description="Alerts when employees upload compliance documents."
+  //               checked={preferences.emailNotifications.documentUploads}
+  //               onChange={() =>
+  //                 handleToggle("emailNotifications", "documentUploads")
+  //               }
+  //             />
+  //           </div>
+  //         </div>
+
+  //         {/* SECTION 2: System Alerts */}
+  //         <div className="bg-input/20 border border-card-border rounded-xl p-5 sm:p-6 shadow-sm h-full">
+  //           <h3 className="text-base font-bold text-text-primary mb-2 flex items-center gap-2">
+  //             <MonitorSmartphone size={18} className="text-purple-400" /> System
+  //             Alerts
+  //           </h3>
+  //           <div className="flex flex-col">
+  //             <SettingRow
+  //               label="Attendance Alerts"
+  //               description="In-app alerts for late check-ins or missing punch-outs."
+  //               checked={preferences.systemAlerts.attendanceAlerts}
+  //               onChange={() =>
+  //                 handleToggle("systemAlerts", "attendanceAlerts")
+  //               }
+  //             />
+  //             <SettingRow
+  //               label="Birthday Reminders"
+  //               description="Show reminders for upcoming employee birthdays/anniversaries."
+  //               checked={preferences.systemAlerts.birthdayReminders}
+  //               onChange={() =>
+  //                 handleToggle("systemAlerts", "birthdayReminders")
+  //               }
+  //             />
+  //           </div>
+  //           <div className="mt-auto pt-4 pb-2 flex justify-end">
+  //             <Button
+  //               type="submit"
+  //               disabled={saving}
+  //               variant="custom"
+  //               bg="#3B82F6"
+  //               text="#FFFFFF"
+  //               icon={Save}
+  //               className={saving ? "opacity-70" : ""}
+  //             >
+  //               {saving ? "Saving Preferences..." : "Save Preferences"}
+  //             </Button>
+  //           </div>
+  //         </div>
+  //       </div>
+
+  //       {/* ─── Save Button (PUSHED TO BOTTOM RIGHT) ─── */}
+  //     </form>
+  //   </div>
+  // );
+
+
+return (
+  <div className="animate-in fade-in duration-300 flex flex-col h-full">
+    {/* Header */}
+    <div
+      className="flex items-center gap-4 mb-8 pb-5"
+      style={{
+        borderBottom: `1px solid ${colors.cardBorder}`,
+      }}
+    >
+      <div
+        className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm"
+        style={{
+          backgroundColor: colors.orangeLight,
+          color: colors.orange,
+        }}
+      >
+        <BellRing size={26} />
       </div>
 
-      {/* ─── Status Message ─── */}
-      {message.text && (
-        <div
-          className={`p-4 mb-6 rounded-lg text-sm font-medium border ${
-            message.type === "success"
-              ? "bg-green-500/10 text-green-400 border-green-500/20"
-              : "bg-red-500/10 text-red-400 border-red-500/20"
-          }`}
+      <div>
+        <h3
+          className="text-2xl font-bold"
+          style={{ color: colors.textPrimary }}
         >
-          {message.text}
-        </div>
-      )}
+          Notifications
+        </h3>
 
-      {/* ─── Settings Form ─── */}
-      <form onSubmit={handleSubmit} className="flex flex-col flex-1">
-        {/* ─── Responsive Grid Container ─── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start mb-8">
-          {/* SECTION 1: Email Notifications */}
-          <div className="bg-input/20 border border-card-border rounded-xl p-5 sm:p-6 shadow-sm h-full">
-            <h3 className="text-base font-bold text-text-primary mb-2 flex items-center gap-2">
-              <Mail size={18} className="text-blue-400" /> Email Notifications
-            </h3>
-            <div className="flex flex-col">
-              <SettingRow
-                label="Leave Requests"
-                description="Get an email when an employee applies for leave."
-                checked={preferences.emailNotifications.leaveRequests}
-                onChange={() =>
-                  handleToggle("emailNotifications", "leaveRequests")
-                }
-              />
-              <SettingRow
-                label="New Employee Onboarding"
-                description="Alerts when a new user profile is created."
-                checked={preferences.emailNotifications.newEmployeeOnboarding}
-                onChange={() =>
-                  handleToggle("emailNotifications", "newEmployeeOnboarding")
-                }
-              />
-              <SettingRow
-                label="Payroll Processed"
-                description="Receive summaries when payroll is generated."
-                checked={preferences.emailNotifications.payrollProcessed}
-                onChange={() =>
-                  handleToggle("emailNotifications", "payrollProcessed")
-                }
-              />
-              <SettingRow
-                label="Document Uploads"
-                description="Alerts when employees upload compliance documents."
-                checked={preferences.emailNotifications.documentUploads}
-                onChange={() =>
-                  handleToggle("emailNotifications", "documentUploads")
-                }
-              />
-            </div>
-          </div>
-
-          {/* SECTION 2: System Alerts */}
-          <div className="bg-input/20 border border-card-border rounded-xl p-5 sm:p-6 shadow-sm h-full">
-            <h3 className="text-base font-bold text-text-primary mb-2 flex items-center gap-2">
-              <MonitorSmartphone size={18} className="text-purple-400" /> System
-              Alerts
-            </h3>
-            <div className="flex flex-col">
-              <SettingRow
-                label="Attendance Alerts"
-                description="In-app alerts for late check-ins or missing punch-outs."
-                checked={preferences.systemAlerts.attendanceAlerts}
-                onChange={() =>
-                  handleToggle("systemAlerts", "attendanceAlerts")
-                }
-              />
-              <SettingRow
-                label="Birthday Reminders"
-                description="Show reminders for upcoming employee birthdays/anniversaries."
-                checked={preferences.systemAlerts.birthdayReminders}
-                onChange={() =>
-                  handleToggle("systemAlerts", "birthdayReminders")
-                }
-              />
-            </div>
-            <div className="mt-auto pt-4 pb-2 flex justify-end">
-              <Button
-                type="submit"
-                disabled={saving}
-                variant="custom"
-                bg="#3B82F6"
-                text="#FFFFFF"
-                icon={Save}
-                className={saving ? "opacity-70" : ""}
-              >
-                {saving ? "Saving Preferences..." : "Save Preferences"}
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* ─── Save Button (PUSHED TO BOTTOM RIGHT) ─── */}
-      </form>
+        <p
+          className="text-sm mt-1"
+          style={{ color: colors.textSecondary }}
+        >
+          Control what alerts HR and administrators receive.
+        </p>
+      </div>
     </div>
-  );
+
+    {/* Status */}
+    {message.text && (
+      <div
+        className="mb-6 p-4 rounded-xl border text-sm font-medium"
+        style={{
+          backgroundColor:
+            message.type === "success"
+              ? colors.successLight
+              : colors.dangerLight,
+          borderColor:
+            message.type === "success"
+              ? colors.success
+              : colors.danger,
+          color:
+            message.type === "success"
+              ? colors.success
+              : colors.danger,
+        }}
+      >
+        {message.text}
+      </div>
+    )}
+
+    {/* Form */}
+    <form onSubmit={handleSubmit} className="flex flex-col flex-1">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+        {/* Email Notifications */}
+        <div
+          className="rounded-2xl p-6 border shadow-sm flex flex-col"
+          style={{
+            backgroundColor: colors.cardBg,
+            borderColor: colors.cardBorder,
+          }}
+        >
+          <div className="flex items-center gap-2 mb-5">
+            <Mail
+              size={20}
+              style={{
+                color: colors.blue,
+              }}
+            />
+
+            <h4
+              className="font-bold text-base"
+              style={{
+                color: colors.textPrimary,
+              }}
+            >
+              Email Notifications
+            </h4>
+          </div>
+
+          <div className="flex flex-col">
+            <SettingRow
+              label="Leave Requests"
+              description="Get an email when an employee applies for leave."
+              checked={preferences.emailNotifications.leaveRequests}
+              onChange={() =>
+                handleToggle("emailNotifications", "leaveRequests")
+              }
+            />
+
+            <SettingRow
+              label="New Employee Onboarding"
+              description="Alerts when a new user profile is created."
+              checked={
+                preferences.emailNotifications.newEmployeeOnboarding
+              }
+              onChange={() =>
+                handleToggle(
+                  "emailNotifications",
+                  "newEmployeeOnboarding"
+                )
+              }
+            />
+
+            <SettingRow
+              label="Payroll Processed"
+              description="Receive summaries when payroll is generated."
+              checked={
+                preferences.emailNotifications.payrollProcessed
+              }
+              onChange={() =>
+                handleToggle(
+                  "emailNotifications",
+                  "payrollProcessed"
+                )
+              }
+            />
+
+            <SettingRow
+              label="Document Uploads"
+              description="Alerts when employees upload compliance documents."
+              checked={
+                preferences.emailNotifications.documentUploads
+              }
+              onChange={() =>
+                handleToggle(
+                  "emailNotifications",
+                  "documentUploads"
+                )
+              }
+            />
+          </div>
+        </div>
+
+        {/* System Alerts */}
+        <div
+          className="rounded-2xl p-6 border shadow-sm flex flex-col"
+          style={{
+            backgroundColor: colors.cardBg,
+            borderColor: colors.cardBorder,
+          }}
+        >
+          <div className="flex items-center gap-2 mb-5">
+            <MonitorSmartphone
+              size={20}
+              style={{
+                color: colors.purple,
+              }}
+            />
+
+            <h4
+              className="font-bold text-base"
+              style={{
+                color: colors.textPrimary,
+              }}
+            >
+              System Alerts
+            </h4>
+          </div>
+
+          <div className="flex flex-col flex-1">
+            <SettingRow
+              label="Attendance Alerts"
+              description="Receive in-app alerts for late check-ins or missing punch-outs."
+              checked={
+                preferences.systemAlerts.attendanceAlerts
+              }
+              onChange={() =>
+                handleToggle(
+                  "systemAlerts",
+                  "attendanceAlerts"
+                )
+              }
+            />
+
+            <SettingRow
+              label="Birthday Reminders"
+              description="Show reminders for employee birthdays and work anniversaries."
+              checked={
+                preferences.systemAlerts.birthdayReminders
+              }
+              onChange={() =>
+                handleToggle(
+                  "systemAlerts",
+                  "birthdayReminders"
+                )
+              }
+            />
+          </div>
+
+          <div className="pt-6 flex justify-end">
+            <Button
+              type="submit"
+              disabled={saving}
+              variant="custom"
+              bg={colors.buttonBg}
+              hoverBg={colors.buttonHover}
+              text={colors.textPrimary}
+              icon={Save}
+              className={saving ? "opacity-70" : ""}
+            >
+              {saving
+                ? "Saving Preferences..."
+                : "Save Preferences"}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+);
 }

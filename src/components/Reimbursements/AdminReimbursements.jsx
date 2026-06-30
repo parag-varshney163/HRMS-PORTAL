@@ -7,6 +7,7 @@ import useNotification from "../../hooks/useNotification.jsx";
 import axiosInstance from "../../api/axiosInstance.js";
 import FilterDropDown from "../ui/FilterDropDown.jsx";
 import Button from "../../components/ui/Button.jsx";
+import colors from "../../constants/colors.js";
 import StatsCard from "../ui/StatsCard.jsx";
 
 
@@ -171,257 +172,639 @@ const AdminReimbursements = () => {
 
   const totalPending = (stats.pendingManager || 0) + (stats.pendingAdmin || 0);
 
+  // return (
+  //   <div className="py-2 pb-6 w-full h-full flex flex-col animate-in fade-in">
+  //     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+  //       <div>
+  //         <h2 className="text-2xl font-bold text-text-primary">
+  //           Expense <span className="text-accent">Approvals</span>
+  //         </h2>
+  //         <p className="text-sm text-text-secondary mt-1">
+  //           Manage and approve employee expenses.
+  //         </p>
+  //       </div>
+  //       <Button
+  //         variant="custom"
+  //         bg="#3B82F6"
+  //         text="#FFF"
+  //         icon={Plus}
+  //         size="sm"
+  //         onClick={() => setApplyModalOpen(true)}
+  //       >
+  //         Apply Reimbursement
+  //       </Button>
+  //     </div>
+
+  //     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  //       <StatsCard
+  //         icon={FileText}
+  //         iconBg="bg-blue-500/10"
+  //         iconColor="text-blue-400"
+  //         value={loading ? "..." : stats.totalRequests || 0}
+  //         label="Total Requests"
+  //       />
+  //       <StatsCard
+  //         icon={Clock}
+  //         iconBg="bg-yellow-500/10"
+  //         iconColor="text-yellow-400"
+  //         value={loading ? "..." : totalPending}
+  //         label="Total Pending"
+  //       />
+  //       <StatsCard
+  //         icon={CheckCircle}
+  //         iconBg="bg-green-500/10"
+  //         iconColor="text-green-400"
+  //         value={loading ? "..." : stats.approved || 0}
+  //         label="Approved"
+  //       />
+  //       <StatsCard
+  //         icon={DollarSign}
+  //         iconBg="bg-purple-500/10"
+  //         iconColor="text-purple-400"
+  //         value={
+  //           loading
+  //             ? "..."
+  //             : `$${(stats.totalApprovedAmount || 0).toLocaleString()}`
+  //         }
+  //         label="Approved Amount"
+  //       />
+  //     </div>
+
+
+
+  //     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-card-border pb-3 mb-4">
+  //       <h3 className="text-lg font-bold text-text-primary">
+  //         All Team Requests
+  //       </h3>
+
+  //       <div className="w-[220px]">
+  //         <FilterDropDown
+  //           width="220px"
+  //           defaultLabel="Pending"
+  //           options={[
+  //             "Pending",
+  //             "Approved",
+  //             "Rejected",
+  //             "All Requests",
+  //           ]}
+  //           onSelect={(value) => {
+  //             const statusMap = {
+  //               Pending: "pending",
+  //               Approved: "approved",
+  //               Rejected: "rejected",
+  //               "All Requests": "",
+  //             };
+
+  //             setStatusFilter(statusMap[value] || "");
+  //             setPage(1);
+  //           }}
+  //         />
+  //       </div>
+  //     </div>
+
+
+  //     <div className="flex-1">
+  //       {loading ? (
+  //         <div className="py-10 text-center text-text-secondary animate-pulse">
+  //           Loading requests...
+  //         </div>
+  //       ) : requests.length > 0 ? (
+  //         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  //           {requests.map((req) => {
+  //             const reqStatus = req.status?.toLowerCase() || "";
+  //             const isPending = reqStatus.includes("pending");
+
+  //             return (
+  //               <div
+  //                 key={req._id}
+  //                 className="bg-card border border-card-border rounded-xl p-5 hover:border-btn/40 transition-colors flex flex-col"
+  //               >
+  //                 <div className="flex justify-between items-start mb-3">
+  //                   <div>
+  //                     <h4 className="text-base font-bold text-text-primary">
+  //                       {req.reimbursementType}
+  //                     </h4>
+  //                     <p className="text-xs text-text-secondary flex items-center gap-1 mt-1">
+  //                       <User size={12} />{" "}
+  //                       {req.user?.firstName ||
+  //                         req.employee?.firstName ||
+  //                         "Unknown"}{" "}
+  //                       • {new Date(req.expenseDate).toLocaleDateString()}
+  //                     </p>
+  //                   </div>
+  //                   <div className="text-right">
+  //                     <p className="text-lg font-bold text-accent">
+  //                       ${req.amount || 0}
+  //                     </p>
+  //                   </div>
+  //                 </div>
+
+  //                 <div className="mb-4 text-sm text-text-secondary line-clamp-2">
+  //                   {req.description}
+  //                 </div>
+
+  //                 {(req.approvedByManager || req.approvedByAdmin) && (
+  //                   <div className="mb-3 p-2 rounded-lg bg-input/20 border border-card-border/50 flex flex-col gap-1 text-[10px] text-text-secondary">
+  //                     {req.approvedByManager && (
+  //                       <p>
+  //                         Manager:{" "}
+  //                         <span className="font-medium text-text-primary">
+  //                           {req.approvedByManager.firstName}
+  //                         </span>
+  //                       </p>
+  //                     )}
+  //                     {req.approvedByAdmin && (
+  //                       <p>
+  //                         Admin:{" "}
+  //                         <span className="font-medium text-text-primary">
+  //                           {req.approvedByAdmin.firstName}
+  //                         </span>
+  //                       </p>
+  //                     )}
+  //                   </div>
+  //                 )}
+
+  //                 <div className="mt-auto pt-4 border-t border-card-border/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+  //                   {renderStatusBadge(req)}
+
+  //                   <div className="flex gap-2 w-full sm:w-auto">
+  //                     {isManager &&
+  //                       !isAdmin &&
+  //                       reqStatus.includes("pending_manager") && (
+  //                         <Button
+  //                           variant="custom"
+  //                           bg="#3B82F6"
+  //                           text="#FFF"
+  //                           size="sm"
+  //                           onClick={() => handleManagerApprove(req._id)}
+  //                           className="flex-1 sm:flex-none font-bold"
+  //                         >
+  //                           Approve Request
+  //                         </Button>
+  //                       )}
+
+  //                     {isAdmin && isPending && (
+  //                       <>
+  //                         <Button
+  //                           variant="custom"
+  //                           bg="#22C55E"
+  //                           text="#FFF"
+  //                           size="sm"
+  //                           onClick={() =>
+  //                             handleAdminAction(req._id, "approved")
+  //                           }
+  //                           className="flex-1 sm:flex-none font-bold"
+  //                         >
+  //                           Approve
+  //                         </Button>
+  //                         <Button
+  //                           variant="custom"
+  //                           bg="#EF4444"
+  //                           text="#FFF"
+  //                           size="sm"
+  //                           onClick={() =>
+  //                             handleAdminAction(req._id, "rejected")
+  //                           }
+  //                           className="flex-1 sm:flex-none font-bold"
+  //                         >
+  //                           Reject
+  //                         </Button>
+  //                       </>
+  //                     )}
+  //                   </div>
+  //                 </div>
+  //               </div>
+  //             );
+  //           })}
+  //         </div>
+  //       ) : (
+  //         <div className="flex flex-col items-center justify-center py-16 bg-card border border-dashed border-card-border rounded-xl text-text-secondary mt-4">
+  //           <Inbox size={48} className="mb-4 opacity-50" />
+  //           <p className="text-lg font-bold text-text-primary">
+  //             No pending approvals
+  //           </p>
+  //         </div>
+  //       )}
+  //     </div>
+
+  //     {totalPages > 1 && (
+  //       <div className="flex items-center justify-between border-t border-card-border mt-6 pt-4">
+  //         <p className="text-sm text-text-secondary">
+  //           Page <span className="font-semibold text-text-primary">{page}</span>{" "}
+  //           of{" "}
+  //           <span className="font-semibold text-text-primary">
+  //             {totalPages}
+  //           </span>
+  //         </p>
+  //         <div className="flex gap-2">
+  //           <button
+  //             disabled={page === 1}
+  //             onClick={() => setPage((p) => Math.max(1, p - 1))}
+  //             className="p-1.5 rounded bg-input text-text-secondary hover:text-text-primary disabled:opacity-50 transition-colors"
+  //           >
+  //             <ChevronLeft size={18} />
+  //           </button>
+  //           <button
+  //             disabled={page === totalPages}
+  //             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+  //             className="p-1.5 rounded bg-input text-text-secondary hover:text-text-primary disabled:opacity-50 transition-colors"
+  //           >
+  //             <ChevronRight size={18} />
+  //           </button>
+  //         </div>
+  //       </div>
+  //     )}
+
+  //     <ApplyReimbursementModal
+  //       key={isApplyModalOpen ? "open" : "closed"}
+  //       open={isApplyModalOpen}
+  //       onClose={() => setApplyModalOpen(false)}
+  //       onSubmit={handleApplyReimbursement}
+  //     />
+  //   </div>
+  // );
+
   return (
-    <div className="py-2 pb-6 w-full h-full flex flex-col animate-in fade-in">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h2 className="text-2xl font-bold text-text-primary">
-            Expense <span className="text-accent">Approvals</span>
-          </h2>
-          <p className="text-sm text-text-secondary mt-1">
-            Manage and approve employee expenses.
-          </p>
-        </div>
-        <Button
-          variant="custom"
-          bg="#3B82F6"
-          text="#FFF"
-          icon={Plus}
-          size="sm"
-          onClick={() => setApplyModalOpen(true)}
+  <div className="py-2 pb-6 w-full h-full flex flex-col animate-in fade-in">
+    {/* Header */}
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+      <div>
+        <h2
+          className="text-2xl font-bold"
+          style={{ color: colors.textPrimary }}
         >
-          Apply Reimbursement
-        </Button>
+          Expense{" "}
+          <span style={{ color: colors.accent }}>Approvals</span>
+        </h2>
+
+        <p
+          className="text-sm mt-1"
+          style={{ color: colors.textSecondary }}
+        >
+          Manage and approve employee expenses.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatsCard
-          icon={FileText}
-          iconBg="bg-blue-500/10"
-          iconColor="text-blue-400"
-          value={loading ? "..." : stats.totalRequests || 0}
-          label="Total Requests"
-        />
-        <StatsCard
-          icon={Clock}
-          iconBg="bg-yellow-500/10"
-          iconColor="text-yellow-400"
-          value={loading ? "..." : totalPending}
-          label="Total Pending"
-        />
-        <StatsCard
-          icon={CheckCircle}
-          iconBg="bg-green-500/10"
-          iconColor="text-green-400"
-          value={loading ? "..." : stats.approved || 0}
-          label="Approved"
-        />
-        <StatsCard
-          icon={DollarSign}
-          iconBg="bg-purple-500/10"
-          iconColor="text-purple-400"
-          value={
-            loading
-              ? "..."
-              : `$${(stats.totalApprovedAmount || 0).toLocaleString()}`
-          }
-          label="Approved Amount"
-        />
-      </div>
+      <Button
+        variant="custom"
+        bg={colors.blue}
+        text="#FFF"
+        icon={Plus}
+        size="sm"
+        onClick={() => setApplyModalOpen(true)}
+      >
+        Apply Reimbursement
+      </Button>
+    </div>
 
+    {/* Stats */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <StatsCard
+        icon={FileText}
+        iconBg={colors.blueLight}
+        iconColor={colors.blue}
+        value={loading ? "..." : stats.totalRequests || 0}
+        label="Total Requests"
+      />
 
+      <StatsCard
+        icon={Clock}
+        iconBg={colors.warningLight}
+        iconColor={colors.warning}
+        value={loading ? "..." : totalPending}
+        label="Total Pending"
+      />
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-card-border pb-3 mb-4">
-        <h3 className="text-lg font-bold text-text-primary">
-          All Team Requests
-        </h3>
+      <StatsCard
+        icon={CheckCircle}
+        iconBg={colors.successLight}
+        iconColor={colors.success}
+        value={loading ? "..." : stats.approved || 0}
+        label="Approved"
+      />
 
-        <div className="w-[220px]">
-          <FilterDropDown
-            width="220px"
-            defaultLabel="Pending"
-            options={[
-              "Pending",
-              "Approved",
-              "Rejected",
-              "All Requests",
-            ]}
-            onSelect={(value) => {
-              const statusMap = {
-                Pending: "pending",
-                Approved: "approved",
-                Rejected: "rejected",
-                "All Requests": "",
-              };
-
-              setStatusFilter(statusMap[value] || "");
-              setPage(1);
-            }}
-          />
-        </div>
-      </div>
-
-
-      <div className="flex-1">
-        {loading ? (
-          <div className="py-10 text-center text-text-secondary animate-pulse">
-            Loading requests...
-          </div>
-        ) : requests.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {requests.map((req) => {
-              const reqStatus = req.status?.toLowerCase() || "";
-              const isPending = reqStatus.includes("pending");
-
-              return (
-                <div
-                  key={req._id}
-                  className="bg-card border border-card-border rounded-xl p-5 hover:border-btn/40 transition-colors flex flex-col"
-                >
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h4 className="text-base font-bold text-text-primary">
-                        {req.reimbursementType}
-                      </h4>
-                      <p className="text-xs text-text-secondary flex items-center gap-1 mt-1">
-                        <User size={12} />{" "}
-                        {req.user?.firstName ||
-                          req.employee?.firstName ||
-                          "Unknown"}{" "}
-                        • {new Date(req.expenseDate).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-accent">
-                        ${req.amount || 0}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mb-4 text-sm text-text-secondary line-clamp-2">
-                    {req.description}
-                  </div>
-
-                  {(req.approvedByManager || req.approvedByAdmin) && (
-                    <div className="mb-3 p-2 rounded-lg bg-input/20 border border-card-border/50 flex flex-col gap-1 text-[10px] text-text-secondary">
-                      {req.approvedByManager && (
-                        <p>
-                          Manager:{" "}
-                          <span className="font-medium text-text-primary">
-                            {req.approvedByManager.firstName}
-                          </span>
-                        </p>
-                      )}
-                      {req.approvedByAdmin && (
-                        <p>
-                          Admin:{" "}
-                          <span className="font-medium text-text-primary">
-                            {req.approvedByAdmin.firstName}
-                          </span>
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="mt-auto pt-4 border-t border-card-border/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                    {renderStatusBadge(req)}
-
-                    <div className="flex gap-2 w-full sm:w-auto">
-                      {isManager &&
-                        !isAdmin &&
-                        reqStatus.includes("pending_manager") && (
-                          <Button
-                            variant="custom"
-                            bg="#3B82F6"
-                            text="#FFF"
-                            size="sm"
-                            onClick={() => handleManagerApprove(req._id)}
-                            className="flex-1 sm:flex-none font-bold"
-                          >
-                            Approve Request
-                          </Button>
-                        )}
-
-                      {isAdmin && isPending && (
-                        <>
-                          <Button
-                            variant="custom"
-                            bg="#22C55E"
-                            text="#FFF"
-                            size="sm"
-                            onClick={() =>
-                              handleAdminAction(req._id, "approved")
-                            }
-                            className="flex-1 sm:flex-none font-bold"
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            variant="custom"
-                            bg="#EF4444"
-                            text="#FFF"
-                            size="sm"
-                            onClick={() =>
-                              handleAdminAction(req._id, "rejected")
-                            }
-                            className="flex-1 sm:flex-none font-bold"
-                          >
-                            Reject
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-16 bg-card border border-dashed border-card-border rounded-xl text-text-secondary mt-4">
-            <Inbox size={48} className="mb-4 opacity-50" />
-            <p className="text-lg font-bold text-text-primary">
-              No pending approvals
-            </p>
-          </div>
-        )}
-      </div>
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-card-border mt-6 pt-4">
-          <p className="text-sm text-text-secondary">
-            Page <span className="font-semibold text-text-primary">{page}</span>{" "}
-            of{" "}
-            <span className="font-semibold text-text-primary">
-              {totalPages}
-            </span>
-          </p>
-          <div className="flex gap-2">
-            <button
-              disabled={page === 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="p-1.5 rounded bg-input text-text-secondary hover:text-text-primary disabled:opacity-50 transition-colors"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              disabled={page === totalPages}
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="p-1.5 rounded bg-input text-text-secondary hover:text-text-primary disabled:opacity-50 transition-colors"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
-        </div>
-      )}
-
-      <ApplyReimbursementModal
-        key={isApplyModalOpen ? "open" : "closed"}
-        open={isApplyModalOpen}
-        onClose={() => setApplyModalOpen(false)}
-        onSubmit={handleApplyReimbursement}
+      <StatsCard
+        icon={DollarSign}
+        iconBg={colors.purpleLight}
+        iconColor={colors.purple}
+        value={
+          loading
+            ? "..."
+            : `₹${(stats.totalApprovedAmount || 0).toLocaleString("en-IN")}`
+        }
+        label="Approved Amount"
       />
     </div>
-  );
+
+    {/* Filter */}
+    <div
+      className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-3 mb-4"
+      style={{ borderBottom: `1px solid ${colors.cardBorder}` }}
+    >
+      <h3
+        className="text-lg font-bold"
+        style={{ color: colors.textPrimary }}
+      >
+        All Team Requests
+      </h3>
+
+      <div className="w-[220px]">
+        <FilterDropDown
+          width="220px"
+          defaultLabel="Pending"
+          options={[
+            "Pending",
+            "Approved",
+            "Rejected",
+            "All Requests",
+          ]}
+          onSelect={(value) => {
+            const statusMap = {
+              Pending: "pending",
+              Approved: "approved",
+              Rejected: "rejected",
+              "All Requests": "",
+            };
+
+            setStatusFilter(statusMap[value] || "");
+            setPage(1);
+          }}
+        />
+      </div>
+    </div>
+
+    {/* Cards */}
+    <div className="flex-1">
+      {loading ? (
+        <div
+          className="py-10 text-center animate-pulse"
+          style={{ color: colors.textSecondary }}
+        >
+          Loading requests...
+        </div>
+      ) : requests.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {requests.map((req) => {
+            const reqStatus = req.status?.toLowerCase() || "";
+            const isPending = reqStatus.includes("pending");
+
+            return (
+              <div
+                key={req._id}
+                className="rounded-xl p-5 flex flex-col transition-colors"
+                style={{
+                  background: colors.cardBg,
+                  border: `1px solid ${colors.cardBorder}`,
+                }}
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h4
+                      className="text-base font-bold"
+                      style={{ color: colors.textPrimary }}
+                    >
+                      {req.reimbursementType}
+                    </h4>
+
+                    <p
+                      className="text-xs flex items-center gap-1 mt-1"
+                      style={{ color: colors.textSecondary }}
+                    >
+                      <User size={12} />
+                      {req.user?.firstName ||
+                        req.employee?.firstName ||
+                        "Unknown"}{" "}
+                      •{" "}
+                      {new Date(
+                        req.expenseDate,
+                      ).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  <div className="text-right">
+                    <p
+                      className="text-lg font-bold"
+                      style={{ color: colors.accent }}
+                    >
+                      ₹{req.amount || 0}
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className="mb-4 text-sm line-clamp-2"
+                  style={{ color: colors.textSecondary }}
+                >
+                  {req.description}
+                </div>
+
+                {(req.approvedByManager ||
+                  req.approvedByAdmin) && (
+                  <div
+                    className="mb-3 p-2 rounded-lg flex flex-col gap-1 text-[10px]"
+                    style={{
+                      background: colors.inputBg,
+                      border: `1px solid ${colors.cardBorder}`,
+                      color: colors.textSecondary,
+                    }}
+                  >
+                    {req.approvedByManager && (
+                      <p>
+                        Manager:{" "}
+                        <span
+                          style={{
+                            color: colors.textPrimary,
+                            fontWeight: 600,
+                          }}
+                        >
+                          {req.approvedByManager.firstName}
+                        </span>
+                      </p>
+                    )}
+
+                    {req.approvedByAdmin && (
+                      <p>
+                        Admin:{" "}
+                        <span
+                          style={{
+                            color: colors.textPrimary,
+                            fontWeight: 600,
+                          }}
+                        >
+                          {req.approvedByAdmin.firstName}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                <div
+                  className="mt-auto pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+                  style={{
+                    borderTop: `1px solid ${colors.cardBorder}`,
+                  }}
+                >
+                  {renderStatusBadge(req)}
+
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    {isManager &&
+                      !isAdmin &&
+                      reqStatus.includes(
+                        "pending_manager",
+                      ) && (
+                        <Button
+                          variant="custom"
+                          bg={colors.blue}
+                          text="#FFF"
+                          size="sm"
+                          onClick={() =>
+                            handleManagerApprove(req._id)
+                          }
+                          className="flex-1 sm:flex-none font-bold"
+                        >
+                          Approve Request
+                        </Button>
+                      )}
+
+                    {isAdmin && isPending && (
+                      <>
+                        <Button
+                          variant="custom"
+                          bg={colors.success}
+                          text="#FFF"
+                          size="sm"
+                          onClick={() =>
+                            handleAdminAction(
+                              req._id,
+                              "approved",
+                            )
+                          }
+                          className="flex-1 sm:flex-none font-bold"
+                        >
+                          Approve
+                        </Button>
+
+                        <Button
+                          variant="custom"
+                          bg={colors.danger}
+                          text="#FFF"
+                          size="sm"
+                          onClick={() =>
+                            handleAdminAction(
+                              req._id,
+                              "rejected",
+                            )
+                          }
+                          className="flex-1 sm:flex-none font-bold"
+                        >
+                          Reject
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div
+          className="flex flex-col items-center justify-center py-16 rounded-xl mt-4"
+          style={{
+            background: colors.cardBg,
+            border: `1px dashed ${colors.cardBorder}`,
+            color: colors.textSecondary,
+          }}
+        >
+          <Inbox
+            size={48}
+            className="mb-4"
+            style={{ opacity: 0.5 }}
+          />
+
+          <p
+            className="text-lg font-bold"
+            style={{ color: colors.textPrimary }}
+          >
+            No pending approvals
+          </p>
+        </div>
+      )}
+    </div>
+
+    {totalPages > 1 && (
+      <div
+        className="flex items-center justify-between mt-6 pt-4"
+        style={{
+          borderTop: `1px solid ${colors.cardBorder}`,
+        }}
+      >
+        <p
+          className="text-sm"
+          style={{ color: colors.textSecondary }}
+        >
+          Page{" "}
+          <span
+            style={{
+              color: colors.textPrimary,
+              fontWeight: 600,
+            }}
+          >
+            {page}
+          </span>{" "}
+          of{" "}
+          <span
+            style={{
+              color: colors.textPrimary,
+              fontWeight: 600,
+            }}
+          >
+            {totalPages}
+          </span>
+        </p>
+
+        <div className="flex gap-2">
+          <button
+            disabled={page === 1}
+            onClick={() =>
+              setPage((p) => Math.max(1, p - 1))
+            }
+            className="p-1.5 rounded transition-colors disabled:opacity-50"
+            style={{
+              background: colors.inputBg,
+              color: colors.textSecondary,
+            }}
+          >
+            <ChevronLeft size={18} />
+          </button>
+
+          <button
+            disabled={page === totalPages}
+            onClick={() =>
+              setPage((p) =>
+                Math.min(totalPages, p + 1),
+              )
+            }
+            className="p-1.5 rounded transition-colors disabled:opacity-50"
+            style={{
+              background: colors.inputBg,
+              color: colors.textSecondary,
+            }}
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      </div>
+    )}
+
+    <ApplyReimbursementModal
+      key={isApplyModalOpen ? "open" : "closed"}
+      open={isApplyModalOpen}
+      onClose={() => setApplyModalOpen(false)}
+      onSubmit={handleApplyReimbursement}
+    />
+  </div>
+);
 };
 
 export default AdminReimbursements;

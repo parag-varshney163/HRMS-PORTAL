@@ -5,6 +5,7 @@ import useNotification from "../../hooks/useNotification.jsx";
 import ApplyResignationModal from "./ApplyResignationModal";
 import axiosInstance from "../../api/axiosInstance.js";
 import Button from "../../components/ui/Button.jsx";
+import colors from "../../constants/colors.js";
 
 
 const EmployeeResignations = () => {
@@ -93,96 +94,271 @@ const EmployeeResignations = () => {
       </span>
     );
   };
+  // return (
+  //   <div className="py-2 pb-6 w-full h-full flex flex-col animate-in fade-in">
+  //     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+  //       <div>
+  //         <h2 className="text-2xl font-bold text-text-primary">
+  //           My <span className="text-accent">Resignation</span>
+  //         </h2>
+  //         <p className="text-sm text-text-secondary mt-1">
+  //           Track your offboarding request.
+  //         </p>
+  //       </div>
+  //       <Button
+  //         variant="custom"
+  //         bg="#3B82F6"
+  //         text="#FFF"
+  //         icon={UserMinus}
+  //         size="sm"
+  //         onClick={() => setApplyModalOpen(true)}
+  //       >
+  //         Apply Resignation
+  //       </Button>
+  //     </div>
+  //     <div className="flex-1 border-t border-card-border pt-6">
+  //       {loading ? (
+  //         <div className="py-10 text-center text-text-secondary animate-pulse">
+  //           Loading request...
+  //         </div>
+  //       ) : requests.length > 0 ? (
+  //         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  //           {requests.map((req) => (
+  //             <div
+  //               key={req._id}
+  //               className="bg-card border border-card-border rounded-xl p-5 flex flex-col"
+  //             >
+  //               <div className="flex justify-between items-start mb-4">
+  //                 <h3 className="text-lg font-bold text-text-primary">
+  //                   Resignation Request
+  //                 </h3>
+  //                 {renderStatusBadge(req.status)}
+  //               </div>
+  //               <div className="bg-input/30 border border-card-border/50 rounded-xl p-4 mt-auto">
+  //                 <div className="flex items-center justify-between mb-3 border-b border-card-border/50 pb-3">
+  //                   <div className="flex items-center gap-2 text-text-secondary">
+  //                     <Calendar size={15} className="shrink-0 text-accent" />
+  //                     <span className="text-xs font-semibold text-text-primary">
+  //                       Last Working Day:
+  //                     </span>
+  //                   </div>
+  //                   <span className="text-sm font-bold text-text-primary">
+  //                     {new Date(req.lastWorkingDate).toLocaleDateString(
+  //                       "en-US",
+  //                       { month: "short", day: "numeric", year: "numeric" },
+  //                     )}
+  //                   </span>
+  //                 </div>
+  //                 <div>
+  //                   <span className="text-[11px] text-text-secondary uppercase tracking-wider font-semibold block mb-1">
+  //                     Reason for leaving
+  //                   </span>
+  //                   <p className="text-sm text-text-primary italic line-clamp-3">
+  //                     "
+  //                     {req.reason === "string" || !req.reason
+  //                       ? "No specific reason provided."
+  //                       : req.reason}
+  //                     "
+  //                   </p>
+  //                 </div>
+  //               </div>
+  //             </div>
+  //           ))}
+  //         </div>
+  //       ) : (
+  //         <div className="flex flex-col items-center justify-center py-16 bg-card border border-dashed border-card-border rounded-xl text-text-secondary mt-4">
+  //           <Inbox size={48} className="mb-4 opacity-50" />
+  //           <p className="text-lg font-bold text-text-primary">
+  //             No request found
+  //           </p>
+  //           <p className="text-sm mt-1">
+  //             You have not submitted a resignation request.
+  //           </p>
+  //         </div>
+  //       )}
+  //     </div>
+  //     <ApplyResignationModal
+  //       open={isApplyModalOpen}
+  //       onClose={() => setApplyModalOpen(false)}
+  //       onSubmit={handleApply}
+  //     />
+  //   </div>
+  // );
+
   return (
-    <div className="py-2 pb-6 w-full h-full flex flex-col animate-in fade-in">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h2 className="text-2xl font-bold text-text-primary">
-            My <span className="text-accent">Resignation</span>
-          </h2>
-          <p className="text-sm text-text-secondary mt-1">
-            Track your offboarding request.
-          </p>
-        </div>
-        <Button
-          variant="custom"
-          bg="#3B82F6"
-          text="#FFF"
-          icon={UserMinus}
-          size="sm"
-          onClick={() => setApplyModalOpen(true)}
+  <div className="py-2 pb-6 w-full h-full flex flex-col animate-in fade-in">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+      <div>
+        <h2
+          className="text-2xl font-bold"
+          style={{ color: colors.textPrimary }}
         >
-          Apply Resignation
-        </Button>
+          My <span style={{ color: colors.accent }}>Resignation</span>
+        </h2>
+
+        <p
+          className="text-sm mt-1"
+          style={{ color: colors.textSecondary }}
+        >
+          Track your offboarding request.
+        </p>
       </div>
-      <div className="flex-1 border-t border-card-border pt-6">
-        {loading ? (
-          <div className="py-10 text-center text-text-secondary animate-pulse">
-            Loading request...
-          </div>
-        ) : requests.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {requests.map((req) => (
+
+      <Button
+        variant="custom"
+        bg={colors.blue}
+        text="#FFF"
+        icon={UserMinus}
+        size="sm"
+        onClick={() => setApplyModalOpen(true)}
+      >
+        Apply Resignation
+      </Button>
+    </div>
+
+    <div
+      className="flex-1 pt-6"
+      style={{
+        borderTop: `1px solid ${colors.cardBorder}`,
+      }}
+    >
+      {loading ? (
+        <div
+          className="py-10 text-center animate-pulse"
+          style={{ color: colors.textSecondary }}
+        >
+          Loading request...
+        </div>
+      ) : requests.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {requests.map((req) => (
+            <div
+              key={req._id}
+              className="rounded-xl p-5 flex flex-col shadow-sm"
+              style={{
+                background: colors.cardBg,
+                border: `1px solid ${colors.cardBorder}`,
+              }}
+            >
+              <div className="flex justify-between items-start mb-4">
+                <h3
+                  className="text-lg font-bold"
+                  style={{ color: colors.textPrimary }}
+                >
+                  Resignation Request
+                </h3>
+
+                {renderStatusBadge(req.status)}
+              </div>
+
               <div
-                key={req._id}
-                className="bg-card border border-card-border rounded-xl p-5 flex flex-col"
+                className="rounded-xl p-4 mt-auto"
+                style={{
+                  background: colors.inputBg,
+                  border: `1px solid ${colors.cardBorder}`,
+                }}
               >
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-lg font-bold text-text-primary">
-                    Resignation Request
-                  </h3>
-                  {renderStatusBadge(req.status)}
+                <div
+                  className="flex items-center justify-between mb-3 pb-3"
+                  style={{
+                    borderBottom: `1px solid ${colors.cardBorder}`,
+                  }}
+                >
+                  <div
+                    className="flex items-center gap-2"
+                    style={{ color: colors.textSecondary }}
+                  >
+                    <Calendar
+                      size={15}
+                      className="shrink-0"
+                      style={{ color: colors.accent }}
+                    />
+
+                    <span
+                      className="text-xs font-semibold"
+                      style={{ color: colors.textPrimary }}
+                    >
+                      Last Working Day:
+                    </span>
+                  </div>
+
+                  <span
+                    className="text-sm font-bold"
+                    style={{ color: colors.textPrimary }}
+                  >
+                    {new Date(req.lastWorkingDate).toLocaleDateString(
+                      "en-US",
+                      {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      }
+                    )}
+                  </span>
                 </div>
-                <div className="bg-input/30 border border-card-border/50 rounded-xl p-4 mt-auto">
-                  <div className="flex items-center justify-between mb-3 border-b border-card-border/50 pb-3">
-                    <div className="flex items-center gap-2 text-text-secondary">
-                      <Calendar size={15} className="shrink-0 text-accent" />
-                      <span className="text-xs font-semibold text-text-primary">
-                        Last Working Day:
-                      </span>
-                    </div>
-                    <span className="text-sm font-bold text-text-primary">
-                      {new Date(req.lastWorkingDate).toLocaleDateString(
-                        "en-US",
-                        { month: "short", day: "numeric", year: "numeric" },
-                      )}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-[11px] text-text-secondary uppercase tracking-wider font-semibold block mb-1">
-                      Reason for leaving
-                    </span>
-                    <p className="text-sm text-text-primary italic line-clamp-3">
-                      "
-                      {req.reason === "string" || !req.reason
-                        ? "No specific reason provided."
-                        : req.reason}
-                      "
-                    </p>
-                  </div>
+
+                <div>
+                  <span
+                    className="text-[11px] uppercase tracking-wider font-semibold block mb-1"
+                    style={{ color: colors.textSecondary }}
+                  >
+                    Reason for leaving
+                  </span>
+
+                  <p
+                    className="text-sm italic line-clamp-3"
+                    style={{ color: colors.textPrimary }}
+                  >
+                    "
+                    {req.reason === "string" || !req.reason
+                      ? "No specific reason provided."
+                      : req.reason}
+                    "
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-16 bg-card border border-dashed border-card-border rounded-xl text-text-secondary mt-4">
-            <Inbox size={48} className="mb-4 opacity-50" />
-            <p className="text-lg font-bold text-text-primary">
-              No request found
-            </p>
-            <p className="text-sm mt-1">
-              You have not submitted a resignation request.
-            </p>
-          </div>
-        )}
-      </div>
-      <ApplyResignationModal
-        open={isApplyModalOpen}
-        onClose={() => setApplyModalOpen(false)}
-        onSubmit={handleApply}
-      />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div
+          className="flex flex-col items-center justify-center py-16 rounded-xl mt-4"
+          style={{
+            background: colors.cardBg,
+            border: `2px dashed ${colors.cardBorder}`,
+            color: colors.textSecondary,
+          }}
+        >
+          <Inbox
+            size={48}
+            className="mb-4"
+            style={{ color: colors.textMuted, opacity: 0.6 }}
+          />
+
+          <p
+            className="text-lg font-bold"
+            style={{ color: colors.textPrimary }}
+          >
+            No request found
+          </p>
+
+          <p
+            className="text-sm mt-1"
+            style={{ color: colors.textSecondary }}
+          >
+            You have not submitted a resignation request.
+          </p>
+        </div>
+      )}
     </div>
-  );
+
+    <ApplyResignationModal
+      open={isApplyModalOpen}
+      onClose={() => setApplyModalOpen(false)}
+      onSubmit={handleApply}
+    />
+  </div>
+);
 };
 export default EmployeeResignations;
 

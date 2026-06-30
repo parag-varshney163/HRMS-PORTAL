@@ -1,20 +1,16 @@
+import { CheckCircle, XCircle, Clock, CalendarDays, SlidersHorizontal, Inbox, } from "lucide-react";
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  CheckCircle,
-  XCircle,
-  Clock,
-  CalendarDays,
-  SlidersHorizontal,
-  Inbox,
-} from "lucide-react";
-import axiosInstance from "../../api/axiosInstance";
-import StatsCard from "../ui/StatsCard";
-import DataTable from "../ui/DataTable";
-import SearchBar from "../ui/SearchBar";
-import Button from "../ui/Button";
+
 import useNotification from "../../hooks/useNotification.jsx";
+import axiosInstance from "../../api/axiosInstance";
+import colors from "../../constants/colors.js";
+import StatsCard from "../ui/StatsCard";
+import SearchBar from "../ui/SearchBar";
+import DataTable from "../ui/DataTable";
+import Button from "../ui/Button";
+
 
 // 🚨 CRITICAL FIX: Ensure 'export default function' is exactly like this.
 export default function OrgLeaves({ refreshTrigger, onOpenBalanceModal }) {
@@ -124,244 +120,573 @@ export default function OrgLeaves({ refreshTrigger, onOpenBalanceModal }) {
   };
 
   // ─── HELPER: STATUS BADGE ───
+  // const renderStatusBadge = (val) => {
+  //   const s = val?.toLowerCase() || "pending";
+  //   let style = "bg-yellow-500/10 text-yellow-500 border-yellow-500/30";
+
+  //   if (s === "approved")
+  //     style = "bg-green-500/10 text-green-400 border-green-500/30";
+  //   if (s === "rejected")
+  //     style = "bg-red-500/10 text-red-400 border-red-500/30";
+
+  //   return (
+  //     <span
+  //       className={`px-2.5 py-1 rounded-md border text-[10px] font-bold uppercase tracking-wider ${style}`}
+  //     >
+  //       {val || "Pending"}
+  //     </span>
+  //   );
+  // };
   const renderStatusBadge = (val) => {
-    const s = val?.toLowerCase() || "pending";
-    let style = "bg-yellow-500/10 text-yellow-500 border-yellow-500/30";
+  const status = val?.toLowerCase() || "pending";
 
-    if (s === "approved")
-      style = "bg-green-500/10 text-green-400 border-green-500/30";
-    if (s === "rejected")
-      style = "bg-red-500/10 text-red-400 border-red-500/30";
+  let bg = colors.warningLight;
+  let color = colors.warning;
+  let border = colors.warning;
 
-    return (
-      <span
-        className={`px-2.5 py-1 rounded-md border text-[10px] font-bold uppercase tracking-wider ${style}`}
-      >
-        {val || "Pending"}
-      </span>
-    );
-  };
-
-  // ─── DATATABLE COLUMNS ───
-  const columns = [
-    {
-      key: "employee",
-      label: "Employee",
-      width: "1.5fr",
-      align: "left",
-      render: (_, row) => (
-        <div className="min-w-0">
-          <p className="text-sm font-bold text-text-primary truncate">
-            {row.employeeName || "Unknown"}
-          </p>
-          <p className="text-xs text-text-secondary font-mono truncate">
-            {row.employeeId || "-"}
-          </p>
-        </div>
-      ),
-    },
-    {
-      key: "leaveInfo",
-      label: "Leave Details",
-      width: "1.5fr",
-      align: "left",
-      render: (_, row) => (
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-text-primary truncate capitalize">
-            {row.leaveType
-              ? row.leaveType.replace(/([A-Z])/g, " $1").trim()
-              : "Leave"}
-          </p>
-          <p className="text-xs text-text-secondary truncate mt-0.5">
-            <span className="font-semibold text-accent">
-              {row.totalDays || 0} Day(s)
-            </span>{" "}
-            •{" "}
-            {row.startDate ? new Date(row.startDate).toLocaleDateString() : "-"}
-          </p>
-        </div>
-      ),
-    },
-    {
-      key: "reason",
-      label: "Reason",
-      width: "1fr",
-      align: "left",
-      render: (val) => (
-        <span
-          className="text-xs text-text-secondary truncate block max-w-[150px]"
-          title={val}
-        >
-          {val || "-"}
-        </span>
-      ),
-    },
-    {
-      key: "status",
-      label: "Status",
-      width: "1fr",
-      align: "center",
-      render: (val) => renderStatusBadge(val),
-    },
-    {
-      key: "actions",
-      label: "Actions",
-      width: "1.5fr",
-      align: "right",
-      render: (_, row) => {
-        // 🚨 Hide buttons if the request is already processed
-        if (row.status?.toLowerCase() !== "pending") {
-          return (
-            <span className="text-xs text-text-secondary italic">
-              Processed
-            </span>
-          );
-        }
-
-        return (
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              variant="custom"
-              bg="#22C55E"
-              text="#FFF"
-              size="sm"
-              icon={CheckCircle}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleUpdateStatus(row._id || row.id, "approved");
-              }}
-              className="px-3"
-            >
-              Approve
-            </Button>
-            <Button
-              variant="custom"
-              bg="#EF4444"
-              text="#FFF"
-              size="sm"
-              icon={XCircle}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleUpdateStatus(row._id || row.id, "rejected");
-              }}
-              className="px-3"
-            >
-              Reject
-            </Button>
-          </div>
-        );
-      },
-    },
-  ];
+  if (status === "approved") {
+    bg = colors.successLight;
+    color = colors.success;
+    border = colors.success;
+  } else if (status === "rejected") {
+    bg = colors.dangerLight;
+    color = colors.danger;
+    border = colors.danger;
+  }
 
   return (
-    <div className="pt-8 border-t border-card-border mt-6 w-full animate-in fade-in">
-      {/* ─── HEADER ─── */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h2 className="text-xl font-bold text-text-primary">
-            Organization <span className="text-accent">Requests</span>
-          </h2>
-          <p className="text-sm text-text-secondary mt-1">
-            Manage team leave applications.
-          </p>
-        </div>
-        {/* Uncomment this when you want to use the Adjust Balances Modal */}
-        {/* <Button
-          variant="custom"
-          bg="#eab308"
-          text="#000"
-          icon={SlidersHorizontal}
-          size="sm"
-          onClick={onOpenBalanceModal}
+    <span
+      className="px-2.5 py-1 rounded-md border text-[10px] font-bold uppercase tracking-wider"
+      style={{
+        backgroundColor: bg,
+        color,
+        borderColor: border,
+      }}
+    >
+      {val || "Pending"}
+    </span>
+  );
+};
+
+  // ─── DATATABLE COLUMNS ───
+  // const columns = [
+  //   {
+  //     key: "employee",
+  //     label: "Employee",
+  //     width: "1.5fr",
+  //     align: "left",
+  //     render: (_, row) => (
+  //       <div className="min-w-0">
+  //         <p className="text-sm font-bold text-text-primary truncate">
+  //           {row.employeeName || "Unknown"}
+  //         </p>
+  //         <p className="text-xs text-text-secondary font-mono truncate">
+  //           {row.employeeId || "-"}
+  //         </p>
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     key: "leaveInfo",
+  //     label: "Leave Details",
+  //     width: "1.5fr",
+  //     align: "left",
+  //     render: (_, row) => (
+  //       <div className="min-w-0">
+  //         <p className="text-sm font-medium text-text-primary truncate capitalize">
+  //           {row.leaveType
+  //             ? row.leaveType.replace(/([A-Z])/g, " $1").trim()
+  //             : "Leave"}
+  //         </p>
+  //         <p className="text-xs text-text-secondary truncate mt-0.5">
+  //           <span className="font-semibold text-accent">
+  //             {row.totalDays || 0} Day(s)
+  //           </span>{" "}
+  //           •{" "}
+  //           {row.startDate ? new Date(row.startDate).toLocaleDateString() : "-"}
+  //         </p>
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     key: "reason",
+  //     label: "Reason",
+  //     width: "1fr",
+  //     align: "left",
+  //     render: (val) => (
+  //       <span
+  //         className="text-xs text-text-secondary truncate block max-w-[150px]"
+  //         title={val}
+  //       >
+  //         {val || "-"}
+  //       </span>
+  //     ),
+  //   },
+  //   {
+  //     key: "status",
+  //     label: "Status",
+  //     width: "1fr",
+  //     align: "center",
+  //     render: (val) => renderStatusBadge(val),
+  //   },
+  //   {
+  //     key: "actions",
+  //     label: "Actions",
+  //     width: "1.5fr",
+  //     align: "right",
+  //     render: (_, row) => {
+  //       // 🚨 Hide buttons if the request is already processed
+  //       if (row.status?.toLowerCase() !== "pending") {
+  //         return (
+  //           <span className="text-xs text-text-secondary italic">
+  //             Processed
+  //           </span>
+  //         );
+  //       }
+
+  //       return (
+  //         <div className="flex items-center justify-end gap-2">
+  //           <Button
+  //             variant="custom"
+  //             bg="#22C55E"
+  //             text="#FFF"
+  //             size="sm"
+  //             icon={CheckCircle}
+  //             onClick={(e) => {
+  //               e.stopPropagation();
+  //               handleUpdateStatus(row._id || row.id, "approved");
+  //             }}
+  //             className="px-3"
+  //           >
+  //             Approve
+  //           </Button>
+  //           <Button
+  //             variant="custom"
+  //             bg="#EF4444"
+  //             text="#FFF"
+  //             size="sm"
+  //             icon={XCircle}
+  //             onClick={(e) => {
+  //               e.stopPropagation();
+  //               handleUpdateStatus(row._id || row.id, "rejected");
+  //             }}
+  //             className="px-3"
+  //           >
+  //             Reject
+  //           </Button>
+  //         </div>
+  //       );
+  //     },
+  //   },
+  // ];
+  const columns = [
+  {
+    key: "employee",
+    label: "Employee",
+    width: "1.5fr",
+    align: "left",
+    render: (_, row) => (
+      <div className="min-w-0">
+        <p
+          className="text-sm font-bold truncate"
+          style={{ color: colors.textPrimary }}
         >
-          Adjust Balances
-        </Button> */}
-      </div>
+          {row.employeeName || "Unknown"}
+        </p>
 
-      {/* ─── STATS GRID ─── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatsCard
-          icon={CalendarDays}
-          iconBg="bg-blue-500/10"
-          iconColor="text-blue-400"
-          value={loading ? "..." : stats.total || 0}
-          label="Total Requests"
-        />
-        <StatsCard
-          icon={Clock}
-          iconBg="bg-yellow-500/10"
-          iconColor="text-yellow-400"
-          value={loading ? "..." : stats.pending || 0}
-          label="Pending Action"
-        />
-        <StatsCard
-          icon={CheckCircle}
-          iconBg="bg-green-500/10"
-          iconColor="text-green-400"
-          value={loading ? "..." : stats.approved || 0}
-          label="Approved"
-        />
-        <StatsCard
-          icon={XCircle}
-          iconBg="bg-red-500/10"
-          iconColor="text-red-400"
-          value={loading ? "..." : stats.rejected || 0}
-          label="Rejected"
-        />
+        <p
+          className="text-xs font-mono truncate"
+          style={{ color: colors.textSecondary }}
+        >
+          {row.employeeId || "-"}
+        </p>
       </div>
+    ),
+  },
 
-      {/* ─── FILTER BAR ─── */}
-      <div className="flex flex-col xl:flex-row items-center justify-between gap-4 p-4 bg-card/40 border border-card-border rounded-2xl mb-4">
-        <div className="flex items-center gap-3 w-full xl:w-auto">
-          <label className="text-sm font-medium text-text-secondary whitespace-nowrap">
-            Filter Status:
-          </label>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full sm:w-48 bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none focus:border-btn transition-colors cursor-pointer"
+  {
+    key: "leaveInfo",
+    label: "Leave Details",
+    width: "1.5fr",
+    align: "left",
+    render: (_, row) => (
+      <div className="min-w-0">
+        <p
+          className="text-sm font-medium truncate capitalize"
+          style={{ color: colors.textPrimary }}
+        >
+          {row.leaveType
+            ? row.leaveType.replace(/([A-Z])/g, " $1").trim()
+            : "Leave"}
+        </p>
+
+        <p
+          className="text-xs truncate mt-0.5"
+          style={{ color: colors.textSecondary }}
+        >
+          <span
+            className="font-semibold"
+            style={{ color: colors.accent }}
           >
-            <option value="">All Statuses</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-          </select>
+            {row.totalDays || 0} Day(s)
+          </span>{" "}
+          •{" "}
+          {row.startDate
+            ? new Date(row.startDate).toLocaleDateString()
+            : "-"}
+        </p>
+      </div>
+    ),
+  },
+
+  {
+    key: "reason",
+    label: "Reason",
+    width: "1fr",
+    align: "left",
+    render: (val) => (
+      <span
+        className="text-xs truncate block max-w-[150px]"
+        title={val}
+        style={{ color: colors.textSecondary }}
+      >
+        {val || "-"}
+      </span>
+    ),
+  },
+
+  {
+    key: "status",
+    label: "Status",
+    width: "1fr",
+    align: "center",
+    render: (val) => renderStatusBadge(val),
+  },
+
+  {
+    key: "actions",
+    label: "Actions",
+    width: "1.5fr",
+    align: "right",
+    render: (_, row) => {
+      if (row.status?.toLowerCase() !== "pending") {
+        return (
+          <span
+            className="text-xs italic"
+            style={{ color: colors.textSecondary }}
+          >
+            Processed
+          </span>
+        );
+      }
+
+      return (
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            variant="custom"
+            bg={colors.success}
+            hoverBg="#43A93A"
+            text="#FFFFFF"
+            size="sm"
+            icon={CheckCircle}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleUpdateStatus(row._id || row.id, "approved");
+            }}
+            className="px-3"
+          >
+            Approve
+          </Button>
+
+          <Button
+            variant="custom"
+            bg={colors.danger}
+            hoverBg="#D93B31"
+            text="#FFFFFF"
+            size="sm"
+            icon={XCircle}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleUpdateStatus(row._id || row.id, "rejected");
+            }}
+            className="px-3"
+          >
+            Reject
+          </Button>
         </div>
-        <div className="w-full xl:w-112.5 flex justify-end">
-          <SearchBar
-            placeholder="Search employee..."
-            value={searchQuery}
-            onChange={(val) => setSearchQuery(val)}
-            width="100%"
-          />
-        </div>
+      );
+    },
+  },
+];
+
+  // return (
+  //   <div className="pt-8 border-t border-card-border mt-6 w-full animate-in fade-in">
+  //     {/* ─── HEADER ─── */}
+  //     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+  //       <div>
+  //         <h2 className="text-xl font-bold text-text-primary">
+  //           Organization <span className="text-accent">Requests</span>
+  //         </h2>
+  //         <p className="text-sm text-text-secondary mt-1">
+  //           Manage team leave applications.
+  //         </p>
+  //       </div>
+  //       {/* Uncomment this when you want to use the Adjust Balances Modal */}
+  //       {/* <Button
+  //         variant="custom"
+  //         bg="#eab308"
+  //         text="#000"
+  //         icon={SlidersHorizontal}
+  //         size="sm"
+  //         onClick={onOpenBalanceModal}
+  //       >
+  //         Adjust Balances
+  //       </Button> */}
+  //     </div>
+
+  //     {/* ─── STATS GRID ─── */}
+  //     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+  //       <StatsCard
+  //         icon={CalendarDays}
+  //         iconBg="bg-blue-500/10"
+  //         iconColor="text-blue-400"
+  //         value={loading ? "..." : stats.total || 0}
+  //         label="Total Requests"
+  //       />
+  //       <StatsCard
+  //         icon={Clock}
+  //         iconBg="bg-yellow-500/10"
+  //         iconColor="text-yellow-400"
+  //         value={loading ? "..." : stats.pending || 0}
+  //         label="Pending Action"
+  //       />
+  //       <StatsCard
+  //         icon={CheckCircle}
+  //         iconBg="bg-green-500/10"
+  //         iconColor="text-green-400"
+  //         value={loading ? "..." : stats.approved || 0}
+  //         label="Approved"
+  //       />
+  //       <StatsCard
+  //         icon={XCircle}
+  //         iconBg="bg-red-500/10"
+  //         iconColor="text-red-400"
+  //         value={loading ? "..." : stats.rejected || 0}
+  //         label="Rejected"
+  //       />
+  //     </div>
+
+  //     {/* ─── FILTER BAR ─── */}
+  //     <div className="flex flex-col xl:flex-row items-center justify-between gap-4 p-4 bg-card/40 border border-card-border rounded-2xl mb-4">
+  //       <div className="flex items-center gap-3 w-full xl:w-auto">
+  //         <label className="text-sm font-medium text-text-secondary whitespace-nowrap">
+  //           Filter Status:
+  //         </label>
+  //         <select
+  //           value={statusFilter}
+  //           onChange={(e) => setStatusFilter(e.target.value)}
+  //           className="w-full sm:w-48 bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none focus:border-btn transition-colors cursor-pointer"
+  //         >
+  //           <option value="">All Statuses</option>
+  //           <option value="pending">Pending</option>
+  //           <option value="approved">Approved</option>
+  //           <option value="rejected">Rejected</option>
+  //         </select>
+  //       </div>
+  //       <div className="w-full xl:w-112.5 flex justify-end">
+  //         <SearchBar
+  //           placeholder="Search employee..."
+  //           value={searchQuery}
+  //           onChange={(val) => setSearchQuery(val)}
+  //           width="100%"
+  //         />
+  //       </div>
+  //     </div>
+
+  //     {/* ─── DATATABLE ─── */}
+  //     <div className="flex-1 -mt-4">
+  //       {records.length === 0 && !loading ? (
+  //         <div className="flex flex-col items-center justify-center py-16 bg-card border border-dashed border-card-border rounded-xl text-text-secondary mt-8">
+  //           <Inbox size={48} className="mb-4 opacity-50" />
+  //           <p className="text-lg font-bold text-text-primary">
+  //             No requests found
+  //           </p>
+  //           <p className="text-sm mt-1">
+  //             Adjust your search or filter criteria.
+  //           </p>
+  //         </div>
+  //       ) : (
+  //         <DataTable
+  //           columns={columns}
+  //           data={records}
+  //           loading={loading}
+  //           paginationMode="server"
+  //           page={page}
+  //           totalPages={totalPages}
+  //           onPageChange={setPage}
+  //         />
+  //       )}
+  //     </div>
+  //   </div>
+  // );
+  return (
+  <div
+    className="pt-8 mt-6 w-full animate-in fade-in border-t"
+    style={{ borderColor: colors.cardBorder }}
+  >
+    {/* ─── HEADER ─── */}
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+      <div>
+        <h2
+          className="text-2xl font-bold"
+          style={{ color: colors.textPrimary }}
+        >
+          Organization{" "}
+          <span style={{ color: colors.accent }}>Requests</span>
+        </h2>
+
+        <p
+          className="text-sm mt-1"
+          style={{ color: colors.textSecondary }}
+        >
+          Manage team leave applications.
+        </p>
       </div>
 
-      {/* ─── DATATABLE ─── */}
-      <div className="flex-1 -mt-4">
-        {records.length === 0 && !loading ? (
-          <div className="flex flex-col items-center justify-center py-16 bg-card border border-dashed border-card-border rounded-xl text-text-secondary mt-8">
-            <Inbox size={48} className="mb-4 opacity-50" />
-            <p className="text-lg font-bold text-text-primary">
-              No requests found
-            </p>
-            <p className="text-sm mt-1">
-              Adjust your search or filter criteria.
-            </p>
-          </div>
-        ) : (
-          <DataTable
-            columns={columns}
-            data={records}
-            loading={loading}
-            paginationMode="server"
-            page={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          />
-        )}
+      {/* Uncomment when needed */}
+      {/* <Button
+        variant="custom"
+        bg={colors.buttonBg}
+        hoverBg={colors.buttonHover}
+        text={colors.textPrimary}
+        icon={SlidersHorizontal}
+        size="sm"
+        onClick={onOpenBalanceModal}
+      >
+        Adjust Balances
+      </Button> */}
+    </div>
+
+    {/* ─── STATS GRID ─── */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <StatsCard
+        icon={CalendarDays}
+        iconBg={colors.blueLight}
+        iconColor={colors.blue}
+        value={loading ? "..." : stats.total || 0}
+        label="Total Requests"
+      />
+
+      <StatsCard
+        icon={Clock}
+        iconBg={colors.warningLight}
+        iconColor={colors.warning}
+        value={loading ? "..." : stats.pending || 0}
+        label="Pending Action"
+      />
+
+      <StatsCard
+        icon={CheckCircle}
+        iconBg={colors.successLight}
+        iconColor={colors.success}
+        value={loading ? "..." : stats.approved || 0}
+        label="Approved"
+      />
+
+      <StatsCard
+        icon={XCircle}
+        iconBg={colors.dangerLight}
+        iconColor={colors.danger}
+        value={loading ? "..." : stats.rejected || 0}
+        label="Rejected"
+      />
+    </div>
+
+    {/* ─── FILTER BAR ─── */}
+    <div
+      className="flex flex-col xl:flex-row items-center justify-between gap-4 p-4 rounded-2xl border mb-4"
+      style={{
+        backgroundColor: colors.cardBg,
+        borderColor: colors.cardBorder,
+      }}
+    >
+      <div className="flex items-center gap-3 w-full xl:w-auto">
+        <label
+          className="text-sm font-medium whitespace-nowrap"
+          style={{ color: colors.textSecondary }}
+        >
+          Filter Status:
+        </label>
+
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="w-full sm:w-48 px-4 py-2.5 rounded-xl border text-sm outline-none transition-colors cursor-pointer"
+          style={{
+            backgroundColor: colors.inputBg,
+            borderColor: colors.cardBorder,
+            color: colors.textPrimary,
+          }}
+        >
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+
+      <div className="w-full xl:w-[450px] flex justify-end">
+        <SearchBar
+          placeholder="Search employee..."
+          value={searchQuery}
+          onChange={(val) => setSearchQuery(val)}
+          width="100%"
+        />
       </div>
     </div>
-  );
+
+    {/* ─── TABLE ─── */}
+    <div className="flex-1 -mt-4">
+      {records.length === 0 && !loading ? (
+        <div
+          className="flex flex-col items-center justify-center py-16 rounded-xl border border-dashed mt-8"
+          style={{
+            backgroundColor: colors.cardBg,
+            borderColor: colors.cardBorder,
+          }}
+        >
+          <Inbox
+            size={48}
+            className="mb-4 opacity-50"
+            style={{ color: colors.textMuted }}
+          />
+
+          <p
+            className="text-lg font-bold"
+            style={{ color: colors.textPrimary }}
+          >
+            No requests found
+          </p>
+
+          <p
+            className="text-sm mt-1"
+            style={{ color: colors.textSecondary }}
+          >
+            Adjust your search or filter criteria.
+          </p>
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={records}
+          loading={loading}
+          paginationMode="server"
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      )}
+    </div>
+  </div>
+);
 }

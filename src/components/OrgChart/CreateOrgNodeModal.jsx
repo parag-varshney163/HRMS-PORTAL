@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { X, Loader2 } from "lucide-react";
+
 import useNotification from "../../hooks/useNotification.jsx";
 import axiosInstance from "../../api/axiosInstance.js";
+import colors from "../../constants/colors.js";
+
 
 // Formatter for Department Names
 const formatDeptName = (name) => {
@@ -112,151 +115,429 @@ export default function CreateOrgNodeModal({ open, onClose, onSuccess }) {
     }
   };
 
+  // return (
+  //   <div
+  //     className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+  //     onClick={onClose}
+  //   >
+  //     <div
+  //       className="bg-card border border-card-border rounded-2xl w-full max-w-lg shadow-2xl flex flex-col"
+  //       onClick={(e) => e.stopPropagation()}
+  //     >
+  //       {/* Header */}
+  //       <div className="flex items-center justify-between p-6 border-b border-card-border">
+  //         <div>
+  //           <h2 className="text-xl font-bold text-text-primary">
+  //             Create Organization Node
+  //           </h2>
+  //           <p className="text-xs text-text-secondary mt-1">
+  //             Assign an employee to the hierarchy tree.
+  //           </p>
+  //         </div>
+  //         <button
+  //           type="button"
+  //           onClick={onClose}
+  //           className="text-text-secondary hover:text-text-primary transition-colors"
+  //         >
+  //           <X size={20} />
+  //         </button>
+  //       </div>
+
+  //       {/* Form */}
+  //       <form onSubmit={handleSubmit} className="p-6 space-y-5">
+  //         {loadingData && (
+  //           <div className="flex items-center justify-center gap-2 text-sm text-accent bg-accent/10 py-2 rounded-lg">
+  //             <Loader2 size={16} className="animate-spin" /> Loading Directory
+  //             Data...
+  //           </div>
+  //         )}
+
+  //         {/* 1. User Dropdown */}
+  //         <div>
+  //           <label className="block text-sm font-semibold text-text-primary mb-1.5">
+  //             Employee <span className="text-danger">*</span>
+  //           </label>
+  //           <select
+  //             disabled={loadingData}
+  //             value={form.user}
+  //             onChange={(e) => handleChange("user", e.target.value)}
+  //             className={`w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer focus:border-btn transition-colors disabled:opacity-50 ${errors.user ? "border-danger" : "border-card-border"}`}
+  //           >
+  //             <option value="" disabled>
+  //               Select Employee
+  //             </option>
+  //             {users.map((u) => (
+  //               <option key={u._id} value={u._id}>
+  //                 {u.name || `${u.firstName} ${u.lastName}`}
+  //               </option>
+  //             ))}
+  //           </select>
+  //           {errors.user && (
+  //             <p className="text-xs text-danger mt-1">{errors.user}</p>
+  //           )}
+  //         </div>
+
+  //         {/* 2. Role Title */}
+  //         <div>
+  //           <label className="block text-sm font-semibold text-text-primary mb-1.5">
+  //             Role Title <span className="text-danger">*</span>
+  //           </label>
+  //           <input
+  //             type="text"
+  //             placeholder="e.g. Senior Software Engineer"
+  //             disabled={loadingData}
+  //             value={form.roleTitle}
+  //             onChange={(e) => handleChange("roleTitle", e.target.value)}
+  //             className={`w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border text-sm outline-none focus:border-btn transition-colors disabled:opacity-50 ${errors.roleTitle ? "border-danger" : "border-card-border"}`}
+  //           />
+  //           {errors.roleTitle && (
+  //             <p className="text-xs text-danger mt-1">{errors.roleTitle}</p>
+  //           )}
+  //         </div>
+
+  //         {/* 3. Department Dropdown */}
+  //         <div>
+  //           <label className="block text-sm font-semibold text-text-primary mb-1.5">
+  //             Department <span className="text-danger">*</span>
+  //           </label>
+  //           <select
+  //             disabled={loadingData}
+  //             value={form.department}
+  //             onChange={(e) => handleChange("department", e.target.value)}
+  //             className={`w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer focus:border-btn transition-colors disabled:opacity-50 ${errors.department ? "border-danger" : "border-card-border"}`}
+  //           >
+  //             <option value="" disabled>
+  //               Select Department
+  //             </option>
+  //             {departments.map((dept) => (
+  //               <option key={dept._id} value={dept._id}>
+  //                 {formatDeptName(dept.name)}
+  //               </option>
+  //             ))}
+  //           </select>
+  //           {errors.department && (
+  //             <p className="text-xs text-danger mt-1">{errors.department}</p>
+  //           )}
+  //         </div>
+
+  //         {/* 4. Manager Dropdown */}
+  //         <div>
+  //           <label className="block text-sm font-semibold text-text-primary mb-1.5">
+  //             Reports To (Manager)
+  //           </label>
+  //           <select
+  //             disabled={loadingData}
+  //             value={form.manager}
+  //             onChange={(e) => handleChange("manager", e.target.value)}
+  //             className="w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none cursor-pointer focus:border-btn transition-colors disabled:opacity-50"
+  //           >
+  //             <option value="">No Manager (Top Level / CEO)</option>
+  //             {managers.map((m) => (
+  //               <option key={m._id} value={m._id}>
+  //                 {m.name || `${m.firstName} ${m.lastName}`}
+  //               </option>
+  //             ))}
+  //           </select>
+  //         </div>
+
+  //         {/* Buttons */}
+  //         <div className="flex gap-3 pt-4">
+  //           <button
+  //             type="button"
+  //             onClick={onClose}
+  //             disabled={isSubmitting || loadingData}
+  //             className="flex-1 py-2.5 rounded-xl bg-input text-text-secondary border border-card-border text-sm font-semibold hover:bg-hover transition-colors"
+  //           >
+  //             Cancel
+  //           </button>
+  //           <button
+  //             type="submit"
+  //             disabled={isSubmitting || loadingData}
+  //             className="flex-1 py-2.5 rounded-xl bg-btn text-white border-none text-sm font-semibold hover:bg-btn-hover transition-colors disabled:opacity-70"
+  //           >
+  //             {isSubmitting ? "Creating..." : "Create Node"}
+  //           </button>
+  //         </div>
+  //       </form>
+  //     </div>
+  //   </div>
+  // );
+
   return (
+  <div
+    className="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style={{
+      backgroundColor: "rgba(0,0,0,0.6)",
+      backdropFilter: "blur(6px)",
+    }}
+    onClick={onClose}
+  >
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-      onClick={onClose}
+      className="w-full max-w-lg rounded-2xl shadow-2xl flex flex-col"
+      style={{
+        backgroundColor: colors.cardBg,
+        border: `1px solid ${colors.cardBorder}`,
+      }}
+      onClick={(e) => e.stopPropagation()}
     >
+      {/* Header */}
       <div
-        className="bg-card border border-card-border rounded-2xl w-full max-w-lg shadow-2xl flex flex-col"
-        onClick={(e) => e.stopPropagation()}
+        className="flex items-center justify-between p-6 border-b"
+        style={{ borderColor: colors.cardBorder }}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-card-border">
-          <div>
-            <h2 className="text-xl font-bold text-text-primary">
-              Create Organization Node
-            </h2>
-            <p className="text-xs text-text-secondary mt-1">
-              Assign an employee to the hierarchy tree.
-            </p>
+        <div>
+          <h2
+            className="text-xl font-bold"
+            style={{ color: colors.textPrimary }}
+          >
+            Create Organization Node
+          </h2>
+
+          <p
+            className="text-xs mt-1"
+            style={{ color: colors.textSecondary }}
+          >
+            Assign an employee to the hierarchy tree.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="p-2 rounded-lg transition-colors"
+          style={{ color: colors.textSecondary }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = colors.hover;
+            e.currentTarget.style.color = colors.textPrimary;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "transparent";
+            e.currentTarget.style.color = colors.textSecondary;
+          }}
+        >
+          <X size={20} />
+        </button>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        {loadingData && (
+          <div
+            className="flex items-center justify-center gap-2 text-sm py-2 rounded-lg"
+            style={{
+              color: colors.accent,
+              backgroundColor: colors.accentLight,
+            }}
+          >
+            <Loader2 size={16} className="animate-spin" />
+            Loading Directory Data...
           </div>
+        )}
+
+        {/* Employee */}
+        <div>
+          <label
+            className="block text-sm font-semibold mb-1.5"
+            style={{ color: colors.textPrimary }}
+          >
+            Employee <span style={{ color: colors.danger }}>*</span>
+          </label>
+
+          <select
+            disabled={loadingData}
+            value={form.user}
+            onChange={(e) => handleChange("user", e.target.value)}
+            className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer disabled:opacity-50"
+            style={{
+              backgroundColor: colors.inputBg,
+              color: colors.textPrimary,
+              borderColor: errors.user
+                ? colors.danger
+                : colors.cardBorder,
+            }}
+          >
+            <option value="" disabled>
+              Select Employee
+            </option>
+
+            {users.map((u) => (
+              <option key={u._id} value={u._id}>
+                {u.name || `${u.firstName} ${u.lastName}`}
+              </option>
+            ))}
+          </select>
+
+          {errors.user && (
+            <p
+              className="text-xs mt-1"
+              style={{ color: colors.danger }}
+            >
+              {errors.user}
+            </p>
+          )}
+        </div>
+
+        {/* Role */}
+        <div>
+          <label
+            className="block text-sm font-semibold mb-1.5"
+            style={{ color: colors.textPrimary }}
+          >
+            Role Title <span style={{ color: colors.danger }}>*</span>
+          </label>
+
+          <input
+            type="text"
+            disabled={loadingData}
+            placeholder="e.g. Senior Software Engineer"
+            value={form.roleTitle}
+            onChange={(e) =>
+              handleChange("roleTitle", e.target.value)
+            }
+            className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none disabled:opacity-50"
+            style={{
+              backgroundColor: colors.inputBg,
+              color: colors.textPrimary,
+              borderColor: errors.roleTitle
+                ? colors.danger
+                : colors.cardBorder,
+            }}
+          />
+
+          {errors.roleTitle && (
+            <p
+              className="text-xs mt-1"
+              style={{ color: colors.danger }}
+            >
+              {errors.roleTitle}
+            </p>
+          )}
+        </div>
+
+        {/* Department */}
+        <div>
+          <label
+            className="block text-sm font-semibold mb-1.5"
+            style={{ color: colors.textPrimary }}
+          >
+            Department <span style={{ color: colors.danger }}>*</span>
+          </label>
+
+          <select
+            disabled={loadingData}
+            value={form.department}
+            onChange={(e) =>
+              handleChange("department", e.target.value)
+            }
+            className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer disabled:opacity-50"
+            style={{
+              backgroundColor: colors.inputBg,
+              color: colors.textPrimary,
+              borderColor: errors.department
+                ? colors.danger
+                : colors.cardBorder,
+            }}
+          >
+            <option value="" disabled>
+              Select Department
+            </option>
+
+            {departments.map((dept) => (
+              <option key={dept._id} value={dept._id}>
+                {formatDeptName(dept.name)}
+              </option>
+            ))}
+          </select>
+
+          {errors.department && (
+            <p
+              className="text-xs mt-1"
+              style={{ color: colors.danger }}
+            >
+              {errors.department}
+            </p>
+          )}
+        </div>
+
+        {/* Manager */}
+        <div>
+          <label
+            className="block text-sm font-semibold mb-1.5"
+            style={{ color: colors.textPrimary }}
+          >
+            Reports To (Manager)
+          </label>
+
+          <select
+            disabled={loadingData}
+            value={form.manager}
+            onChange={(e) =>
+              handleChange("manager", e.target.value)
+            }
+            className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer disabled:opacity-50"
+            style={{
+              backgroundColor: colors.inputBg,
+              color: colors.textPrimary,
+              borderColor: colors.cardBorder,
+            }}
+          >
+            <option value="">
+              No Manager (Top Level / CEO)
+            </option>
+
+            {managers.map((m) => (
+              <option key={m._id} value={m._id}>
+                {m.name || `${m.firstName} ${m.lastName}`}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Footer */}
+        <div className="flex gap-3 pt-4">
           <button
             type="button"
             onClick={onClose}
-            className="text-text-secondary hover:text-text-primary transition-colors"
+            disabled={isSubmitting || loadingData}
+            className="flex-1 py-2.5 rounded-xl border text-sm font-semibold transition-colors"
+            style={{
+              backgroundColor: colors.inputBg,
+              color: colors.textSecondary,
+              borderColor: colors.cardBorder,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = colors.hover;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = colors.inputBg;
+            }}
           >
-            <X size={20} />
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            disabled={isSubmitting || loadingData}
+            className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors disabled:opacity-70"
+            style={{
+              backgroundColor: colors.buttonBg,
+              color: colors.cardBg,
+              border: "none",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor =
+                colors.buttonHover;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor =
+                colors.buttonBg;
+            }}
+          >
+            {isSubmitting ? "Creating..." : "Create Node"}
           </button>
         </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {loadingData && (
-            <div className="flex items-center justify-center gap-2 text-sm text-accent bg-accent/10 py-2 rounded-lg">
-              <Loader2 size={16} className="animate-spin" /> Loading Directory
-              Data...
-            </div>
-          )}
-
-          {/* 1. User Dropdown */}
-          <div>
-            <label className="block text-sm font-semibold text-text-primary mb-1.5">
-              Employee <span className="text-danger">*</span>
-            </label>
-            <select
-              disabled={loadingData}
-              value={form.user}
-              onChange={(e) => handleChange("user", e.target.value)}
-              className={`w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer focus:border-btn transition-colors disabled:opacity-50 ${errors.user ? "border-danger" : "border-card-border"}`}
-            >
-              <option value="" disabled>
-                Select Employee
-              </option>
-              {users.map((u) => (
-                <option key={u._id} value={u._id}>
-                  {u.name || `${u.firstName} ${u.lastName}`}
-                </option>
-              ))}
-            </select>
-            {errors.user && (
-              <p className="text-xs text-danger mt-1">{errors.user}</p>
-            )}
-          </div>
-
-          {/* 2. Role Title */}
-          <div>
-            <label className="block text-sm font-semibold text-text-primary mb-1.5">
-              Role Title <span className="text-danger">*</span>
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. Senior Software Engineer"
-              disabled={loadingData}
-              value={form.roleTitle}
-              onChange={(e) => handleChange("roleTitle", e.target.value)}
-              className={`w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border text-sm outline-none focus:border-btn transition-colors disabled:opacity-50 ${errors.roleTitle ? "border-danger" : "border-card-border"}`}
-            />
-            {errors.roleTitle && (
-              <p className="text-xs text-danger mt-1">{errors.roleTitle}</p>
-            )}
-          </div>
-
-          {/* 3. Department Dropdown */}
-          <div>
-            <label className="block text-sm font-semibold text-text-primary mb-1.5">
-              Department <span className="text-danger">*</span>
-            </label>
-            <select
-              disabled={loadingData}
-              value={form.department}
-              onChange={(e) => handleChange("department", e.target.value)}
-              className={`w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer focus:border-btn transition-colors disabled:opacity-50 ${errors.department ? "border-danger" : "border-card-border"}`}
-            >
-              <option value="" disabled>
-                Select Department
-              </option>
-              {departments.map((dept) => (
-                <option key={dept._id} value={dept._id}>
-                  {formatDeptName(dept.name)}
-                </option>
-              ))}
-            </select>
-            {errors.department && (
-              <p className="text-xs text-danger mt-1">{errors.department}</p>
-            )}
-          </div>
-
-          {/* 4. Manager Dropdown */}
-          <div>
-            <label className="block text-sm font-semibold text-text-primary mb-1.5">
-              Reports To (Manager)
-            </label>
-            <select
-              disabled={loadingData}
-              value={form.manager}
-              onChange={(e) => handleChange("manager", e.target.value)}
-              className="w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none cursor-pointer focus:border-btn transition-colors disabled:opacity-50"
-            >
-              <option value="">No Manager (Top Level / CEO)</option>
-              {managers.map((m) => (
-                <option key={m._id} value={m._id}>
-                  {m.name || `${m.firstName} ${m.lastName}`}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isSubmitting || loadingData}
-              className="flex-1 py-2.5 rounded-xl bg-input text-text-secondary border border-card-border text-sm font-semibold hover:bg-hover transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting || loadingData}
-              className="flex-1 py-2.5 rounded-xl bg-btn text-white border-none text-sm font-semibold hover:bg-btn-hover transition-colors disabled:opacity-70"
-            >
-              {isSubmitting ? "Creating..." : "Create Node"}
-            </button>
-          </div>
-        </form>
-      </div>
+      </form>
     </div>
-  );
+  </div>
+);
 }

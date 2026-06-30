@@ -23,24 +23,50 @@ import colors from "../constants/colors.js";
 //   { key: "under_review", label: "Under Review", icon: Eye },
 //   { key: "done", label: "Done", icon: CheckSquare },
 // ];
+// const COLUMNS_CONFIG = [
+//   {
+//     key: "to_do",
+//     label: "To Do",
+//     icon: ListTodo,
+//     color: colors.Blue,
+//   },
+//   {
+//     key: "in_progress",
+//     label: "In Progress",
+//     icon: PlayCircle,
+//     color: colors.warning,
+//   },
+//   {
+//     key: "under_review",
+//     label: "Under Review",
+//     icon: Eye,
+//     color: colors.accent,
+//   },
+//   {
+//     key: "done",
+//     label: "Done",
+//     icon: CheckSquare,
+//     color: colors.success,
+//   },
+// ];
 const COLUMNS_CONFIG = [
   {
     key: "to_do",
     label: "To Do",
     icon: ListTodo,
-    color: colors.Blue,
+    color: colors.blue,
   },
   {
     key: "in_progress",
     label: "In Progress",
     icon: PlayCircle,
-    color: colors.warning,
+    color: colors.danger,
   },
   {
     key: "under_review",
     label: "Under Review",
     icon: Eye,
-    color: colors.accent,
+    color: colors.danger,
   },
   {
     key: "done",
@@ -234,22 +260,231 @@ export default function Tasks() {
     (arr) => arr.length === 0,
   );
 
+  //   return (
+  //     <div className="py-2 pb-6 flex flex-col w-full">
+  //       {/* ─── HEADER ─── */}
+  //       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+  //         <div>
+  //           <h2 className="text-xl sm:text-2xl font-bold text-text-primary">
+  //             Task <span className="text-accent">Management</span>
+  //           </h2>
+  //           <p className="text-xs sm:text-sm text-text-secondary mt-1">
+  //             Organize and track your team's work.
+  //           </p>
+  //         </div>
+  //         <Button
+  //           variant="custom"
+  //           bg="#3B82F6"
+  //           text="#FFFFFF"
+  //           size="sm"
+  //           icon={Plus}
+  //           className="rounded-xl py-2.5 px-4 w-full sm:w-auto justify-center"
+  //           onClick={() => {
+  //             setEditingTask(null);
+  //             setIsModalOpen(true);
+  //           }}
+  //         >
+  //           New Task
+  //         </Button>
+  //       </div>
+
+  //       {/* ─── STATS GRID ─── */}
+  //       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+  //         {/* <StatsCard
+  //           icon={ListTodo}
+  //           iconBg="bg-blue-500/10"
+  //           iconColor="text-blue-400"
+  //           label="Total Tasks"
+  //           value={loading ? "..." : stats.totalTasks || 0}
+  //         />
+  //         <StatsCard
+  //           icon={PlayCircle}
+  //           iconBg="bg-yellow-500/10"
+  //           iconColor="text-yellow-400"
+  //           label="In Progress"
+  //           value={loading ? "..." : stats.inProgress || 0}
+  //         />
+  //         <StatsCard
+  //           icon={CheckSquare}
+  //           iconBg="bg-green-500/10"
+  //           iconColor="text-green-400"
+  //           label="Completed"
+  //           value={loading ? "..." : stats.completed || 0}
+  //         />
+  //         <StatsCard
+  //           icon={Eye}
+  //           iconBg="bg-red-500/10"
+  //           iconColor="text-red-400"
+  //           label="Overdue"
+  //           value={loading ? "..." : stats.overdue || 0}
+  //         /> */}
+  //         <StatsCard
+  //   icon={ListTodo}
+  //   iconBg={colors.blueLight}
+  //   iconColor={colors.blue}
+  //   label="Total Tasks"
+  //   value={loading ? "..." : stats.totalTasks || 0}
+  // />
+
+  // <StatsCard
+  //   icon={PlayCircle}
+  //   iconBg={colors.warningLight}
+  //   iconColor={colors.warning}
+  //   label="In Progress"
+  //   value={loading ? "..." : stats.inProgress || 0}
+  // />
+
+  // <StatsCard
+  //   icon={CheckSquare}
+  //   iconBg={colors.successLight}
+  //   iconColor={colors.success}
+  //   label="Completed"
+  //   value={loading ? "..." : stats.completed || 0}
+  // />
+
+  // <StatsCard
+  //   icon={Eye}
+  //   iconBg={colors.dangerLight}
+  //   iconColor={colors.danger}
+  //   label="Overdue"
+  //   value={loading ? "..." : stats.overdue || 0}
+  // />
+  //       </div>
+  //       <OtherEmployeesTasks />
+
+  //       {/* ─── SEARCH BAR ─── */}
+  //       <div className="bg-card border border-card-border rounded-xl p-4 mb-6">
+  //         <SearchBar
+  //           placeholder="Search tasks by title, tag..."
+  //           value={searchQuery}
+  //           onChange={setSearchQuery}
+  //         />
+  //       </div>
+
+  //       {/* ─── KANBAN BOARD ─── */}
+  //       {loading ? (
+  //         <div className="flex-1 flex items-center justify-center py-20 text-text-secondary animate-pulse">
+  //           Loading tasks...
+  //         </div>
+  //       ) : isBoardEmpty ? (
+  //         <div className="flex-1 flex flex-col items-center justify-center py-20 bg-card border border-dashed border-card-border rounded-2xl text-text-secondary">
+  //           <Inbox size={48} className="mb-4 opacity-50" />
+  //           <p className="text-lg font-bold text-text-primary">No tasks found</p>
+  //           <p className="text-sm mt-1 mb-6">Create a new task to get started.</p>
+  //           <Button
+  //             onClick={() => {
+  //               setEditingTask(null);
+  //               setIsModalOpen(true);
+  //             }}
+  //             icon={Plus}
+  //           >
+  //             Create Task
+  //           </Button>
+  //         </div>
+  //       ) : (
+  //         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 pb-4 items-start">
+  //           {COLUMNS_CONFIG.map((col) => {
+  //             const columnTasks = boardData[col.key] || [];
+  //             const ColIcon = col.icon;
+
+  //             return (
+  //               <div
+  //                 key={col.key}
+  //                 className="flex flex-col gap-4 bg-input/20 p-3 rounded-2xl border border-card-border/50 min-h-[300px]"
+  //               >
+  //                 <div className="flex items-center gap-2 text-text-secondary mb-1 px-1">
+  //                   {/* <ColIcon size={18} />
+  //                   <h3 className="font-semibold text-sm text-text-primary">
+  //                     {col.label}
+  //                   </h3> */}
+  //                   <ColIcon size={18} style={{ color: col.color }} />
+
+  //                   <h3
+  //                     className="font-semibold text-sm !text-white"
+  //                     style={{ color: col.color }}
+  //                   >
+  //                     {col.label}
+  //                   </h3>
+  //                   <span className="text-xs bg-btn/10 text-btn px-2 py-0.5 rounded-full ml-auto">
+  //                     {columnTasks.length || 0}
+  //                   </span>
+  //                 </div>
+
+  //                 <div className="flex flex-col gap-3 h-full">
+  //                   {columnTasks.map((task) => (
+  //                     <TaskCard
+  //                       key={task._id}
+  //                       task={task}
+  //                       onEdit={() => {
+  //                         setEditingTask(task);
+  //                         setIsModalOpen(true);
+  //                       }}
+  //                       onDelete={() => handleDeleteTask(task._id)}
+  //                       onCommentClick={(task) => {
+  //                         setSelectedTask(task);
+  //                         setIsCommentModalOpen(true);
+  //                       }}
+  //                       onView={(task) => {
+  //                         setViewTaskId(task._id);
+  //                         setIsViewModalOpen(true);
+  //                       }}
+  //                     />
+  //                   ))}
+  //                   {columnTasks.length === 0 && (
+  //                     <div className="h-24 border-2 border-dashed border-card-border rounded-xl flex items-center justify-center text-xs text-text-secondary bg-card/30">
+  //                       No data found
+  //                     </div>
+  //                   )}
+  //                 </div>
+  //               </div>
+  //             );
+  //           })}
+  //         </div>
+  //       )}
+
+  //       {/* ─── MODAL ─── */}
+  //       <TaskModal
+  //         key={
+  //           isModalOpen ? (editingTask ? editingTask._id : "create") : "closed"
+  //         }
+  //         open={isModalOpen}
+  //         onClose={() => {
+  //           setIsModalOpen(false);
+  //           setEditingTask(null);
+  //         }}
+  //         onSubmit={handleSaveTask}
+  //         initialData={editingTask}
+  //       />
+  //       <CommentsModal
+  //         open={isCommentModalOpen}
+  //         onClose={() => setIsCommentModalOpen(false)}
+  //         task={selectedTask}
+  //       />
+  //       <TaskViewModal
+  //         open={isViewModalOpen}
+  //         onClose={() => setIsViewModalOpen(false)}
+  //         taskId={viewTaskId}
+  //       />
+  //     </div>
+  //   );
+
   return (
     <div className="py-2 pb-6 flex flex-col w-full">
-      {/* ─── HEADER ─── */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-text-primary">
+          <h2 className="text-xl sm:text-2xl font-bold text-black">
             Task <span className="text-accent">Management</span>
           </h2>
           <p className="text-xs sm:text-sm text-text-secondary mt-1">
             Organize and track your team's work.
           </p>
         </div>
+
         <Button
           variant="custom"
-          bg="#3B82F6"
-          text="#FFFFFF"
+          bg={colors.blue}
+          text={colors.cardBg}
           size="sm"
           icon={Plus}
           className="rounded-xl py-2.5 px-4 w-full sm:w-auto justify-center"
@@ -262,41 +497,155 @@ export default function Tasks() {
         </Button>
       </div>
 
-      {/* ─── STATS GRID ─── */}
+      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatsCard
           icon={ListTodo}
-          iconBg="bg-blue-500/10"
-          iconColor="text-blue-400"
+          iconBg={colors.blueLight}
+          iconColor={colors.blue}
           label="Total Tasks"
           value={loading ? "..." : stats.totalTasks || 0}
         />
+
         <StatsCard
           icon={PlayCircle}
-          iconBg="bg-yellow-500/10"
-          iconColor="text-yellow-400"
+          iconBg={colors.warningLight}
+          iconColor={colors.warning}
           label="In Progress"
           value={loading ? "..." : stats.inProgress || 0}
         />
+
         <StatsCard
           icon={CheckSquare}
-          iconBg="bg-green-500/10"
-          iconColor="text-green-400"
+          iconBg={colors.successLight}
+          iconColor={colors.success}
           label="Completed"
           value={loading ? "..." : stats.completed || 0}
         />
+
         <StatsCard
           icon={Eye}
-          iconBg="bg-red-500/10"
-          iconColor="text-red-400"
+          iconBg={colors.dangerLight}
+          iconColor={colors.danger}
           label="Overdue"
           value={loading ? "..." : stats.overdue || 0}
         />
       </div>
+
       <OtherEmployeesTasks />
 
-      {/* ─── SEARCH BAR ─── */}
-      <div className="bg-card border border-card-border rounded-xl p-4 mb-6">
+      {/* Search */}
+      {/* <div className="bg-card border border-card-border rounded-xl p-4 mb-6">
+      <SearchBar
+        placeholder="Search tasks by title, tag..."
+        value={searchQuery}
+        onChange={setSearchQuery}
+      />
+    </div>
+
+    
+    {loading ? (
+      <div className="flex-1 flex items-center justify-center py-20 text-text-secondary animate-pulse">
+        Loading tasks...
+      </div>
+    ) : isBoardEmpty ? (
+      <div className="flex-1 flex flex-col items-center justify-center py-20 bg-card border border-dashed border-card-border rounded-2xl text-text-secondary">
+        <Inbox size={48} className="mb-4 opacity-50" />
+
+        <p className="text-lg font-bold text-black">
+          No tasks found
+        </p>
+
+        <p className="text-sm mt-1 mb-6">
+          Create a new task to get started.
+        </p>
+
+        <Button
+          bg={colors.blue}
+          text={colors.cardBg}
+          icon={Plus}
+          onClick={() => {
+            setEditingTask(null);
+            setIsModalOpen(true);
+          }}
+        >
+          Create Task
+        </Button>
+      </div>
+    ) : (
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 pb-4 items-start">
+        {COLUMNS_CONFIG.map((col) => {
+          const columnTasks = boardData[col.key] || [];
+          const ColIcon = col.icon;
+
+          return (
+            <div
+              key={col.key}
+              className="flex flex-col gap-4 bg-input/20 p-3 rounded-2xl border border-card-border/50 min-h-[300px]"
+            >
+              <div className="flex items-center gap-2 mb-1 px-1">
+                <ColIcon
+                  size={18}
+                  style={{ color: col.color }}
+                />
+
+                <h3
+                  className="font-bold text-sm"
+                  style={{ color: col.color }}
+                >
+                  {col.label}
+                </h3>
+
+                <span
+                  className="text-xs px-2 py-0.5 rounded-full ml-auto font-medium"
+                  style={{
+                    backgroundColor: `${col.color}20`,
+                    color: col.color,
+                  }}
+                >
+                  {columnTasks.length}
+                </span>
+              </div>
+
+              <div className="flex flex-col gap-3 h-full">
+                {columnTasks.map((task) => (
+                  <TaskCard
+                    key={task._id}
+                    task={task}
+                    onEdit={() => {
+                      setEditingTask(task);
+                      setIsModalOpen(true);
+                    }}
+                    onDelete={() => handleDeleteTask(task._id)}
+                    onCommentClick={(task) => {
+                      setSelectedTask(task);
+                      setIsCommentModalOpen(true);
+                    }}
+                    onView={() => {
+                      setViewTaskId(task._id);
+                      setIsViewModalOpen(true);
+                    }}
+                  />
+                ))}
+
+                {columnTasks.length === 0 && (
+                  <div className="h-24 border-2 border-dashed border-card-border rounded-xl flex items-center justify-center text-xs text-text-secondary bg-card/30">
+                    No data found
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    )} */}
+      <div
+        className="rounded-xl p-4 mb-6 shadow-sm"
+        style={{
+          background: colors.cardBg,
+          border: `1px solid ${colors.cardBorder}`,
+        }}
+      >
         <SearchBar
           placeholder="Search tasks by title, tag..."
           value={searchQuery}
@@ -304,22 +653,54 @@ export default function Tasks() {
         />
       </div>
 
-      {/* ─── KANBAN BOARD ─── */}
+      {/* Board */}
       {loading ? (
-        <div className="flex-1 flex items-center justify-center py-20 text-text-secondary animate-pulse">
+        <div
+          className="flex-1 flex items-center justify-center py-20 animate-pulse"
+          style={{ color: colors.textSecondary }}
+        >
           Loading tasks...
         </div>
       ) : isBoardEmpty ? (
-        <div className="flex-1 flex flex-col items-center justify-center py-20 bg-card border border-dashed border-card-border rounded-2xl text-text-secondary">
-          <Inbox size={48} className="mb-4 opacity-50" />
-          <p className="text-lg font-bold text-text-primary">No tasks found</p>
-          <p className="text-sm mt-1 mb-6">Create a new task to get started.</p>
+        <div
+          className="flex-1 flex flex-col items-center justify-center py-20 rounded-2xl"
+          style={{
+            background: colors.cardBg,
+            border: `2px dashed ${colors.cardBorder}`,
+            color: colors.textSecondary,
+          }}
+        >
+          <Inbox
+            size={48}
+            className="mb-4"
+            style={{
+              color: colors.textMuted,
+              opacity: 0.5,
+            }}
+          />
+
+          <p
+            className="text-lg font-bold"
+            style={{ color: colors.textPrimary }}
+          >
+            No tasks found
+          </p>
+
+          <p
+            className="text-sm mt-1 mb-6"
+            style={{ color: colors.textSecondary }}
+          >
+            Create a new task to get started.
+          </p>
+
           <Button
+            bg={colors.blue}
+            text={colors.cardBg}
+            icon={Plus}
             onClick={() => {
               setEditingTask(null);
               setIsModalOpen(true);
             }}
-            icon={Plus}
           >
             Create Task
           </Button>
@@ -333,23 +714,33 @@ export default function Tasks() {
             return (
               <div
                 key={col.key}
-                className="flex flex-col gap-4 bg-input/20 p-3 rounded-2xl border border-card-border/50 min-h-[300px]"
+                className="flex flex-col gap-4 p-3 rounded-2xl min-h-[300px]"
+                style={{
+                  background: colors.inputBg,
+                  border: `1px solid ${colors.cardBorder}`,
+                }}
               >
-                <div className="flex items-center gap-2 text-text-secondary mb-1 px-1">
-                  {/* <ColIcon size={18} />
-                  <h3 className="font-semibold text-sm text-text-primary">
-                    {col.label}
-                  </h3> */}
-                  <ColIcon size={18} style={{ color: col.color }} />
+                <div className="flex items-center gap-2 mb-1 px-1">
+                  <ColIcon
+                    size={18}
+                    style={{ color: col.color }}
+                  />
 
                   <h3
-                    className="font-semibold text-sm !text-white"
+                    className="font-bold text-sm"
                     style={{ color: col.color }}
                   >
                     {col.label}
                   </h3>
-                  <span className="text-xs bg-btn/10 text-btn px-2 py-0.5 rounded-full ml-auto">
-                    {columnTasks.length || 0}
+
+                  <span
+                    className="text-xs px-2 py-0.5 rounded-full ml-auto font-medium"
+                    style={{
+                      backgroundColor: `${col.color}20`,
+                      color: col.color,
+                    }}
+                  >
+                    {columnTasks.length}
                   </span>
                 </div>
 
@@ -367,14 +758,22 @@ export default function Tasks() {
                         setSelectedTask(task);
                         setIsCommentModalOpen(true);
                       }}
-                      onView={(task) => {
+                      onView={() => {
                         setViewTaskId(task._id);
                         setIsViewModalOpen(true);
                       }}
                     />
                   ))}
+
                   {columnTasks.length === 0 && (
-                    <div className="h-24 border-2 border-dashed border-card-border rounded-xl flex items-center justify-center text-xs text-text-secondary bg-card/30">
+                    <div
+                      className="h-24 rounded-xl flex items-center justify-center text-xs"
+                      style={{
+                        background: colors.cardBg,
+                        border: `2px dashed ${colors.cardBorder}`,
+                        color: colors.textSecondary,
+                      }}
+                    >
                       No data found
                     </div>
                   )}
@@ -385,10 +784,14 @@ export default function Tasks() {
         </div>
       )}
 
-      {/* ─── MODAL ─── */}
+      {/* Modals */}
       <TaskModal
         key={
-          isModalOpen ? (editingTask ? editingTask._id : "create") : "closed"
+          isModalOpen
+            ? editingTask
+              ? editingTask._id
+              : "create"
+            : "closed"
         }
         open={isModalOpen}
         onClose={() => {
@@ -398,11 +801,13 @@ export default function Tasks() {
         onSubmit={handleSaveTask}
         initialData={editingTask}
       />
+
       <CommentsModal
         open={isCommentModalOpen}
         onClose={() => setIsCommentModalOpen(false)}
         task={selectedTask}
       />
+
       <TaskViewModal
         open={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}

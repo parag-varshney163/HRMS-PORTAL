@@ -132,6 +132,8 @@
 import { Calendar, MessageSquare, Paperclip, Edit2, Trash2, Eye, } from "lucide-react";
 import React from "react";
 
+import colors from "../../constants/colors";
+
 
 export default function TaskCard({
   task,
@@ -152,9 +154,9 @@ export default function TaskCard({
   // ─── DATE ───
   const dueDate = task?.due_date
     ? new Date(task.due_date).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })
+      month: "short",
+      day: "numeric",
+    })
     : "No Date";
 
   // ─── COUNTS ───
@@ -164,192 +166,486 @@ export default function TaskCard({
   // ─── PRIORITY ───
   const priority = (task?.priority || "medium").toLowerCase();
 
+  // const PRIORITY_STYLES = {
+  //   high: "bg-red-500/15 text-red-400 border border-red-500/20",
+  //   medium:
+  //     "bg-yellow-500/15 text-yellow-400 border border-yellow-500/20",
+  //   low: "bg-green-500/15 text-green-400 border border-green-500/20",
+  // };
   const PRIORITY_STYLES = {
-    high: "bg-red-500/15 text-red-400 border border-red-500/20",
-    medium:
-      "bg-yellow-500/15 text-yellow-400 border border-yellow-500/20",
-    low: "bg-green-500/15 text-green-400 border border-green-500/20",
+    high: {
+      backgroundColor: colors.dangerLight,
+      color: colors.danger,
+      border: `1px solid ${colors.danger}`,
+    },
+    medium: {
+      backgroundColor: colors.warningLight,
+      color: colors.warning,
+      border: `1px solid ${colors.warning}`,
+    },
+    low: {
+      backgroundColor: colors.successLight,
+      color: colors.success,
+      border: `1px solid ${colors.success}`,
+    },
   };
-
   const priorityStyle =
     PRIORITY_STYLES[priority] || PRIORITY_STYLES.medium;
 
   // ─── STATUS ───
   const status = task?.status || "to_do";
 
+  // const STATUS_CARD_STYLES = {
+  //   to_do:
+  //     "bg-blue-500/[0.06] border-blue-500/20 hover:border-blue-400/40",
+
+  //   in_progress:
+  //     "bg-yellow-500/[0.06] border-yellow-500/20 hover:border-yellow-400/40",
+
+  //   under_review:
+  //     "bg-purple-500/[0.06] border-purple-500/20 hover:border-purple-400/40",
+
+  //   done:
+  //     "bg-green-500/[0.06] border-green-500/20 hover:border-green-400/40",
+  // };
+
+  // const cardStyle =
+  //   STATUS_CARD_STYLES[status] ||
+  //   "bg-card border-card-border hover:border-btn/50";
   const STATUS_CARD_STYLES = {
-    to_do:
-      "bg-blue-500/[0.06] border-blue-500/20 hover:border-blue-400/40",
+    to_do: {
+      backgroundColor: colors.blueLight,
+      borderColor: colors.blue,
+    },
 
-    in_progress:
-      "bg-yellow-500/[0.06] border-yellow-500/20 hover:border-yellow-400/40",
+    in_progress: {
+      backgroundColor: colors.warningLight,
+      borderColor: colors.warning,
+    },
 
-    under_review:
-      "bg-purple-500/[0.06] border-purple-500/20 hover:border-purple-400/40",
+    under_review: {
+      backgroundColor: colors.purpleLight,
+      borderColor: colors.purple,
+    },
 
-    done:
-      "bg-green-500/[0.06] border-green-500/20 hover:border-green-400/40",
+    done: {
+      backgroundColor: colors.successLight,
+      borderColor: colors.success,
+    },
   };
 
   const cardStyle =
-    STATUS_CARD_STYLES[status] ||
-    "bg-card border-card-border hover:border-btn/50";
+    STATUS_CARD_STYLES[status] || {
+      backgroundColor: colors.cardBg,
+      borderColor: colors.cardBorder,
+    };
 
   // ─── STATUS BADGE ───
+  // const getStatusBadgeStyle = () => {
+  //   switch (status) {
+  //     case "to_do":
+  //       return "bg-blue-500/15 text-blue-400";
+
+  //     case "in_progress":
+  //       return "bg-yellow-500/15 text-yellow-400";
+
+  //     case "under_review":
+  //       return "bg-purple-500/15 text-purple-400";
+
+  //     case "done":
+  //       return "bg-green-500/15 text-green-400";
+
+  //     default:
+  //       return "bg-gray-500/15 text-gray-400";
+  //   }
+  // };
   const getStatusBadgeStyle = () => {
     switch (status) {
       case "to_do":
-        return "bg-blue-500/15 text-blue-400";
+        return {
+          backgroundColor: colors.blueLight,
+          color: colors.blue,
+        };
 
       case "in_progress":
-        return "bg-yellow-500/15 text-yellow-400";
+        return {
+          backgroundColor: colors.warningLight,
+          color: colors.warning,
+        };
 
       case "under_review":
-        return "bg-purple-500/15 text-purple-400";
+        return {
+          backgroundColor: colors.purpleLight,
+          color: colors.purple,
+        };
 
       case "done":
-        return "bg-green-500/15 text-green-400";
+        return {
+          backgroundColor: colors.successLight,
+          color: colors.success,
+        };
 
       default:
-        return "bg-gray-500/15 text-gray-400";
+        return {
+          backgroundColor: colors.inputBg,
+          color: colors.textSecondary,
+        };
     }
   };
 
+  // return (
+  //   <div
+  //     className="rounded-xl p-4 border transition-all duration-200 flex flex-col relative backdrop-blur-sm"
+  //     style={cardStyle}
+  //   >
+  //     {/* ─── HEADER ─── */}
+  //     <div className="flex items-start justify-between mb-3">
+  //       {/* LEFT LABELS */}
+  //       <div className="flex flex-wrap items-center gap-2 pr-2">
+  //         {/* PRIORITY */}
+  //         <span
+  //           className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider"
+  //           style={priorityStyle}
+  //         >
+  //           {priority}
+  //         </span>
+
+  //         {/* STATUS */}
+  //         <span
+  //           className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider"
+  //           style={getStatusBadgeStyle()}
+  //         >
+  //           {status.replace("_", " ")}
+  //         </span>
+
+  //         {/* TEAM */}
+  //         {task?.team && (
+  //           <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider truncate max-w-[100px]"
+  //             style={{
+  //               backgroundColor: colors.inputBg,
+  //               color: colors.textSecondary,
+  //             }}>
+  //             {task.team}
+  //           </span>
+  //         )}
+  //       </div>
+
+  //       {/* ACTION BUTTONS */}
+  //       <div className="flex items-center gap-1 shrink-0 bg-card border border-card-border/50 rounded-lg p-0.5 shadow-sm">
+  //         {/* VIEW */}
+  //         <button
+  //           onClick={(e) => {
+  //             e.stopPropagation();
+  //             onView?.(task);
+  //           }}
+  //           className="p-1.5 text-text-secondary hover:text-indigo-400 hover:bg-indigo-500/10 rounded-md transition-colors"
+  //           title="View Task"
+  //         >
+  //           <Eye size={14} />
+  //         </button>
+
+  //         {/* EDIT */}
+  //         <button
+  //           onClick={(e) => {
+  //             e.preventDefault();
+  //             e.stopPropagation();
+  //             onEdit?.();
+  //           }}
+  //           className="p-1.5 text-text-secondary hover:text-blue-400 hover:bg-blue-500/10 rounded-md transition-colors"
+  //           title="Edit Task"
+  //         >
+  //           <Edit2 size={14} />
+  //         </button>
+
+  //         {/* DELETE */}
+  //         <button
+  //           onClick={(e) => {
+  //             e.preventDefault();
+  //             e.stopPropagation();
+  //             onDelete?.();
+  //           }}
+  //           className="p-1.5 text-text-secondary hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
+  //           title="Delete Task"
+  //         >
+  //           <Trash2 size={14} />
+  //         </button>
+  //       </div>
+  //     </div>
+
+  //     {/* ─── TITLE ─── */}
+  //     <h4 className="text-sm font-bold text-text-primary mb-1 line-clamp-1">
+  //       {title}
+  //     </h4>
+
+  //     {/* ─── DESCRIPTION ─── */}
+  //     <p className="text-xs text-text-secondary line-clamp-2 mb-4 min-h-[32px]">
+  //       {description}
+  //     </p>
+
+  //     {/* ─── FOOTER ─── */}
+  //     <div className="flex items-center justify-between pt-3 border-t border-card-border/50 mt-auto">
+  //       {/* ASSIGNEE */}
+  //       <div className="flex items-center gap-2">
+  //         <div className="w-6 h-6 rounded-full bg-btn/20 text-btn flex items-center justify-center text-[10px] font-bold uppercase shrink-0">
+  //           {assigneeName !== "Unassigned"
+  //             ? assigneeName.charAt(0)
+  //             : "?"}
+  //         </div>
+
+  //         <span className="text-xs font-medium text-text-primary truncate max-w-[80px]">
+  //           {assigneeName}
+  //         </span>
+  //       </div>
+
+  //       {/* METRICS */}
+  //       <div className="flex items-center gap-3 text-text-secondary">
+  //         {/* DATE */}
+  //         <div className="flex items-center gap-1 text-xs" title="Due Date">
+  //           <Calendar size={12} />
+
+  //           <span
+  //             className={
+  //               task?.due_date &&
+  //                 new Date(task.due_date) < new Date()
+  //                 ? "text-red-400 font-semibold"
+  //                 : ""
+  //             }
+  //           >
+  //             {dueDate}
+  //           </span>
+  //         </div>
+
+  //         {/* COMMENTS */}
+  //         <div
+  //           className="flex items-center gap-1 text-xs cursor-pointer hover:text-btn transition-colors"
+  //           title="Comments"
+  //           onClick={() => onCommentClick?.(task)}
+  //         >
+  //           <MessageSquare size={12} />
+  //           <span>{commentCount}</span>
+  //         </div>
+
+  //         {/* ATTACHMENTS */}
+  //         <div
+  //           className="flex items-center gap-1 text-xs"
+  //           title="Attachments"
+  //         >
+  //           <Paperclip size={12} />
+  //           <span>{attachmentCount}</span>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
+
   return (
-    <div
-      className={`rounded-xl p-4 border transition-all duration-200 flex flex-col relative backdrop-blur-sm ${cardStyle}`}
-    >
-      {/* ─── HEADER ─── */}
-      <div className="flex items-start justify-between mb-3">
-        {/* LEFT LABELS */}
-        <div className="flex flex-wrap items-center gap-2 pr-2">
-          {/* PRIORITY */}
+  <div
+    className="rounded-xl p-4 border transition-all duration-200 flex flex-col relative backdrop-blur-sm"
+    style={cardStyle}
+  >
+    {/* HEADER */}
+    <div className="flex items-start justify-between mb-3">
+      <div className="flex flex-wrap items-center gap-2 pr-2">
+        {/* Priority */}
+        <span
+          className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider"
+          style={priorityStyle}
+        >
+          {priority}
+        </span>
+
+        {/* Status */}
+        <span
+          className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider"
+          style={getStatusBadgeStyle()}
+        >
+          {status.replace("_", " ")}
+        </span>
+
+        {/* Team */}
+        {task?.team && (
           <span
-            className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${priorityStyle}`}
+            className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider truncate max-w-[100px]"
+            style={{
+              backgroundColor: colors.inputBg,
+              color: colors.textSecondary,
+            }}
           >
-            {priority}
+            {task.team}
           </span>
-
-          {/* STATUS */}
-          <span
-            className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${getStatusBadgeStyle()}`}
-          >
-            {status.replace("_", " ")}
-          </span>
-
-          {/* TEAM */}
-          {task?.team && (
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-input text-text-secondary uppercase tracking-wider truncate max-w-[100px]">
-              {task.team}
-            </span>
-          )}
-        </div>
-
-        {/* ACTION BUTTONS */}
-        <div className="flex items-center gap-1 shrink-0 bg-card border border-card-border/50 rounded-lg p-0.5 shadow-sm">
-          {/* VIEW */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onView?.(task);
-            }}
-            className="p-1.5 text-text-secondary hover:text-indigo-400 hover:bg-indigo-500/10 rounded-md transition-colors"
-            title="View Task"
-          >
-            <Eye size={14} />
-          </button>
-
-          {/* EDIT */}
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onEdit?.();
-            }}
-            className="p-1.5 text-text-secondary hover:text-blue-400 hover:bg-blue-500/10 rounded-md transition-colors"
-            title="Edit Task"
-          >
-            <Edit2 size={14} />
-          </button>
-
-          {/* DELETE */}
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onDelete?.();
-            }}
-            className="p-1.5 text-text-secondary hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
-            title="Delete Task"
-          >
-            <Trash2 size={14} />
-          </button>
-        </div>
+        )}
       </div>
 
-      {/* ─── TITLE ─── */}
-      <h4 className="text-sm font-bold text-text-primary mb-1 line-clamp-1">
-        {title}
-      </h4>
+      {/* Actions */}
+      <div
+        className="flex items-center gap-1 shrink-0 rounded-lg p-0.5 shadow-sm"
+        style={{
+          backgroundColor: colors.cardBg,
+          border: `1px solid ${colors.cardBorder}`,
+        }}
+      >
+        {/* View */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onView?.(task);
+          }}
+          className="p-1.5 rounded-md transition-colors"
+          style={{ color: colors.textSecondary }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = colors.blue;
+            e.currentTarget.style.backgroundColor = colors.blueLight;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = colors.textSecondary;
+            e.currentTarget.style.backgroundColor = "transparent";
+          }}
+          title="View Task"
+        >
+          <Eye size={14} />
+        </button>
 
-      {/* ─── DESCRIPTION ─── */}
-      <p className="text-xs text-text-secondary line-clamp-2 mb-4 min-h-[32px]">
-        {description}
-      </p>
+        {/* Edit */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onEdit?.();
+          }}
+          className="p-1.5 rounded-md transition-colors"
+          style={{ color: colors.textSecondary }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = colors.blue;
+            e.currentTarget.style.backgroundColor = colors.blueLight;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = colors.textSecondary;
+            e.currentTarget.style.backgroundColor = "transparent";
+          }}
+          title="Edit Task"
+        >
+          <Edit2 size={14} />
+        </button>
 
-      {/* ─── FOOTER ─── */}
-      <div className="flex items-center justify-between pt-3 border-t border-card-border/50 mt-auto">
-        {/* ASSIGNEE */}
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-btn/20 text-btn flex items-center justify-center text-[10px] font-bold uppercase shrink-0">
-            {assigneeName !== "Unassigned"
-              ? assigneeName.charAt(0)
-              : "?"}
-          </div>
+        {/* Delete */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDelete?.();
+          }}
+          className="p-1.5 rounded-md transition-colors"
+          style={{ color: colors.textSecondary }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = colors.danger;
+            e.currentTarget.style.backgroundColor = colors.dangerLight;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = colors.textSecondary;
+            e.currentTarget.style.backgroundColor = "transparent";
+          }}
+          title="Delete Task"
+        >
+          <Trash2 size={14} />
+        </button>
+      </div>
+    </div>
 
-          <span className="text-xs font-medium text-text-primary truncate max-w-[80px]">
-            {assigneeName}
+    {/* Title */}
+    <h4
+      className="text-sm font-bold mb-1 line-clamp-1"
+      style={{ color: colors.textPrimary }}
+    >
+      {title}
+    </h4>
+
+    {/* Description */}
+    <p
+      className="text-xs line-clamp-2 mb-4 min-h-[32px]"
+      style={{ color: colors.textSecondary }}
+    >
+      {description}
+    </p>
+
+    {/* Footer */}
+    <div
+      className="flex items-center justify-between pt-3 mt-auto"
+      style={{
+        borderTop: `1px solid ${colors.cardBorder}`,
+      }}
+    >
+      {/* Assignee */}
+      <div className="flex items-center gap-2">
+        <div
+          className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold uppercase shrink-0"
+          style={{
+            backgroundColor: colors.accentLight,
+            color: colors.accentDark,
+          }}
+        >
+          {assigneeName !== "Unassigned"
+            ? assigneeName.charAt(0)
+            : "?"}
+        </div>
+
+        <span
+          className="text-xs font-medium truncate max-w-[80px]"
+          style={{ color: colors.textPrimary }}
+        >
+          {assigneeName}
+        </span>
+      </div>
+
+      {/* Metrics */}
+      <div
+        className="flex items-center gap-3"
+        style={{ color: colors.textSecondary }}
+      >
+        {/* Due Date */}
+        <div className="flex items-center gap-1 text-xs">
+          <Calendar size={12} />
+
+          <span
+            style={{
+              color:
+                task?.due_date &&
+                new Date(task.due_date) < new Date()
+                  ? colors.danger
+                  : colors.textSecondary,
+              fontWeight:
+                task?.due_date &&
+                new Date(task.due_date) < new Date()
+                  ? 600
+                  : 400,
+            }}
+          >
+            {dueDate}
           </span>
         </div>
 
-        {/* METRICS */}
-        <div className="flex items-center gap-3 text-text-secondary">
-          {/* DATE */}
-          <div className="flex items-center gap-1 text-xs" title="Due Date">
-            <Calendar size={12} />
+        {/* Comments */}
+        <div
+          className="flex items-center gap-1 text-xs cursor-pointer transition-colors"
+          onClick={() => onCommentClick?.(task)}
+          style={{ color: colors.textSecondary }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = colors.accentDark;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = colors.textSecondary;
+          }}
+        >
+          <MessageSquare size={12} />
+          <span>{commentCount}</span>
+        </div>
 
-            <span
-              className={
-                task?.due_date &&
-                new Date(task.due_date) < new Date()
-                  ? "text-red-400 font-semibold"
-                  : ""
-              }
-            >
-              {dueDate}
-            </span>
-          </div>
-
-          {/* COMMENTS */}
-          <div
-            className="flex items-center gap-1 text-xs cursor-pointer hover:text-btn transition-colors"
-            title="Comments"
-            onClick={() => onCommentClick?.(task)}
-          >
-            <MessageSquare size={12} />
-            <span>{commentCount}</span>
-          </div>
-
-          {/* ATTACHMENTS */}
-          <div
-            className="flex items-center gap-1 text-xs"
-            title="Attachments"
-          >
-            <Paperclip size={12} />
-            <span>{attachmentCount}</span>
-          </div>
+        {/* Attachments */}
+        <div className="flex items-center gap-1 text-xs">
+          <Paperclip size={12} />
+          <span>{attachmentCount}</span>
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

@@ -1,9 +1,8 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 // import React, { lazy, Suspense, useState } from "react";
 // import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
 // import Sidebar from "./components/ui/Sidebar";
 // import Navbar from "./components/ui/Navbar";
-
 // // ─── Lazy-loaded pages (code-split per route) ─────────────────────
 // const Dashboard = lazy(() => import("./pages/Dashboard"));
 // const Employees = lazy(() => import("./pages/Employees"));
@@ -18,7 +17,6 @@
 // const Settings = lazy(() => import("./pages/Settings"));
 // const Resignations = lazy(() => import("./pages/Resignations"));
 // const Recruitment = lazy(() => import("./pages/Recruitment"));
-
 // const PageLoader = () => (
 //   <div className="flex-1 flex items-center justify-center py-32">
 //     <div className="flex flex-col items-center gap-3">
@@ -27,18 +25,15 @@
 //     </div>
 //   </div>
 // );
-
 // // ─── Shared layout — Sidebar + Navbar wrapping page content ───────
 // // const AppLayout = ({ children }) => {
 // //   const [sidebarOpen, setSidebarOpen] = useState(true);
-
 // //   return (
 // //     <div className="min-h-screen flex bg-gradient-to-b from-primary to-secondary text-text-primary">
 // //       <Sidebar
 // //         isOpen={sidebarOpen}
 // //         toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
 // //       />
-
 // //       <main className="flex-1 py-6 px-8 overflow-y-auto">
 // //         <Navbar />
 // //         <Suspense fallback={<PageLoader />}>{children}</Suspense>
@@ -46,19 +41,15 @@
 // //     </div>
 // //   );
 // // };
-
 // const AppLayout = ({ children }) => {
 //   // Start closed on mobile, open on desktop
 //   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
-
 //   const toggleSidebar = () => {
 //     setSidebarOpen(!sidebarOpen);
 //   };
-
 //   return (
 //     <div className="h-screen flex bg-linear-to-b from-primary to-secondary text-text-primary overflow-hidden">
 //       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
-
 //       <main className="flex-1 py-4 px-4 md:py-6 md:px-8 overflow-y-auto no-scrollbar">
 //         <Navbar toggleSidebar={toggleSidebar} />
 //         <Suspense fallback={<PageLoader />}>{children}</Suspense>
@@ -66,7 +57,6 @@
 //     </div>
 //   );
 // };
-
 // function App() {
 //   return (
 //     <BrowserRouter>
@@ -192,23 +182,20 @@
 //             </AppLayout>
 //           }
 //         />
-
 //         {/* Catch-all — redirect to dashboard */}
 //         <Route path="*" element={<Dashboard />} />
 //       </Routes>
 //     </BrowserRouter>
 //   );
 // }
-
 // export default App;
-
 import React, { lazy, Suspense, useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 import Sidebar from "./components/ui/Sidebar";
-import Navbar from "./components/ui/Navbar";
 import Sonner from "./components/ui/Sonner";
-import { Outlet } from "react-router-dom";
+import Navbar from "./components/ui/Navbar";
+
 
 // ─── Loading Spinner ───
 const PageLoader = () => (
@@ -232,7 +219,14 @@ const AppLayout = () => {
   };
 
   return (
-    <div className="h-screen flex bg-linear-to-b from-primary to-secondary text-text-primary overflow-hidden">
+    // <div className="h-screen flex bg-linear-to-b from-primary to-secondary text-text-primary overflow-hidden">
+    <div
+      className="h-screen flex overflow-hidden"
+      style={{
+        background: colors.pageGradient,
+        color: colors.textPrimary,
+      }}
+    >
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
       <main className="flex-1 py-4 px-4 md:py-6 md:px-8 overflow-y-auto relative">
         <Navbar toggleSidebar={toggleSidebar} />
@@ -253,6 +247,7 @@ import ROUTES from "./constants/Routes";
 import AnnouncementsPage from "./pages/Announcements";
 import ResetPassword from "./pages/ResetPassword";
 import UpdatePassword from "./pages/UpdatePassword";
+import colors from "./constants/colors";
 
 // ─── Lazy-loaded Public Pages ───
 const WelcomePage = lazy(() => import("./pages/WelcomePage"));

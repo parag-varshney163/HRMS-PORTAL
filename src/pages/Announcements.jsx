@@ -8,6 +8,7 @@ import useNotification from "../hooks/useNotification.jsx";
 import axiosInstance from "../api/axiosInstance";
 // Components
 import Button from "../components/ui/Button";
+import colors from "../constants/colors.js";
 
 
 const AnnouncementsPage = () => {
@@ -220,133 +221,316 @@ const AnnouncementsPage = () => {
     }
   };
 
+  // return (
+  //   <div className="py-2 pb-6 w-full h-full">
+  //     {/* ─── Header ─── */}
+  //     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+  //       <div>
+  //         <h2 className="text-2xl font-bold text-text-primary">
+  //           Company <span className="text-accent">Announcements</span>
+  //         </h2>
+  //         <p className="text-sm text-text-secondary mt-1">
+  //           Manage templates and broadcast messages to employees.
+  //         </p>
+  //       </div>
+  //       <div className="flex gap-3 w-full sm:w-auto">
+  //         {activeTab === "templates" ? (
+  //           <Button
+  //             variant="outline"
+  //             icon={Plus}
+  //             onClick={() => {
+  //               setEditingTemplate(null);
+  //               setTemplateModalOpen(true);
+  //             }}
+  //           >
+  //             Create Template
+  //           </Button>
+  //         ) : (
+  //           <Button
+  //             variant="custom"
+  //             bg="#3B82F6"
+  //             text="#FFF"
+  //             icon={Megaphone}
+  //             onClick={() => setPublishModalOpen(true)}
+  //           >
+  //             Send Announcement
+  //           </Button>
+  //         )}
+  //       </div>
+  //     </div>
+
+  //     {/* ─── Tabs ─── */}
+  //     <div className="flex gap-6 border-b border-card-border mb-6">
+  //       <button
+  //         onClick={() => setActiveTab("history")}
+  //         className={`pb-3 text-sm font-medium transition-colors ${activeTab === "history"
+  //             ? "text-accent border-b-2 border-accent"
+  //             : "text-text-secondary hover:text-text-primary"
+  //           }`}
+  //       >
+  //         Sent Announcements
+  //       </button>
+  //       <button
+  //         onClick={() => setActiveTab("templates")}
+  //         className={`pb-3 text-sm font-medium transition-colors ${activeTab === "templates"
+  //             ? "text-accent border-b-2 border-accent"
+  //             : "text-text-secondary hover:text-text-primary"
+  //           }`}
+  //       >
+  //         Message Templates
+  //       </button>
+  //     </div>
+
+  //     {/* ─── Content Area ─── */}
+  //     {loading ? (
+  //       <div className="py-20 text-center text-text-secondary animate-pulse">
+  //         Loading data...
+  //       </div>
+  //     ) : activeTab === "history" ? (
+  //       // 🔹 HISTORY VIEW
+  //       <div className="space-y-4">
+  //         {announcements.length > 0 ? (
+  //           announcements.map((announcement) => (
+  //             <AnnouncementCard
+  //               key={announcement._id}
+  //               data={announcement}
+  //               isAdminView={true}
+  //             />
+  //           ))
+  //         ) : (
+  //           <div className="text-center py-10 text-text-secondary">
+  //             No announcements sent yet.
+  //           </div>
+  //         )}
+  //       </div>
+  //     ) : (
+  //       // 🔹 TEMPLATES VIEW
+  //       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+  //         {templates.length > 0 ? (
+  //           templates.map((template) => (
+  //             <AnnouncementCard
+  //               key={template._id}
+  //               data={template}
+  //               isAdminView={true}
+  //               onEdit={() => handleOpenEditTemplate(template)}
+  //               onDelete={() => handleDeleteTemplate(template._id)}
+  //             />
+  //           ))
+  //         ) : (
+  //           <div className="col-span-full text-center py-10 text-text-secondary">
+  //             No templates created yet.
+  //           </div>
+  //         )}
+  //       </div>
+  //     )}
+
+  //     {/* ─── Modals ─── */}
+  //     <CreateTemplateModal
+  //       key={
+  //         isTemplateModalOpen
+  //           ? editingTemplate
+  //             ? editingTemplate._id
+  //             : "create"
+  //           : "closed"
+  //       }
+  //       open={isTemplateModalOpen}
+  //       onClose={handleCloseTemplateModal}
+  //       onSave={handleSaveTemplate}
+  //       initialData={editingTemplate}
+  //     />
+
+  //     <PublishAnnouncementModal
+  //       key={isPublishModalOpen ? "publish-open" : "publish-closed"}
+  //       open={isPublishModalOpen}
+  //       onClose={() => setPublishModalOpen(false)}
+  //       onPublish={handlePublishAnnouncement}
+  //       templates={templates}
+  //     />
+  //   </div>
+  // );
+
   return (
-    <div className="py-2 pb-6 w-full h-full">
-      {/* ─── Header ─── */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h2 className="text-2xl font-bold text-text-primary">
-            Company <span className="text-accent">Announcements</span>
-          </h2>
-          <p className="text-sm text-text-secondary mt-1">
-            Manage templates and broadcast messages to employees.
-          </p>
-        </div>
-        <div className="flex gap-3 w-full sm:w-auto">
-          {activeTab === "templates" ? (
-            <Button
-              variant="outline"
-              icon={Plus}
-              onClick={() => {
-                setEditingTemplate(null);
-                setTemplateModalOpen(true);
-              }}
-            >
-              Create Template
-            </Button>
-          ) : (
-            <Button
-              variant="custom"
-              bg="#3B82F6"
-              text="#FFF"
-              icon={Megaphone}
-              onClick={() => setPublishModalOpen(true)}
-            >
-              Send Announcement
-            </Button>
-          )}
-        </div>
+  <div className="py-2 pb-6 w-full h-full">
+    {/* ─── Header ─── */}
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+      <div>
+        <h2
+          className="text-2xl font-bold"
+          style={{ color: colors.textPrimary }}
+        >
+          Company <span style={{ color: colors.accent }}>Announcements</span>
+        </h2>
+
+        <p
+          className="text-sm mt-1"
+          style={{ color: colors.textSecondary }}
+        >
+          Manage templates and broadcast messages to employees.
+        </p>
       </div>
 
-      {/* ─── Tabs ─── */}
-      <div className="flex gap-6 border-b border-card-border mb-6">
-        <button
-          onClick={() => setActiveTab("history")}
-          className={`pb-3 text-sm font-medium transition-colors ${activeTab === "history"
-              ? "text-accent border-b-2 border-accent"
-              : "text-text-secondary hover:text-text-primary"
-            }`}
-        >
-          Sent Announcements
-        </button>
-        <button
-          onClick={() => setActiveTab("templates")}
-          className={`pb-3 text-sm font-medium transition-colors ${activeTab === "templates"
-              ? "text-accent border-b-2 border-accent"
-              : "text-text-secondary hover:text-text-primary"
-            }`}
-        >
-          Message Templates
-        </button>
+      <div className="flex gap-3 w-full sm:w-auto">
+        {activeTab === "templates" ? (
+          <Button
+            variant="custom"
+            bg={colors.blue}
+            text="#FFF"
+            icon={Plus}
+            onClick={() => {
+              setEditingTemplate(null);
+              setTemplateModalOpen(true);
+            }}
+          >
+            Create Template
+          </Button>
+        ) : (
+          <Button
+            variant="custom"
+            bg={colors.blue}
+            text="#FFF"
+            icon={Megaphone}
+            onClick={() => setPublishModalOpen(true)}
+          >
+            Send Announcement
+          </Button>
+        )}
       </div>
-
-      {/* ─── Content Area ─── */}
-      {loading ? (
-        <div className="py-20 text-center text-text-secondary animate-pulse">
-          Loading data...
-        </div>
-      ) : activeTab === "history" ? (
-        // 🔹 HISTORY VIEW
-        <div className="space-y-4">
-          {announcements.length > 0 ? (
-            announcements.map((announcement) => (
-              <AnnouncementCard
-                key={announcement._id}
-                data={announcement}
-                isAdminView={true}
-              />
-            ))
-          ) : (
-            <div className="text-center py-10 text-text-secondary">
-              No announcements sent yet.
-            </div>
-          )}
-        </div>
-      ) : (
-        // 🔹 TEMPLATES VIEW
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {templates.length > 0 ? (
-            templates.map((template) => (
-              <AnnouncementCard
-                key={template._id}
-                data={template}
-                isAdminView={true}
-                onEdit={() => handleOpenEditTemplate(template)}
-                onDelete={() => handleDeleteTemplate(template._id)}
-              />
-            ))
-          ) : (
-            <div className="col-span-full text-center py-10 text-text-secondary">
-              No templates created yet.
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ─── Modals ─── */}
-      <CreateTemplateModal
-        key={
-          isTemplateModalOpen
-            ? editingTemplate
-              ? editingTemplate._id
-              : "create"
-            : "closed"
-        }
-        open={isTemplateModalOpen}
-        onClose={handleCloseTemplateModal}
-        onSave={handleSaveTemplate}
-        initialData={editingTemplate}
-      />
-
-      <PublishAnnouncementModal
-        key={isPublishModalOpen ? "publish-open" : "publish-closed"}
-        open={isPublishModalOpen}
-        onClose={() => setPublishModalOpen(false)}
-        onPublish={handlePublishAnnouncement}
-        templates={templates}
-      />
     </div>
-  );
+
+    {/* ─── Tabs ─── */}
+    <div
+      className="flex gap-6 mb-6 border-b"
+      style={{ borderColor: colors.cardBorder }}
+    >
+      <button
+        onClick={() => setActiveTab("history")}
+        className="pb-3 text-sm font-medium transition-colors"
+        style={{
+          color:
+            activeTab === "history"
+              ? colors.accent
+              : colors.textSecondary,
+          borderBottom:
+            activeTab === "history"
+              ? `2px solid ${colors.accent}`
+              : "2px solid transparent",
+        }}
+        onMouseEnter={(e) => {
+          if (activeTab !== "history") {
+            e.currentTarget.style.color = colors.textPrimary;
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (activeTab !== "history") {
+            e.currentTarget.style.color = colors.textSecondary;
+          }
+        }}
+      >
+        Sent Announcements
+      </button>
+
+      <button
+        onClick={() => setActiveTab("templates")}
+        className="pb-3 text-sm font-medium transition-colors"
+        style={{
+          color:
+            activeTab === "templates"
+              ? colors.accent
+              : colors.textSecondary,
+          borderBottom:
+            activeTab === "templates"
+              ? `2px solid ${colors.accent}`
+              : "2px solid transparent",
+        }}
+        onMouseEnter={(e) => {
+          if (activeTab !== "templates") {
+            e.currentTarget.style.color = colors.textPrimary;
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (activeTab !== "templates") {
+            e.currentTarget.style.color = colors.textSecondary;
+          }
+        }}
+      >
+        Message Templates
+      </button>
+    </div>
+
+    {/* ─── Content Area ─── */}
+    {loading ? (
+      <div
+        className="py-20 text-center animate-pulse"
+        style={{ color: colors.textSecondary }}
+      >
+        Loading data...
+      </div>
+    ) : activeTab === "history" ? (
+      <div className="space-y-4">
+        {announcements.length > 0 ? (
+          announcements.map((announcement) => (
+            <AnnouncementCard
+              key={announcement._id}
+              data={announcement}
+              isAdminView={true}
+            />
+          ))
+        ) : (
+          <div
+            className="text-center py-10"
+            style={{ color: colors.textSecondary }}
+          >
+            No announcements sent yet.
+          </div>
+        )}
+      </div>
+    ) : (
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {templates.length > 0 ? (
+          templates.map((template) => (
+            <AnnouncementCard
+              key={template._id}
+              data={template}
+              isAdminView={true}
+              onEdit={() => handleOpenEditTemplate(template)}
+              onDelete={() => handleDeleteTemplate(template._id)}
+            />
+          ))
+        ) : (
+          <div
+            className="col-span-full text-center py-10"
+            style={{ color: colors.textSecondary }}
+          >
+            No templates created yet.
+          </div>
+        )}
+      </div>
+    )}
+
+    {/* ─── Modals ─── */}
+    <CreateTemplateModal
+      key={
+        isTemplateModalOpen
+          ? editingTemplate
+            ? editingTemplate._id
+            : "create"
+          : "closed"
+      }
+      open={isTemplateModalOpen}
+      onClose={handleCloseTemplateModal}
+      onSave={handleSaveTemplate}
+      initialData={editingTemplate}
+    />
+
+    <PublishAnnouncementModal
+      key={isPublishModalOpen ? "publish-open" : "publish-closed"}
+      open={isPublishModalOpen}
+      onClose={() => setPublishModalOpen(false)}
+      onPublish={handlePublishAnnouncement}
+      templates={templates}
+    />
+  </div>
+);
 };
 
 export default AnnouncementsPage;
