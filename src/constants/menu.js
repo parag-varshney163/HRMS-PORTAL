@@ -14,12 +14,12 @@ const MENU_ITEMS = [
     path: "/employees",
     allowedRoles: ["admin", "hr"],
   },
-  {
-    name: "Resignation",
-    icon: UserMinus,
-    path: "/resignations",
-    allowedRoles: ["admin", "hr", "employee","manager"],
-  },
+  // {
+  //   name: "Resignation",
+  //   icon: UserMinus,
+  //   path: "/resignations",
+  //   allowedRoles: ["admin", "hr", "employee","manager"],
+  // },
   {
     name: "Recruitment",
     icon: UserPlus,

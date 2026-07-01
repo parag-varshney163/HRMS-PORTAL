@@ -1,4 +1,5 @@
-import { X, Mail, Phone, Building2, Briefcase, Calendar, IndianRupee, MapPin, BadgeCheck, } from "lucide-react";
+import { X, Mail, Phone, Building2, Briefcase, Calendar, IndianRupee, MapPin, BadgeCheck, FileText, } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import React from "react";
 
 import colors from "../../constants/colors";
@@ -71,6 +72,7 @@ export default function ProfileModal({
   }
 
   const { user, employment, salaryAndLeave } = profileData;
+  const navigate = useNavigate();
 
   return (
     <div
@@ -85,63 +87,6 @@ export default function ProfileModal({
           border: `1px solid ${colors.cardBorder}`,
         }}
       >
-        {/* Header */}
-        {/* <div
-          className="p-6 flex justify-between items-center"
-          style={{
-            background: colors.gradientDiagonal,
-          }}
-        >
-          <div className="flex items-center gap-4">
-           
-            <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold"
-              style={{
-                background: "rgba(255,255,255,0.18)",
-                color: "#fff",
-              }}
-            >
-              {user?.firstName?.charAt(0)}
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-bold text-white">
-                {user?.firstName} {user?.lastName}
-              </h2>
-
-              <p className="text-white/80 text-sm">
-                {employment?.designation}
-              </p>
-
-              <div className="flex gap-2 mt-2">
-               
-                <span
-                  className="px-3 py-1 rounded-full text-xs font-semibold"
-                  style={{
-                    background: "rgba(255,255,255,0.18)",
-                    color: "#fff",
-                  }}
-                >
-                  {user?.role}
-                </span>
-
-                <span
-                  className="px-3 py-1 rounded-full text-xs font-semibold"
-                  style={{
-                    background: colors.successLight,
-                    color: colors.success,
-                  }}
-                >
-                  {user?.status}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <button onClick={onClose}>
-            <X className="text-white" />
-          </button>
-        </div> */}
         <div
           className="p-6 flex justify-between items-center border-b"
           style={{
@@ -200,7 +145,7 @@ export default function ProfileModal({
             </div>
           </div>
 
-          <button
+          {/* <button
             onClick={onClose}
             className="p-2 rounded-lg transition-colors"
             style={{ color: colors.textSecondary }}
@@ -212,7 +157,49 @@ export default function ProfileModal({
             }
           >
             <X size={22} />
-          </button>
+          </button> */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                onClose(); // Close the profile modal first
+
+                navigate("/resignations", {
+                  state: {
+                    employee: user,
+                    employment,
+                  },
+                });
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+              style={{
+                background: colors.warning,
+                color: "#fff",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = "0.9";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = "1";
+              }}
+            >
+              <FileText size={16} />
+              Resignation
+            </button>
+
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg transition-colors"
+              style={{ color: colors.textSecondary }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = colors.hover)
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "transparent")
+              }
+            >
+              <X size={22} />
+            </button>
+          </div>
         </div>
 
 

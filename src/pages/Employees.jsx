@@ -1,6 +1,7 @@
-import { Plus, Users, UserCheck, Clock, UserX } from "lucide-react";
+import { Plus, Users, UserCheck, Clock, UserX, FileText } from "lucide-react";
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { Wallet } from "lucide-react"; // Import Wallet icon
 
 import ManageCompensationModal from "../components/Employee/ManageCompansationModal.jsx";
@@ -106,6 +107,7 @@ const Employees = () => {
     useState("All Departments");
 
   // ─── HELPER: Map API Data to UI ───
+
   const mapApiToEmployee = (apiData) => ({
     _id: apiData.userId || apiData._id,
     empId: apiData.employeeId || apiData.userId,
@@ -375,288 +377,175 @@ const Employees = () => {
     if (selectedDepartment === "All Departments") return true;
     return emp.department === selectedDepartment;
   });
-
-  // return (
-  //   <div className="py-2 pb-6" style={{background:colors.pageGradient}}>
-  //     {/* Header */}
-  //     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-  //       <div>
-  //         <h2 className="text-xl sm:text-2xl font-bold text-text-primary">
-  //           Employee <span className="text-accent">Directory</span>
-  //         </h2>
-  //         <p className="text-xs sm:text-sm text-text-secondary mt-1">
-  //           Manage your organization's workforce
-  //         </p>
-  //       </div>
-  //       <div className="flex gap-2 w-full sm:w-auto">
-  //         <Button
-  //           variant="custom"
-  //           bg={colors.success}// Green color to distinguish from onboarding
-  //           text="#FFFFFF"
-  //           size="sm"
-  //           icon={Wallet}
-  //           onClick={() => setCompModalOpen(true)}
-  //           className="rounded-xl py-2.5 px-4 w-full sm:w-auto justify-center"
-  //         >
-  //           Compensation
-  //         </Button>
-
-  //         <Button
-  //           variant="custom"
-  //           bg={colors.blue}
-  //           text="#FFFFFF"
-  //           size="sm"
-  //           icon={Plus}
-  //           onClick={() => {
-  //             setEditingEmployee(null);
-  //             setModalOpen(true);
-  //           }}
-  //           className="rounded-xl py-2.5 px-4 w-full sm:w-auto justify-center"
-  //         >
-  //           Add Employee
-  //         </Button>
-  //       </div>
-  //     </div>
-
-  //     {/* Stats Grid */}
-  //     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-  //       {STATS_CONFIG.map((stat) => (
-  //         <StatsCard
-  //           key={stat.key}
-  //           icon={stat.icon}
-  //           iconBg={stat.iconBg}
-  //           iconColor={stat.iconColor}
-  //           value={loading ? "..." : stats[stat.key]}
-  //           label={stat.label}
-  //         />
-  //       ))}
-  //     </div>
-
-  //     {/* Filters & Search */}
-  //     <div className="bg-card border border-card-border rounded-xl p-4 mt-4 flex flex-col md:flex-row items-stretch md:items-center gap-3">
-  //       <div className="flex-1 w-full">
-  //         <SearchBar
-  //           placeholder="Search by name, email, or ID..."
-  //           value={searchQuery}
-  //           onChange={(val) => setSearchQuery(val)}
-  //         />
-  //       </div>
-  //     </div>
-
-  //     {/* Employees Grid */}
-  //     {loading ? (
-  //       <div className="flex justify-center items-center py-20">
-  //         <div className="text-text-secondary animate-pulse">
-  //           Loading directory...
-  //         </div>
-  //       </div>
-  //     ) : filteredEmployees.length === 0 ? (
-  //       <div className="flex flex-col items-center justify-center py-16 text-text-secondary">
-  //         <p className="text-lg font-medium">No employees found</p>
-  //         <p className="text-sm mt-1">Try adjusting your search or filters.</p>
-  //       </div>
-  //     ) : (
-  //       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-6">
-  //         {filteredEmployees.map((emp) => (
-  //           <ProfileCard
-  //             key={emp._id || emp.empId}
-  //             data={emp}
-  //             variant="employee"
-  //             onEdit={() => handleEditEmployee(emp)}
-  //             onDelete={() => handleDeleteEmployee(emp._id)}
-  //             onView={() => handleViewEmployee(emp)}
-  //             onDeactivate={() => handleDeactivateEmployee(emp)}
-  //           />
-  //         ))}
-  //       </div>
-  //     )}
-
-  //     <ManageCompensationModal
-  //       open={compModalOpen}
-  //       onClose={() => setCompModalOpen(false)}
-  //       onSuccess={() => {
-  //         // Optionally refresh data if your employee cards show salary/bank info
-  //         fetchEmployees();
-  //       }}
-  //     />
-
-  //     {/* Add/Edit Modal */}
-  //     <AddEmployeeModal
-  //       key={
-  //         modalOpen ? (editingEmployee ? editingEmployee._id : "add") : "closed"
-  //       }
-  //       open={modalOpen}
-  //       onClose={() => {
-  //         setModalOpen(false);
-  //         setEditingEmployee(null);
-  //       }}
-  //       onSave={handleSaveEmployee}
-  //       initialData={editingEmployee}
-  //     />
-  //     <EmployeeDetailsModal
-  //       open={detailsOpen}
-  //       onClose={() => setDetailsOpen(false)}
-  //       employee={selectedEmployee}
-  //     />
-  //   </div>
-  // );
-
+  const navigate = useNavigate();
   return (
-  <div
-    className="py-2 pb-6 min-h-screen"
-    style={{ background: colors.pageGradient }}
-  >
-    {/* Header */}
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-      <div>
-        <h2
-          className="text-xl sm:text-2xl font-bold"
-          style={{ color: colors.textPrimary }}
-        >
-          Employee <span style={{ color: colors.accent }}>Directory</span>
-        </h2>
-
-        <p
-          className="text-xs sm:text-sm mt-1"
-          style={{ color: colors.textSecondary }}
-        >
-          Manage your organization's workforce
-        </p>
-      </div>
-
-      <div className="flex gap-2 w-full sm:w-auto">
-        <Button
-          variant="custom"
-          bg={colors.success}
-          text="#FFFFFF"
-          size="sm"
-          icon={Wallet}
-          onClick={() => setCompModalOpen(true)}
-          className="rounded-xl py-2.5 px-4 w-full sm:w-auto justify-center"
-        >
-          Compensation
-        </Button>
-
-        <Button
-          variant="custom"
-          bg={colors.blue}
-          text="#FFFFFF"
-          size="sm"
-          icon={Plus}
-          onClick={() => {
-            setEditingEmployee(null);
-            setModalOpen(true);
-          }}
-          className="rounded-xl py-2.5 px-4 w-full sm:w-auto justify-center"
-        >
-          Add Employee
-        </Button>
-      </div>
-    </div>
-
-    {/* Stats Grid */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-      {STATS_CONFIG.map((stat) => (
-        <StatsCard
-          key={stat.key}
-          icon={stat.icon}
-          iconBg={stat.iconBg}
-          iconColor={stat.iconColor}
-          value={loading ? "..." : stats[stat.key]}
-          label={stat.label}
-        />
-      ))}
-    </div>
-
-    {/* Filters & Search */}
     <div
-      className="rounded-xl p-4 mt-4 flex flex-col md:flex-row items-stretch md:items-center gap-3"
-      style={{
-        background: colors.cardBg,
-        border: `1px solid ${colors.cardBorder}`,
-      }}
+      className="py-2 pb-6 min-h-screen"
+      style={{ background: colors.pageGradient }}
     >
-      <div className="flex-1 w-full">
-        <SearchBar
-          placeholder="Search by name, email, or ID..."
-          value={searchQuery}
-          onChange={(val) => setSearchQuery(val)}
-        />
-      </div>
-    </div>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2
+            className="text-xl sm:text-2xl font-bold"
+            style={{ color: colors.textPrimary }}
+          >
+            Employee <span style={{ color: colors.accent }}>Directory</span>
+          </h2>
 
-    {/* Employees Grid */}
-    {loading ? (
-      <div className="flex justify-center items-center py-20">
-        <div
-          className="animate-pulse"
-          style={{ color: colors.textSecondary }}
-        >
-          Loading directory...
+          <p
+            className="text-xs sm:text-sm mt-1"
+            style={{ color: colors.textSecondary }}
+          >
+            Manage your organization's workforce
+          </p>
+        </div>
+
+        <div className="flex gap-2 w-full sm:w-auto">
+          {/* Resignation Button */}
+          <Button
+            variant="custom"
+            bg={colors.warning}
+            text="#FFFFFF"
+            size="sm"
+            icon={FileText}
+            onClick={() => navigate("/resignations")}
+            className="rounded-xl py-2.5 px-4 w-full sm:w-auto justify-center"
+          >
+            Resignations
+          </Button>
+          <Button
+            variant="custom"
+            bg={colors.success}
+            text="#FFFFFF"
+            size="sm"
+            icon={Wallet}
+            onClick={() => setCompModalOpen(true)}
+            className="rounded-xl py-2.5 px-4 w-full sm:w-auto justify-center"
+          >
+            Compensation
+          </Button>
+
+          <Button
+            variant="custom"
+            bg={colors.blue}
+            text="#FFFFFF"
+            size="sm"
+            icon={Plus}
+            onClick={() => {
+              setEditingEmployee(null);
+              setModalOpen(true);
+            }}
+            className="rounded-xl py-2.5 px-4 w-full sm:w-auto justify-center"
+          >
+            Add Employee
+          </Button>
         </div>
       </div>
-    ) : filteredEmployees.length === 0 ? (
-      <div
-        className="flex flex-col items-center justify-center py-16"
-        style={{ color: colors.textSecondary }}
-      >
-        <p
-          className="text-lg font-medium"
-          style={{ color: colors.textPrimary }}
-        >
-          No employees found
-        </p>
 
-        <p className="text-sm mt-1">
-          Try adjusting your search or filters.
-        </p>
-      </div>
-    ) : (
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-6">
-        {filteredEmployees.map((emp) => (
-          <ProfileCard
-            key={emp._id || emp.empId}
-            data={emp}
-            variant="employee"
-            onEdit={() => handleEditEmployee(emp)}
-            onDelete={() => handleDeleteEmployee(emp._id)}
-            onView={() => handleViewEmployee(emp)}
-            onDeactivate={() => handleDeactivateEmployee(emp)}
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+        {STATS_CONFIG.map((stat) => (
+          <StatsCard
+            key={stat.key}
+            icon={stat.icon}
+            iconBg={stat.iconBg}
+            iconColor={stat.iconColor}
+            value={loading ? "..." : stats[stat.key]}
+            label={stat.label}
           />
         ))}
       </div>
-    )}
 
-    <ManageCompensationModal
-      open={compModalOpen}
-      onClose={() => setCompModalOpen(false)}
-      onSuccess={fetchEmployees}
-    />
+      {/* Filters & Search */}
+      <div
+        className="rounded-xl p-4 mt-4 flex flex-col md:flex-row items-stretch md:items-center gap-3"
+        style={{
+          background: colors.cardBg,
+          border: `1px solid ${colors.cardBorder}`,
+        }}
+      >
+        <div className="flex-1 w-full">
+          <SearchBar
+            placeholder="Search by name, email, or ID..."
+            value={searchQuery}
+            onChange={(val) => setSearchQuery(val)}
+          />
+        </div>
+      </div>
 
-    <AddEmployeeModal
-      key={
-        modalOpen
-          ? editingEmployee
-            ? editingEmployee._id
-            : "add"
-          : "closed"
-      }
-      open={modalOpen}
-      onClose={() => {
-        setModalOpen(false);
-        setEditingEmployee(null);
-      }}
-      onSave={handleSaveEmployee}
-      initialData={editingEmployee}
-    />
+      {/* Employees Grid */}
+      {loading ? (
+        <div className="flex justify-center items-center py-20">
+          <div
+            className="animate-pulse"
+            style={{ color: colors.textSecondary }}
+          >
+            Loading directory...
+          </div>
+        </div>
+      ) : filteredEmployees.length === 0 ? (
+        <div
+          className="flex flex-col items-center justify-center py-16"
+          style={{ color: colors.textSecondary }}
+        >
+          <p
+            className="text-lg font-medium"
+            style={{ color: colors.textPrimary }}
+          >
+            No employees found
+          </p>
 
-    <EmployeeDetailsModal
-      open={detailsOpen}
-      onClose={() => setDetailsOpen(false)}
-      employee={selectedEmployee}
-    />
-  </div>
-);
+          <p className="text-sm mt-1">
+            Try adjusting your search or filters.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-6">
+          {filteredEmployees.map((emp) => (
+            <ProfileCard
+              key={emp._id || emp.empId}
+              data={emp}
+              variant="employee"
+              onEdit={() => handleEditEmployee(emp)}
+              onDelete={() => handleDeleteEmployee(emp._id)}
+              onView={() => handleViewEmployee(emp)}
+              onDeactivate={() => handleDeactivateEmployee(emp)}
+            />
+          ))}
+        </div>
+      )}
+
+      <ManageCompensationModal
+        open={compModalOpen}
+        onClose={() => setCompModalOpen(false)}
+        onSuccess={fetchEmployees}
+      />
+
+      <AddEmployeeModal
+        key={
+          modalOpen
+            ? editingEmployee
+              ? editingEmployee._id
+              : "add"
+            : "closed"
+        }
+        open={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          setEditingEmployee(null);
+        }}
+        onSave={handleSaveEmployee}
+        initialData={editingEmployee}
+      />
+
+      <EmployeeDetailsModal
+        open={detailsOpen}
+        onClose={() => setDetailsOpen(false)}
+        employee={selectedEmployee}
+      />
+    </div>
+  );
 };
 
 export default Employees;

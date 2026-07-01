@@ -1,288 +1,3 @@
-// /* eslint-disable react-hooks/set-state-in-effect */
-// import React, { useState, useRef, useEffect } from "react";
-// import { X, UploadCloud } from "lucide-react";
-// import Button from "../ui/Button";
-// export default function TaskModal({ open, onClose, onSubmit, initialData }) {
-//   const modalRef = useRef(null);
-//   // ─── STATE ───
-//   // 🚨 CRITICAL FIX: Added `assignTo` to the state to satisfy backend validation
-//   const [form, setForm] = useState({
-//     title: "",
-//     description: "",
-//     assignTo: "", // Will hold the MongoDB _id of the user
-//     priority: "high",
-//     department: "",
-//     team: "Frontend",
-//     status: "to_do",
-//     due_date: "",
-//   });
-//   const [file, setFile] = useState(null);
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const isEditMode = !!initialData;
-//   // ─── POPULATE DATA ON EDIT ───
-//   useEffect(() => {
-//     if (initialData) {
-//       setForm({
-//         title: initialData.title || "",
-//         description: initialData.description || "",
-//         // 🚨 Handle nested assignTo object safely during edit mode
-//         assignTo: initialData.assignTo?._id || initialData.assignTo || "",
-//         priority: initialData.priority || "high",
-//         department: initialData.department || "",
-//         team: initialData.team || "",
-//         status: initialData.status || "to_do",
-//         due_date: initialData.due_date
-//           ? new Date(initialData.due_date).toISOString().split("T")[0]
-//           : "",
-//       });
-//     } else {
-//       setForm({
-//         title: "",
-//         description: "",
-//         assignTo: "", // Reset on close
-//         priority: "high",
-//         department: "",
-//         team: "Frontend",
-//         status: "to_do",
-//         due_date: "",
-//       });
-//     }
-//     setFile(null);
-//   }, [initialData, open]);
-//   // ─── HANDLE CLICK OUTSIDE ───
-//   useEffect(() => {
-//     const handleClickOutside = (event) => {
-//       if (modalRef.current && !modalRef.current.contains(event.target)) {
-//         onClose();
-//       }
-//     };
-//     if (open) document.addEventListener("mousedown", handleClickOutside);
-//     return () => document.removeEventListener("mousedown", handleClickOutside);
-//   }, [open, onClose]);
-//   // ─── HANDLERS ───
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setForm((prev) => ({ ...prev, [name]: value }));
-//   };
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setIsSubmitting(true);
-//     const formData = new FormData();
-//     Object.keys(form).forEach((key) => {
-//       // Only append if the value exists
-//       if (form[key]) formData.append(key, form[key]);
-//     });
-//     if (file) {
-//       formData.append("attachments", file);
-//     }
-//     const result = await onSubmit(formData, initialData?._id);
-//     setIsSubmitting(false);
-//     if (result?.success) {
-//       onClose();
-//     }
-//   };
-//   if (!open) return null;
-//   return (
-//     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity animate-in fade-in duration-200 p-4">
-//       <div
-//         ref={modalRef}
-//         className="relative w-full max-w-lg bg-card border border-card-border rounded-2xl shadow-2xl p-6 flex flex-col max-h-[90vh]"
-//       >
-//         {/* Header */}
-//         <div className="flex items-center justify-between mb-6 shrink-0">
-//           <h2 className="text-xl font-bold text-text-primary">
-//             {isEditMode ? "Edit Task" : "Create New Task"}
-//           </h2>
-//           <button
-//             onClick={onClose}
-//             disabled={isSubmitting}
-//             className="text-text-secondary hover:text-text-primary transition-colors bg-transparent border-none cursor-pointer disabled:opacity-50"
-//           >
-//             <X size={20} />
-//           </button>
-//         </div>
-//         {/* Scrollable Form */}
-//         <div className="overflow-y-auto custom-scrollbar pr-2 pb-2">
-//           <form id="task-form" onSubmit={handleSubmit} className="space-y-5">
-//             <div>
-//               <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                 Task Title <span className="text-red-500">*</span>
-//               </label>
-//               <input
-//                 name="title"
-//                 required
-//                 value={form.title}
-//                 onChange={handleChange}
-//                 type="text"
-//                 placeholder="e.g. Update Login UI"
-//                 className="w-full bg-input border border-card-border rounded-lg p-2.5 text-text-primary text-sm focus:outline-none focus:border-btn transition-colors"
-//               />
-//             </div>
-//             <div>
-//               <label className="block text-sm font-semibold text-text-secondary mb-1.5">
-//                 Description
-//               </label>
-//               <textarea
-//                 name="description"
-//                 value={form.description}
-//                 onChange={handleChange}
-//                 rows={3}
-//                 placeholder="Enter task details..."
-//                 className="w-full bg-input border border-card-border rounded-lg p-2.5 text-text-primary text-sm focus:outline-none focus:border-btn resize-none transition-colors"
-//               />
-//             </div>
-//             {/* 🚨 CRITICAL FIX: ADDED ASSIGN TO FIELD */}
-//             <div>
-//               <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                 Assign To (User ID) <span className="text-red-500">*</span>
-//               </label>
-//               <input
-//                 name="assignTo"
-//                 required
-//                 value={form.assignTo}
-//                 onChange={handleChange}
-//                 type="text"
-//                 placeholder="Paste MongoDB User ID (e.g. 64bfc...)"
-//                 className="w-full bg-input border border-card-border rounded-lg p-2.5 text-text-primary text-sm focus:outline-none focus:border-btn transition-colors"
-//               />
-//               <p className="text-[10px] text-text-secondary mt-1">
-//                 temporary until we did not create all employee list from the
-//                 API.
-//               </p>
-//             </div>
-//             <div className="grid grid-cols-2 gap-4">
-//               <div>
-//                 <label className="block text-sm font-semibold text-text-secondary mb-1.5">
-//                   Priority
-//                 </label>
-//                 <select
-//                   name="priority"
-//                   value={form.priority}
-//                   onChange={handleChange}
-//                   className="w-full bg-input border border-card-border rounded-lg p-2.5 text-text-primary text-sm focus:outline-none focus:border-btn cursor-pointer"
-//                 >
-//                   <option value="high">High</option>
-//                   <option value="medium">Medium</option>
-//                   <option value="low">Low</option>
-//                 </select>
-//               </div>
-//               <div>
-//                 <label className="block text-sm font-semibold text-text-secondary mb-1.5">
-//                   Status
-//                 </label>
-//                 <select
-//                   name="status"
-//                   value={form.status}
-//                   onChange={handleChange}
-//                   className="w-full bg-input border border-card-border rounded-lg p-2.5 text-text-primary text-sm focus:outline-none focus:border-btn cursor-pointer"
-//                 >
-//                   <option value="to_do">To Do</option>
-//                   <option value="in_progress">In Progress</option>
-//                   <option value="under_review">Under Review</option>
-//                   <option value="done">Done</option>
-//                 </select>
-//               </div>
-//             </div>
-//             <div className="grid grid-cols-2 gap-4">
-//               <div>
-//                 <label className="block text-sm font-semibold text-text-secondary mb-1.5">
-//                   Department (ID)
-//                 </label>
-//                 <input
-//                   name="department"
-//                   value={form.department}
-//                   onChange={handleChange}
-//                   type="text"
-//                   placeholder="Dept ID..."
-//                   className="w-full bg-input border border-card-border rounded-lg p-2.5 text-text-primary text-sm focus:outline-none focus:border-btn transition-colors"
-//                 />
-//               </div>
-//               <div>
-//                 <label className="block text-sm font-semibold text-text-secondary mb-1.5">
-//                   Team
-//                 </label>
-//                 <input
-//                   name="team"
-//                   value={form.team}
-//                   onChange={handleChange}
-//                   type="text"
-//                   placeholder="e.g. Frontend"
-//                   className="w-full bg-input border border-card-border rounded-lg p-2.5 text-text-primary text-sm focus:outline-none focus:border-btn transition-colors"
-//                 />
-//               </div>
-//             </div>
-//             <div>
-//               <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                 Due Date <span className="text-red-500">*</span>
-//               </label>
-//               <input
-//                 name="due_date"
-//                 required
-//                 value={form.due_date}
-//                 onChange={handleChange}
-//                 type="date"
-//                 className="w-full bg-input border border-card-border rounded-lg p-2.5 text-text-primary text-sm focus:outline-none focus:border-btn [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-50"
-//               />
-//             </div>
-//             {/* File Upload Zone */}
-//             <div>
-//               <label className="block text-sm font-semibold text-text-secondary mb-1.5">
-//                 Attachments (Optional)
-//               </label>
-//               <div className="relative border-2 border-dashed border-card-border rounded-xl p-4 text-center hover:border-btn/50 transition-colors bg-input/30 group">
-//                 <input
-//                   type="file"
-//                   onChange={(e) => setFile(e.target.files[0])}
-//                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-//                 />
-//                 <div className="flex flex-col items-center gap-1">
-//                   <UploadCloud
-//                     size={20}
-//                     className="text-text-secondary group-hover:text-btn transition-colors"
-//                   />
-//                   <span className="text-xs text-text-secondary">
-//                     {file ? (
-//                       <span className="text-text-primary font-medium">
-//                         {file.name}
-//                       </span>
-//                     ) : (
-//                       "Click or drag file to attach"
-//                     )}
-//                   </span>
-//                 </div>
-//               </div>
-//             </div>
-//           </form>
-//         </div>
-//         {/* Footer Buttons */}
-//         <div className="flex items-center gap-3 mt-6 pt-4 border-t border-card-border shrink-0">
-//           <button
-//             type="button"
-//             onClick={onClose}
-//             disabled={isSubmitting}
-//             className="flex-1 py-2.5 rounded-xl border border-card-border text-sm font-medium text-text-primary hover:bg-input transition-colors bg-transparent cursor-pointer disabled:opacity-50"
-//           >
-//             Cancel
-//           </button>
-//           <Button
-//             type="submit"
-//             form="task-form"
-//             disabled={isSubmitting}
-//             className="flex-1 justify-center py-2.5 font-medium"
-//           >
-//             {isSubmitting
-//               ? "Saving..."
-//               : isEditMode
-//                 ? "Update Task"
-//                 : "Create Task"}
-//           </Button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-/* eslint-disable react-hooks/set-state-in-effect */
-/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useRef, useEffect } from "react";
 import { X, UploadCloud, Loader2 } from "lucide-react";
 
@@ -292,7 +7,7 @@ import colors from "../../constants/colors";
 import Button from "../ui/Button";
 
 
-export default function TaskModal({ open, onClose, onSubmit, initialData }) {
+export default function TaskModal({ open, onClose, onSubmit, initialData, isEmployee }) {
   const modalRef = useRef(null);
 
   // ─── STATE ───
@@ -316,6 +31,7 @@ export default function TaskModal({ open, onClose, onSubmit, initialData }) {
   const [loadingData, setLoadingData] = useState(false);
 
   const isEditMode = !!initialData;
+  const employeeEditMode = isEmployee && isEditMode;
 
   // ─── FETCH EMPLOYEES & DEPARTMENTS ───
   useEffect(() => {
@@ -387,30 +103,69 @@ export default function TaskModal({ open, onClose, onSubmit, initialData }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   // Quick validation check for custom dropdowns
+  //   if (!form.assignTo) {
+  //     alert("Please select an employee.");
+  //     return;
+  //   }
+  //   if (!form.department) {
+  //     alert("Please select a department.");
+  //     return;
+  //   }
+
+  //   setIsSubmitting(true);
+  //   const formData = new FormData();
+  //   Object.keys(form).forEach((key) => {
+  //     if (form[key]) formData.append(key, form[key]);
+  //   });
+
+  //   if (file) formData.append("attachments", file);
+
+  //   const result = await onSubmit(formData, initialData?._id);
+  //   setIsSubmitting(false);
+  //   if (result?.success) onClose();
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Quick validation check for custom dropdowns
-    if (!form.assignTo) {
-      alert("Please select an employee.");
-      return;
-    }
-    if (!form.department) {
-      alert("Please select a department.");
-      return;
+    if (!employeeEditMode) {
+      if (!form.assignTo) {
+        alert("Please select an employee.");
+        return;
+      }
+
+      if (!form.department) {
+        alert("Please select a department.");
+        return;
+      }
     }
 
     setIsSubmitting(true);
-    const formData = new FormData();
-    Object.keys(form).forEach((key) => {
-      if (form[key]) formData.append(key, form[key]);
-    });
 
-    if (file) formData.append("attachments", file);
+    const formData = new FormData();
+
+    if (employeeEditMode) {
+      formData.append("status", form.status);
+    } else {
+      Object.keys(form).forEach((key) => {
+        if (form[key]) formData.append(key, form[key]);
+      });
+
+      if (file) {
+        formData.append("attachments", file);
+      }
+    }
 
     const result = await onSubmit(formData, initialData?._id);
+
     setIsSubmitting(false);
-    if (result?.success) onClose();
+
+    if (result?.success) {
+      onClose();
+    }
   };
 
   if (!open) return null;
@@ -453,448 +208,115 @@ export default function TaskModal({ open, onClose, onSubmit, initialData }) {
     done: "Done",
   };
 
-  // return (
-  //   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity animate-in fade-in duration-200 p-4">
-  //     <div
-  //       ref={modalRef}
-  //       className="relative w-full max-w-lg bg-card border border-card-border rounded-2xl shadow-2xl p-6 flex flex-col max-h-[90vh]"
-  //     >
-  //       {/* Header */}
-  //       <div className="flex items-center justify-between mb-6 shrink-0">
-  //         <h2 className="text-xl font-bold text-text-primary">
-  //           {isEditMode ? "Edit Task" : "Create New Task"}
-  //         </h2>
-  //         <button
-  //           onClick={onClose}
-  //           disabled={isSubmitting}
-  //           className="text-text-secondary hover:text-text-primary transition-colors bg-transparent border-none cursor-pointer disabled:opacity-50"
-  //         >
-  //           <X size={20} />
-  //         </button>
-  //       </div>
-
-  //       {/* Scrollable Form */}
-  //       <div className="overflow-y-auto custom-scrollbar pr-2 pb-2">
-  //         <form id="task-form" onSubmit={handleSubmit} className="space-y-5">
-  //           <div>
-  //             <label className="block text-sm font-semibold text-text-primary mb-1.5">
-  //               Task Title <span className="text-red-500">*</span>
-  //             </label>
-  //             <input
-  //               name="title"
-  //               required
-  //               value={form.title}
-  //               onChange={handleChange}
-  //               type="text"
-  //               placeholder="e.g. Update Login UI"
-  //               className="w-full bg-input border border-card-border rounded-[10px] p-2.5 text-text-primary text-sm focus:outline-none focus:border-btn transition-colors"
-  //             />
-  //           </div>
-
-  //           <div>
-  //             <label className="block text-sm font-semibold text-text-secondary mb-1.5">
-  //               Description
-  //             </label>
-  //             <textarea
-  //               name="description"
-  //               value={form.description}
-  //               onChange={handleChange}
-  //               rows={3}
-  //               placeholder="Enter task details..."
-  //               className="w-full bg-input border border-card-border rounded-[10px] p-2.5 text-text-primary text-sm focus:outline-none focus:border-btn resize-none transition-colors"
-  //             />
-  //           </div>
-
-  //           {/* 🚨 CUSTOM DROPDOWN: ASSIGN TO */}
-  //           <div>
-  //             <label className="block text-sm font-semibold text-text-primary mb-1.5 flex items-center gap-2">
-  //               Assign To <span className="text-red-500">*</span>
-  //               {loadingData && (
-  //                 <Loader2 size={12} className="animate-spin text-accent" />
-  //               )}
-  //             </label>
-  //             {loadingData ? (
-  //               <div className="w-full py-2.5 px-3.5 bg-input text-text-secondary rounded-[10px] border border-card-border flex items-center justify-between text-sm">
-  //                 Loading...
-  //               </div>
-  //             ) : (
-  //               <FilterDropDown
-  //                 key={`emp-${employeeLabel}`} // Forces re-render when employee maps
-  //                 options={employeeOptions}
-  //                 defaultLabel={employeeLabel}
-  //                 width="100%"
-  //                 onSelect={(selectedName) => {
-  //                   // Reverse map the selected Name back into the MongoDB _id
-  //                   const emp = employees.find((e) => e.name === selectedName);
-  //                   if (emp)
-  //                     handleChange({
-  //                       target: { name: "assignTo", value: emp._id },
-  //                     });
-  //                 }}
-  //               />
-  //             )}
-  //           </div>
-
-  //           <div className="grid grid-cols-2 gap-4">
-  //             {/* 🚨 CUSTOM DROPDOWN: PRIORITY */}
-  //             <div>
-  //               <label className="block text-sm font-semibold text-text-secondary mb-1.5">
-  //                 Priority
-  //               </label>
-  //               <FilterDropDown
-  //                 key={`priority-${form.priority}`}
-  //                 options={["High", "Medium", "Low"]}
-  //                 defaultLabel={reversePriorityMap[form.priority] || "Medium"}
-  //                 width="100%"
-  //                 onSelect={(val) =>
-  //                   handleChange({
-  //                     target: { name: "priority", value: priorityMap[val] },
-  //                   })
-  //                 }
-  //               />
-  //             </div>
-
-  //             {/* 🚨 CUSTOM DROPDOWN: STATUS */}
-  //             <div>
-  //               <label className="block text-sm font-semibold text-text-secondary mb-1.5">
-  //                 Status
-  //               </label>
-  //               <FilterDropDown
-  //                 key={`status-${form.status}`}
-  //                 options={["To Do", "In Progress", "Under Review", "Done"]}
-  //                 defaultLabel={reverseStatusMap[form.status] || "To Do"}
-  //                 width="100%"
-  //                 onSelect={(val) =>
-  //                   handleChange({
-  //                     target: { name: "status", value: statusMap[val] },
-  //                   })
-  //                 }
-  //               />
-  //             </div>
-  //           </div>
-
-  //           <div className="grid grid-cols-2 gap-4">
-  //             {/* 🚨 CUSTOM DROPDOWN: DEPARTMENT */}
-  //             <div>
-  //               <label className="block text-sm font-semibold text-text-secondary mb-1.5 flex items-center gap-2">
-  //                 Department <span className="text-red-500">*</span>
-  //               </label>
-  //               {loadingData ? (
-  //                 <div className="w-full py-2.5 px-3.5 bg-input text-text-secondary rounded-[10px] border border-card-border flex items-center justify-between text-sm">
-  //                   Loading...
-  //                 </div>
-  //               ) : (
-  //                 <FilterDropDown
-  //                   key={`dept-${departmentLabel}`}
-  //                   options={departmentOptions}
-  //                   defaultLabel={departmentLabel}
-  //                   width="100%"
-  //                   onSelect={(selectedFormattedName) => {
-  //                     // Reverse map the formatted name back to the original _id
-  //                     const dept = departments.find(
-  //                       (d) => formatDeptName(d.name) === selectedFormattedName,
-  //                     );
-  //                     if (dept)
-  //                       handleChange({
-  //                         target: { name: "department", value: dept._id },
-  //                       });
-  //                   }}
-  //                 />
-  //               )}
-  //             </div>
-
-  //             <div>
-  //               <label className="block text-sm font-semibold text-text-secondary mb-1.5">
-  //                 Team
-  //               </label>
-  //               <input
-  //                 name="team"
-  //                 value={form.team}
-  //                 onChange={handleChange}
-  //                 type="text"
-  //                 placeholder="e.g. Frontend"
-  //                 className="w-full bg-input border border-card-border rounded-[10px] p-2.5 text-text-primary text-sm focus:outline-none focus:border-btn transition-colors"
-  //               />
-  //             </div>
-  //           </div>
-
-  //           <div>
-  //             <label className="block text-sm font-semibold text-text-primary mb-1.5">
-  //               Due Date <span className="text-red-500">*</span>
-  //             </label>
-  //             <input
-  //               name="due_date"
-  //               required
-  //               value={form.due_date}
-  //               onChange={handleChange}
-  //               type="date"
-  //               className="w-full bg-input border border-card-border rounded-[10px] p-2.5 text-text-primary text-sm focus:outline-none focus:border-btn [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-50"
-  //             />
-  //           </div>
-
-  //           {/* File Upload Zone */}
-  //           <div>
-  //             <label className="block text-sm font-semibold text-text-secondary mb-1.5">
-  //               Attachments (Optional)
-  //             </label>
-  //             <div className="relative border-2 border-dashed border-card-border rounded-xl p-4 text-center hover:border-btn/50 transition-colors bg-input/30 group">
-  //               <input
-  //                 type="file"
-  //                 onChange={(e) => setFile(e.target.files[0])}
-  //                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-  //               />
-  //               <div className="flex flex-col items-center gap-1">
-  //                 <UploadCloud
-  //                   size={20}
-  //                   className="text-text-secondary group-hover:text-btn transition-colors"
-  //                 />
-  //                 <span className="text-xs text-text-secondary">
-  //                   {file ? (
-  //                     <span className="text-text-primary font-medium">
-  //                       {file.name}
-  //                     </span>
-  //                   ) : (
-  //                     "Click or drag file to attach"
-  //                   )}
-  //                 </span>
-  //               </div>
-  //             </div>
-  //           </div>
-  //         </form>
-  //       </div>
-
-  //       {/* Footer Buttons */}
-  //       <div className="flex items-center gap-3 mt-6 pt-4 border-t border-card-border shrink-0">
-  //         <button
-  //           type="button"
-  //           onClick={onClose}
-  //           disabled={isSubmitting}
-  //           className="flex-1 py-2.5 rounded-[10px] border border-card-border text-sm font-medium text-text-primary hover:bg-input transition-colors bg-transparent cursor-pointer disabled:opacity-50"
-  //         >
-  //           Cancel
-  //         </button>
-  //         <Button
-  //           type="submit"
-  //           form="task-form"
-  //           disabled={isSubmitting}
-  //           className="flex-1 justify-center py-2.5 font-medium rounded-[10px]"
-  //         >
-  //           {isSubmitting
-  //             ? "Saving..."
-  //             : isEditMode
-  //               ? "Update Task"
-  //               : "Create Task"}
-  //         </Button>
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
-
   return (
-  <div
-    className="fixed inset-0 z-50 flex items-center justify-center p-4"
-    style={{
-      backgroundColor: "rgba(0,0,0,0.6)",
-      backdropFilter: "blur(6px)",
-    }}
-  >
     <div
-      ref={modalRef}
-      className="relative w-full max-w-lg rounded-2xl shadow-2xl p-6 flex flex-col max-h-[90vh]"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{
-        backgroundColor: colors.cardBg,
-        border: `1px solid ${colors.cardBorder}`,
+        backgroundColor: "rgba(0,0,0,0.6)",
+        backdropFilter: "blur(6px)",
       }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6 shrink-0">
-        <h2
-          className="text-xl font-bold"
-          style={{ color: colors.textPrimary }}
-        >
-          {isEditMode ? "Edit Task" : "Create New Task"}
-        </h2>
+      <div
+        ref={modalRef}
+        className="relative w-full max-w-lg rounded-2xl shadow-2xl p-6 flex flex-col max-h-[90vh]"
+        style={{
+          backgroundColor: colors.cardBg,
+          border: `1px solid ${colors.cardBorder}`,
+        }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6 shrink-0">
+          <h2
+            className="text-xl font-bold"
+            style={{ color: colors.textPrimary }}
+          >
+            {isEditMode ? "Edit Task" : "Create New Task"}
+          </h2>
 
-        <button
-          onClick={onClose}
-          disabled={isSubmitting}
-          className="bg-transparent border-none cursor-pointer transition-colors disabled:opacity-50"
-          style={{ color: colors.textSecondary }}
-        >
-          <X size={20} />
-        </button>
-      </div>
+          <button
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="bg-transparent border-none cursor-pointer transition-colors disabled:opacity-50"
+            style={{ color: colors.textSecondary }}
+          >
+            <X size={20} />
+          </button>
+        </div>
 
-      {/* Scrollable Form */}
-      <div className="overflow-y-auto custom-scrollbar pr-2 pb-2">
-        <form id="task-form" onSubmit={handleSubmit} className="space-y-5">
-          {/* Title */}
-          <div>
-            <label
-              className="block text-sm font-semibold mb-1.5"
-              style={{ color: colors.textPrimary }}
-            >
-              Task Title <span style={{ color: colors.danger }}>*</span>
-            </label>
+        {/* Scrollable Form */}
+        <div className="overflow-y-auto custom-scrollbar pr-2 pb-2">
+          <form id="task-form" onSubmit={handleSubmit} className="space-y-5">
+            {/* Title */}
+            <div>
+              <label
+                className="block text-sm font-semibold mb-1.5"
+                style={{ color: colors.textPrimary }}
+              >
+                Task Title <span style={{ color: colors.danger }}>*</span>
+              </label>
 
-            <input
-              name="title"
-              required
-              value={form.title}
-              onChange={handleChange}
-              type="text"
-              placeholder="e.g. Update Login UI"
-              className="w-full rounded-[10px] p-2.5 text-sm focus:outline-none"
-              style={{
-                backgroundColor: colors.inputBg,
-                border: `1px solid ${colors.cardBorder}`,
-                color: colors.textPrimary,
-              }}
-            />
-          </div>
-
-          {/* Description */}
-          <div>
-            <label
-              className="block text-sm font-semibold mb-1.5"
-              style={{ color: colors.textSecondary }}
-            >
-              Description
-            </label>
-
-            <textarea
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              rows={3}
-              placeholder="Enter task details..."
-              className="w-full rounded-[10px] p-2.5 text-sm resize-none focus:outline-none"
-              style={{
-                backgroundColor: colors.inputBg,
-                border: `1px solid ${colors.cardBorder}`,
-                color: colors.textPrimary,
-              }}
-            />
-          </div>
-
-          {/* Assign */}
-          <div>
-            <label
-              className="block text-sm font-semibold mb-1.5 flex items-center gap-2"
-              style={{ color: colors.textPrimary }}
-            >
-              Assign To <span style={{ color: colors.danger }}>*</span>
-
-              {loadingData && (
-                <Loader2
-                  size={12}
-                  className="animate-spin"
-                  style={{ color: colors.accent }}
-                />
-              )}
-            </label>
-
-            {loadingData ? (
-              <div
-                className="w-full py-2.5 px-3.5 rounded-[10px] flex items-center justify-between text-sm"
+              <input
+                name="title"
+                required
+                value={form.title}
+                onChange={handleChange}
+                type="text"
+                placeholder="e.g. Update Login UI"
+                className="w-full rounded-[10px] p-2.5 text-sm focus:outline-none"
                 style={{
                   backgroundColor: colors.inputBg,
                   border: `1px solid ${colors.cardBorder}`,
-                  color: colors.textSecondary,
+                  color: colors.textPrimary,
                 }}
-              >
-                Loading...
-              </div>
-            ) : (
-              <FilterDropDown
-                key={`emp-${employeeLabel}`}
-                options={employeeOptions}
-                defaultLabel={employeeLabel}
-                width="100%"
-                onSelect={(selectedName) => {
-                  const emp = employees.find((e) => e.name === selectedName);
-                  if (emp) {
-                    handleChange({
-                      target: {
-                        name: "assignTo",
-                        value: emp._id,
-                      },
-                    });
-                  }
-                }}
-              />
-            )}
-          </div>
-
-          {/* Priority & Status */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label
-                className="block text-sm font-semibold mb-1.5"
-                style={{ color: colors.textSecondary }}
-              >
-                Priority
-              </label>
-
-              <FilterDropDown
-                key={`priority-${form.priority}`}
-                options={["High", "Medium", "Low"]}
-                defaultLabel={reversePriorityMap[form.priority] || "Medium"}
-                width="100%"
-                onSelect={(val) =>
-                  handleChange({
-                    target: {
-                      name: "priority",
-                      value: priorityMap[val],
-                    },
-                  })
-                }
+                disabled={employeeEditMode}
               />
             </div>
 
+            {/* Description */}
             <div>
               <label
                 className="block text-sm font-semibold mb-1.5"
                 style={{ color: colors.textSecondary }}
               >
-                Status
+                Description
               </label>
 
-              <FilterDropDown
-                key={`status-${form.status}`}
-                options={[
-                  "To Do",
-                  "In Progress",
-                  "Under Review",
-                  "Done",
-                ]}
-                defaultLabel={reverseStatusMap[form.status] || "To Do"}
-                width="100%"
-                onSelect={(val) =>
-                  handleChange({
-                    target: {
-                      name: "status",
-                      value: statusMap[val],
-                    },
-                  })
-                }
+              <textarea
+                name="description"
+                value={form.description}
+                onChange={handleChange}
+                rows={3}
+                placeholder="Enter task details..."
+                className="w-full rounded-[10px] p-2.5 text-sm resize-none focus:outline-none"
+                style={{
+                  backgroundColor: colors.inputBg,
+                  border: `1px solid ${colors.cardBorder}`,
+                  color: colors.textPrimary,
+                }}
+                disabled={employeeEditMode}
               />
             </div>
-          </div>
 
-          {/* Department & Team */}
-          <div className="grid grid-cols-2 gap-4">
+            {/* Assign */}
             <div>
               <label
-                className="block text-sm font-semibold mb-1.5"
-                style={{ color: colors.textSecondary }}
+                className="block text-sm font-semibold mb-1.5 flex items-center gap-2"
+                style={{ color: colors.textPrimary }}
               >
-                Department <span style={{ color: colors.danger }}>*</span>
+                Assign To <span style={{ color: colors.danger }}>*</span>
+
+                {loadingData && (
+                  <Loader2
+                    size={12}
+                    className="animate-spin"
+                    style={{ color: colors.accent }}
+                  />
+                )}
               </label>
 
               {loadingData ? (
                 <div
-                  className="w-full py-2.5 px-3.5 rounded-[10px]"
+                  className="w-full py-2.5 px-3.5 rounded-[10px] flex items-center justify-between text-sm"
                   style={{
                     backgroundColor: colors.inputBg,
                     border: `1px solid ${colors.cardBorder}`,
@@ -905,21 +327,18 @@ export default function TaskModal({ open, onClose, onSubmit, initialData }) {
                 </div>
               ) : (
                 <FilterDropDown
-                  key={`dept-${departmentLabel}`}
-                  options={departmentOptions}
-                  defaultLabel={departmentLabel}
+                  key={`emp-${employeeLabel}`}
+                  options={employeeOptions}
+                  defaultLabel={employeeLabel}
+                  disabled={employeeEditMode}
                   width="100%"
-                  onSelect={(selectedFormattedName) => {
-                    const dept = departments.find(
-                      (d) =>
-                        formatDeptName(d.name) === selectedFormattedName
-                    );
-
-                    if (dept) {
+                  onSelect={(selectedName) => {
+                    const emp = employees.find((e) => e.name === selectedName);
+                    if (emp) {
                       handleChange({
                         target: {
-                          name: "department",
-                          value: dept._id,
+                          name: "assignTo",
+                          value: emp._id,
                         },
                       });
                     }
@@ -928,139 +347,246 @@ export default function TaskModal({ open, onClose, onSubmit, initialData }) {
               )}
             </div>
 
+            {/* Priority & Status */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  className="block text-sm font-semibold mb-1.5"
+                  style={{ color: colors.textSecondary }}
+                >
+                  Priority
+                </label>
+
+                <FilterDropDown
+                  key={`priority-${form.priority}`}
+                  options={["High", "Medium", "Low"]}
+                  disabled={employeeEditMode}
+                  defaultLabel={reversePriorityMap[form.priority] || "Medium"}
+                  width="100%"
+                  onSelect={(val) =>
+                    handleChange({
+                      target: {
+                        name: "priority",
+                        value: priorityMap[val],
+                      },
+                    })
+                  }
+                />
+              </div>
+
+              <div>
+                <label
+                  className="block text-sm font-semibold mb-1.5"
+                  style={{ color: colors.textSecondary }}
+                >
+                  Status
+                </label>
+
+                <FilterDropDown
+                  key={`status-${form.status}`}
+
+                  options={[
+                    "To Do",
+                    "In Progress",
+                    "Under Review",
+                    "Done",
+                  ]}
+                  defaultLabel={reverseStatusMap[form.status] || "To Do"}
+                  width="100%"
+                  onSelect={(val) =>
+                    handleChange({
+                      target: {
+                        name: "status",
+                        value: statusMap[val],
+                      },
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            {/* Department & Team */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  className="block text-sm font-semibold mb-1.5"
+                  style={{ color: colors.textSecondary }}
+                >
+                  Department <span style={{ color: colors.danger }}>*</span>
+                </label>
+
+                {loadingData ? (
+                  <div
+                    className="w-full py-2.5 px-3.5 rounded-[10px]"
+                    style={{
+                      backgroundColor: colors.inputBg,
+                      border: `1px solid ${colors.cardBorder}`,
+                      color: colors.textSecondary,
+                    }}
+                  >
+                    Loading...
+                  </div>
+                ) : (
+                  <FilterDropDown
+                    key={`dept-${departmentLabel}`}
+                    options={departmentOptions}
+                    disabled={employeeEditMode}
+                    defaultLabel={departmentLabel}
+                    width="100%"
+                    onSelect={(selectedFormattedName) => {
+                      const dept = departments.find(
+                        (d) =>
+                          formatDeptName(d.name) === selectedFormattedName
+                      );
+
+                      if (dept) {
+                        handleChange({
+                          target: {
+                            name: "department",
+                            value: dept._id,
+                          },
+                        });
+                      }
+                    }}
+                  />
+                )}
+              </div>
+
+              <div>
+                <label
+                  className="block text-sm font-semibold mb-1.5"
+                  style={{ color: colors.textSecondary }}
+                >
+                  Team
+                </label>
+
+                <input
+                  name="team"
+                  value={form.team}
+                  onChange={handleChange}
+                  type="text"
+                  className="w-full rounded-[10px] p-2.5 text-sm focus:outline-none"
+                  style={{
+                    backgroundColor: colors.inputBg,
+                    border: `1px solid ${colors.cardBorder}`,
+                    color: colors.textPrimary,
+                  }}
+                  disabled={employeeEditMode}
+                />
+              </div>
+            </div>
+
+            {/* Due Date */}
             <div>
               <label
                 className="block text-sm font-semibold mb-1.5"
-                style={{ color: colors.textSecondary }}
+                style={{ color: colors.textPrimary }}
               >
-                Team
+                Due Date <span style={{ color: colors.danger }}>*</span>
               </label>
 
               <input
-                name="team"
-                value={form.team}
+                type="date"
+                name="due_date"
+                required
+                value={form.due_date}
                 onChange={handleChange}
-                type="text"
                 className="w-full rounded-[10px] p-2.5 text-sm focus:outline-none"
                 style={{
                   backgroundColor: colors.inputBg,
                   border: `1px solid ${colors.cardBorder}`,
                   color: colors.textPrimary,
                 }}
+                disabled={employeeEditMode}
               />
             </div>
-          </div>
 
-          {/* Due Date */}
-          <div>
-            <label
-              className="block text-sm font-semibold mb-1.5"
-              style={{ color: colors.textPrimary }}
-            >
-              Due Date <span style={{ color: colors.danger }}>*</span>
-            </label>
+            {/* Upload */}
+            {!employeeEditMode && (<div>
+              <label
+                className="block text-sm font-semibold mb-1.5"
+                style={{ color: colors.textSecondary }}
+              >
+                Attachments (Optional)
+              </label>
 
-            <input
-              type="date"
-              name="due_date"
-              required
-              value={form.due_date}
-              onChange={handleChange}
-              className="w-full rounded-[10px] p-2.5 text-sm focus:outline-none"
-              style={{
-                backgroundColor: colors.inputBg,
-                border: `1px solid ${colors.cardBorder}`,
-                color: colors.textPrimary,
-              }}
-            />
-          </div>
-
-          {/* Upload */}
-          <div>
-            <label
-              className="block text-sm font-semibold mb-1.5"
-              style={{ color: colors.textSecondary }}
-            >
-              Attachments (Optional)
-            </label>
-
-            <div
-              className="relative rounded-xl p-4 text-center group"
-              style={{
-                border: `2px dashed ${colors.cardBorder}`,
-                backgroundColor: colors.inputBg,
-              }}
-            >
-              <input
-                type="file"
-                onChange={(e) => setFile(e.target.files[0])}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              />
-
-              <div className="flex flex-col items-center gap-1">
-                <UploadCloud
-                  size={20}
-                  style={{ color: colors.textSecondary }}
+              <div
+                className="relative rounded-xl p-4 text-center group"
+                style={{
+                  border: `2px dashed ${colors.cardBorder}`,
+                  backgroundColor: colors.inputBg,
+                }}
+              >
+                <input
+                  type="file"
+                  onChange={(e) => setFile(e.target.files[0])}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
 
-                <span
-                  className="text-xs"
-                  style={{ color: colors.textSecondary }}
-                >
-                  {file ? (
-                    <span
-                      style={{
-                        color: colors.textPrimary,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {file.name}
-                    </span>
-                  ) : (
-                    "Click or drag file to attach"
-                  )}
-                </span>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
+                <div className="flex flex-col items-center gap-1">
+                  <UploadCloud
+                    size={20}
+                    style={{ color: colors.textSecondary }}
+                  />
 
-      {/* Footer */}
-      <div
-        className="flex items-center gap-3 mt-6 pt-4 shrink-0"
-        style={{
-          borderTop: `1px solid ${colors.cardBorder}`,
-        }}
-      >
-        <button
-          type="button"
-          onClick={onClose}
-          disabled={isSubmitting}
-          className="flex-1 py-2.5 rounded-[10px] text-sm font-medium cursor-pointer disabled:opacity-50"
+                  <span
+                    className="text-xs"
+                    style={{ color: colors.textSecondary }}
+                  >
+                    {file ? (
+                      <span
+                        style={{
+                          color: colors.textPrimary,
+                          fontWeight: 500,
+                        }}
+                      >
+                        {file.name}
+                      </span>
+                    ) : (
+                      "Click or drag file to attach"
+                    )}
+                  </span>
+                </div>
+              </div>
+            </div>)}
+          </form>
+        </div>
+
+        {/* Footer */}
+        <div
+          className="flex items-center gap-3 mt-6 pt-4 shrink-0"
           style={{
-            backgroundColor: "transparent",
-            border: `1px solid ${colors.cardBorder}`,
-            color: colors.textPrimary,
+            borderTop: `1px solid ${colors.cardBorder}`,
           }}
         >
-          Cancel
-        </button>
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="flex-1 py-2.5 rounded-[10px] text-sm font-medium cursor-pointer disabled:opacity-50"
+            style={{
+              backgroundColor: "transparent",
+              border: `1px solid ${colors.cardBorder}`,
+              color: colors.textPrimary,
+            }}
+          >
+            Cancel
+          </button>
 
-        <Button
-          type="submit"
-          form="task-form"
-          disabled={isSubmitting}
-          className="flex-1 justify-center py-2.5 font-medium rounded-[10px]"
-        >
-          {isSubmitting
-            ? "Saving..."
-            : isEditMode
-            ? "Update Task"
-            : "Create Task"}
-        </Button>
+          <Button
+            type="submit"
+            form="task-form"
+            disabled={isSubmitting}
+            className="flex-1 justify-center py-2.5 font-medium rounded-[10px]"
+          >
+            {isSubmitting
+              ? "Saving..."
+              : isEditMode
+                ? "Update Task"
+                : "Create Task"}
+          </Button>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 }

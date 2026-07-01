@@ -141,6 +141,7 @@ export default function TaskCard({
   onDelete,
   onCommentClick,
   onView,
+  isEmployee = false,
 }) {
   // ─── SAFE DATA FALLBACKS ───
   const title = task?.title || "Untitled Task";
@@ -528,7 +529,7 @@ export default function TaskCard({
         </button>
 
         {/* Delete */}
-        <button
+        { !isEmployee && (<button
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -547,7 +548,7 @@ export default function TaskCard({
           title="Delete Task"
         >
           <Trash2 size={14} />
-        </button>
+        </button>)}
       </div>
     </div>
 
