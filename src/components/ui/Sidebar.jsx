@@ -138,55 +138,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     [navigate, toggleExpand, isOpen, toggleSidebar, logout],
   );
 
-  // ─── RENDER MENU ITEM ───
-  // const renderMenuItem = (item, isChild = false) => {
-  //   const Icon = item.icon;
-  //   const active = selected === item.name;
-  //   const hasChildren = item.children && item.children.length > 0;
-  //   const isExpanded = expandedMenus[item.name];
-
-  //   return (
-  //     <div key={item.name}>
-  //       <div
-  //         onClick={() => handleClick(item)}
-  //         className={`flex items-center gap-3 cursor-pointer rounded-xl py-3 px-3.5 mb-1 ${isChild ? "ml-8 mr-3 mt-1" : "mx-3"
-  //           } select-none transition-all duration-200 ${active
-  //             ? "bg-btn/10 text-btn font-semibold" // Active state styling
-  //             : "hover:bg-hover text-text-secondary hover:text-text-primary"
-  //           } ${item.isLogout ? "text-red-400 hover:text-red-400 hover:bg-red-400/10" : ""}`}
-  //       >
-  //         {Icon && (
-  //           <Icon
-  //             size={isChild ? 16 : 18}
-  //             className={active ? "text-btn" : ""}
-  //           />
-  //         )}
-
-  //         {isOpen && (
-  //           <>
-  //             <span
-  //               className={`text-[13.5px] flex-1 tracking-wide ${isChild ? "text-[12.5px]" : ""}`}
-  //             >
-  //               {item.name}
-  //             </span>
-  //             {hasChildren && (
-  //               <ChevronDown
-  //                 size={14}
-  //                 className={`transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
-  //               />
-  //             )}
-  //           </>
-  //         )}
-  //       </div>
-
-  //       {hasChildren && isOpen && isExpanded && (
-  //         <div className="overflow-hidden animate-in slide-in-from-top-2 duration-200">
-  //           {item.children.map((child) => renderMenuItem(child, true))}
-  //         </div>
-  //       )}
-  //     </div>
-  //   );
-  // };
 
   const renderMenuItem = (item, isChild = false) => {
     const Icon = item.icon;
@@ -310,28 +261,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           boxShadow: "0 0 24px rgba(45, 49, 66, 0.12)",
         }}
       >
-        {/* ─── 1. HEADER (Fixed) ─── */}
-        {/* <div className="flex items-center gap-3 p-5 border-b border-card-border/50 bg-secondary shrink-0 h-20">
-          <img
-            src={logo}
-            onClick={toggleSidebar}
-            alt="ChatSpark"
-            className="w-10 h-10 object-cover cursor-pointer drop-shadow-md hover:scale-105 transition-transform"
-          />
-          {isOpen && (
-            <div
-              className="flex flex-col cursor-pointer"
-              onClick={toggleSidebar}
-            >
-              <span className="text-[18px] font-bold text-text-primary tracking-wide">
-                ChatSpark
-              </span>
-              <span className="text-[11px] text-text-secondary uppercase tracking-widest font-semibold mt-0.5">
-                HRMS Portal
-              </span>
-            </div>
-          )}
-        </div> */}
+
         <div
           className="flex items-center gap-3 p-5 shrink-0 h-20"
           style={{
@@ -377,10 +307,10 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         </nav>
 
         {/* ─── 3. FOOTER (Fixed) ─── */}
-        <div className="p-4 shrink-0 border-t border-card-border/50 bg-secondary/80 backdrop-blur-md">
+        {/* <div className="p-4 shrink-0 border-t border-card-border/50 bg-secondary/80 backdrop-blur-md">
           {isOpen ? (
             <div onClick={fetchProfile} className="flex items-center gap-3 py-2 px-3 rounded-xl bg-card border border-card-border hover:border-btn/50 transition-colors cursor-pointer shadow-sm">
-              <div className="w-9 h-9 min-w-9 rounded-lg bg-btn/20 flex items-center justify-center text-sm font-bold text-btn uppercase border border-[#3B82F6]/20">
+              <div className="w-9 h-9 min-w-9 rounded-lg bg-btn/20 flex items-center justify-center text-xs font-bold text-btn uppercase border border-[#3B82F6]/20">
                 {user?.firstName ? user.firstName.charAt(0) : "U"}
               </div>
               <div className="flex flex-col overflow-hidden">
@@ -473,6 +403,62 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 </div>
               )}
             </div>
+          )}
+        </div> */}
+        <div
+          className="p-4 shrink-0"
+          style={{
+            borderTop: `1px solid ${colors.cardBorder}`,
+            background: colors.sidebarBg,
+          }}
+        >
+          {isOpen ? (
+            <div
+              onClick={fetchProfile}
+              className="flex items-center gap-3 py-2 px-3 rounded-xl cursor-pointer transition-all"
+              style={{
+                background: colors.cardBg,
+                border: `1px solid ${colors.cardBorder}`,
+              }}
+            >
+              <div
+                className="w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold uppercase"
+                style={{
+                  background: colors.activeMenuBg,
+                  color: colors.accent,
+                }}
+              >
+                {user?.firstName?.charAt(0) || "U"}
+              </div>
+
+              <div className="flex flex-col overflow-hidden">
+                <span
+                  className="text-[13px] font-bold truncate"
+                  style={{ color: colors.textPrimary }}
+                >
+                  {`${user?.firstName || ""} ${user?.lastName || ""}`.trim()}
+                </span>
+
+                <span
+                  className="text-[11px] capitalize"
+                  style={{ color: colors.textSecondary }}
+                >
+                  {user?.role || "Employee"}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={fetchProfile}
+              className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition-all hover:scale-105"
+              style={{
+                background: colors.activeMenuBg,
+                color: colors.accent,
+                border: `1px solid ${colors.cardBorder}`,
+              }}
+            >
+              {user?.firstName?.charAt(0) || "U"}
+            </button>
           )}
         </div>
       </aside>
