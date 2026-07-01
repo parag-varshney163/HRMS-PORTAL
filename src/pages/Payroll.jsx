@@ -840,273 +840,272 @@ export default function Finance() {
   //   },
   // ];
   const columns = [
-  {
-    key: "select",
-    label: "",
-    width: "60px",
-    align: "center",
-    render: (_, row) => (
-      <input
-        type="checkbox"
-        checked={selectedEmployees.includes(row.userId)}
-        onChange={(e) => {
-          if (e.target.checked) {
-            setSelectedEmployees((prev) => [...prev, row.userId]);
-          } else {
-            setSelectedEmployees((prev) =>
-              prev.filter((id) => id !== row.userId)
-            );
-          }
-        }}
-        className="w-4 h-4 cursor-pointer"
-        style={{
-          accentColor: colors.blue,
-        }}
-      />
-    ),
-  },
-
-  {
-    key: "employeeName",
-    label: "Employee Name",
-    width: "1.8fr",
-    align: "left",
-    render: (_, row) => (
-      <span
-        className="text-sm font-bold"
-        style={{ color: colors.textPrimary }}
-      >
-        {row.employeeName || "-"}
-      </span>
-    ),
-  },
-
-  {
-    key: "employeeId",
-    label: "Employee ID",
-    width: "1.4fr",
-    align: "left",
-    render: (val) => (
-      <span
-        className="text-xs font-mono"
-        style={{ color: colors.textSecondary }}
-      >
-        {val || "-"}
-      </span>
-    ),
-  },
-
-  {
-    key: "period",
-    label: "Period",
-    width: "1fr",
-    align: "center",
-    render: (_, row) => (
-      <span
-        className="text-sm"
-        style={{ color: colors.textPrimary }}
-      >
-        {row.period || `${row.month}/${row.year}`}
-      </span>
-    ),
-  },
-
-  {
-    key: "daysWorked",
-    label: "Working Days",
-    width: "1fr",
-    align: "center",
-    render: (val) => (
-      <span
-        className="text-sm font-semibold"
-        style={{ color: colors.success }}
-      >
-        {val || 0}
-      </span>
-    ),
-  },
-
-  {
-    key: "absentDays",
-    label: "Absent Days",
-    width: "1fr",
-    align: "center",
-    render: (val) => (
-      <span
-        className="text-sm font-semibold"
-        style={{ color: colors.danger }}
-      >
-        {val || 0}
-      </span>
-    ),
-  },
-
-  {
-    key: "grossPay",
-    label: "Gross Pay",
-    width: "1.2fr",
-    align: "right",
-    render: (val) => (
-      <span
-        className="text-sm font-medium"
-        style={{ color: colors.textPrimary }}
-      >
-        ₹{Number(val || 0).toLocaleString("en-IN")}
-      </span>
-    ),
-  },
-
-  {
-    key: "reimbursement",
-    label: "Reimbu.",
-    width: "1.2fr",
-    align: "right",
-    render: (val) => (
-      <span
-        className="text-sm"
-        style={{ color: colors.blue }}
-      >
-        ₹{Number(val || 0).toLocaleString("en-IN")}
-      </span>
-    ),
-  },
-
-  {
-    key: "netPayout",
-    label: "Net Payout",
-    width: "1.2fr",
-    align: "right",
-    render: (val) => (
-      <span
-        className="text-sm font-bold"
-        style={{ color: colors.success }}
-      >
-        ₹{Number(val || 0).toLocaleString("en-IN")}
-      </span>
-    ),
-  },
-
-  {
-    key: "employmentStatus",
-    label: "Employment Status",
-    width: "1.3fr",
-    align: "center",
-    render: (_, row) => {
-      const status =
-        row.employmentStatus ||
-        row.employeeStatus ||
-        "working";
-
-      const isWorking =
-        status.toLowerCase() === "working";
-
-      return (
-        <span
-          className="text-[10px] font-semibold px-2.5 py-1 rounded-md border uppercase tracking-wider"
-          style={{
-            backgroundColor: isWorking
-              ? colors.successLight
-              : colors.dangerLight,
-            color: isWorking
-              ? colors.success
-              : colors.danger,
-            borderColor: isWorking
-              ? colors.success
-              : colors.danger,
-          }}
-        >
-          {isWorking ? "Working" : "Resigned"}
-        </span>
-      );
-    },
-  },
-
-  {
-    key: "salaryPaidStatus",
-    label: "Salary Status",
-    width: "1.2fr",
-    align: "center",
-    render: (val) => {
-      const currentVal = (val || "pending").toLowerCase();
-
-      const bg =
-        currentVal === "paid"
-          ? colors.successLight
-          : colors.warningLight;
-
-      const text =
-        currentVal === "paid"
-          ? colors.success
-          : colors.warning;
-
-      return (
-        <span
-          className="text-[10px] font-semibold px-2.5 py-1 rounded-md border uppercase tracking-wider"
-          style={{
-            backgroundColor: bg,
-            color: text,
-            borderColor: text,
-          }}
-        >
-          {val || "Pending"}
-        </span>
-      );
-    },
-  },
-
-  {
-    key: "actions",
-    label: "Actions",
-    width: "1fr",
-    align: "center",
-    render: (_, row) => {
-      const isPaid =
-        row.salaryPaidStatus?.toLowerCase() === "paid";
-
-      return (
-        <Button
-          size="sm"
-          bg={isPaid ? colors.danger : colors.success}
-          text={colors.cardBg}
-          onClick={async () => {
-            try {
-              const payload = {
-                userIds: [row.userId],
-                status: isPaid ? "pending" : "paid",
-                month: row.month,
-                year: row.year,
-              };
-
-              const { data } = await axiosInstance.patch(
-                "/api/v1/salary-leave/payroll/bulk-status",
-                payload
-              );
-
-              if (data.success) {
-                notify.success(
-                  "Updated",
-                  `Salary marked as ${
-                    isPaid ? "Pending" : "Paid"
-                  }`
-                );
-
-                fetchData();
-              }
-            } catch (error) {
-              notify.error(
-                "Update Failed",
-                error.response?.data?.message ||
-                  "Unable to update status."
+    {
+      key: "select",
+      label: "",
+      width: "60px",
+      align: "center",
+      render: (_, row) => (
+        <input
+          type="checkbox"
+          checked={selectedEmployees.includes(row.userId)}
+          onChange={(e) => {
+            if (e.target.checked) {
+              setSelectedEmployees((prev) => [...prev, row.userId]);
+            } else {
+              setSelectedEmployees((prev) =>
+                prev.filter((id) => id !== row.userId)
               );
             }
           }}
-        >
-          {isPaid ? "Mark Unpaid" : "Mark Paid"}
-        </Button>
-      );
+          className="w-4 h-4 cursor-pointer"
+          style={{
+            accentColor: colors.blue,
+          }}
+        />
+      ),
     },
-  },
-];
+
+    {
+      key: "employeeName",
+      label: "Employee Name",
+      width: "1.8fr",
+      align: "left",
+      render: (_, row) => (
+        <span
+          className="text-sm font-bold"
+          style={{ color: colors.textPrimary }}
+        >
+          {row.employeeName || "-"}
+        </span>
+      ),
+    },
+
+    {
+      key: "employeeId",
+      label: "Employee ID",
+      width: "1.4fr",
+      align: "left",
+      render: (val) => (
+        <span
+          className="text-xs font-mono"
+          style={{ color: colors.textSecondary }}
+        >
+          {val || "-"}
+        </span>
+      ),
+    },
+
+    {
+      key: "period",
+      label: "Period",
+      width: "1fr",
+      align: "center",
+      render: (_, row) => (
+        <span
+          className="text-sm"
+          style={{ color: colors.textPrimary }}
+        >
+          {row.period || `${row.month}/${row.year}`}
+        </span>
+      ),
+    },
+
+    {
+      key: "daysWorked",
+      label: "Working Days",
+      width: "1fr",
+      align: "center",
+      render: (val) => (
+        <span
+          className="text-sm font-semibold"
+          style={{ color: colors.success }}
+        >
+          {val || 0}
+        </span>
+      ),
+    },
+
+    {
+      key: "absentDays",
+      label: "Absent Days",
+      width: "1fr",
+      align: "center",
+      render: (val) => (
+        <span
+          className="text-sm font-semibold"
+          style={{ color: colors.danger }}
+        >
+          {val || 0}
+        </span>
+      ),
+    },
+
+    {
+      key: "grossPay",
+      label: "Gross Pay",
+      width: "1.2fr",
+      align: "right",
+      render: (val) => (
+        <span
+          className="text-sm font-medium"
+          style={{ color: colors.textPrimary }}
+        >
+          ₹{Number(val || 0).toLocaleString("en-IN")}
+        </span>
+      ),
+    },
+
+    {
+      key: "reimbursement",
+      label: "Reimbu.",
+      width: "1.2fr",
+      align: "right",
+      render: (val) => (
+        <span
+          className="text-sm"
+          style={{ color: colors.blue }}
+        >
+          ₹{Number(val || 0).toLocaleString("en-IN")}
+        </span>
+      ),
+    },
+
+    {
+      key: "netPayout",
+      label: "Net Payout",
+      width: "1.2fr",
+      align: "right",
+      render: (val) => (
+        <span
+          className="text-sm font-bold"
+          style={{ color: colors.success }}
+        >
+          ₹{Number(val || 0).toLocaleString("en-IN")}
+        </span>
+      ),
+    },
+
+    {
+      key: "employmentStatus",
+      label: "Employment Status",
+      width: "1.3fr",
+      align: "center",
+      render: (_, row) => {
+        const status =
+          row.employmentStatus ||
+          row.employeeStatus ||
+          "working";
+
+        const isWorking =
+          status.toLowerCase() === "working";
+
+        return (
+          <span
+            className="text-[10px] font-semibold px-2.5 py-1 rounded-md border uppercase tracking-wider"
+            style={{
+              backgroundColor: isWorking
+                ? colors.successLight
+                : colors.dangerLight,
+              color: isWorking
+                ? colors.success
+                : colors.danger,
+              borderColor: isWorking
+                ? colors.success
+                : colors.danger,
+            }}
+          >
+            {isWorking ? "Working" : "Resigned"}
+          </span>
+        );
+      },
+    },
+
+    {
+      key: "salaryPaidStatus",
+      label: "Salary Status",
+      width: "1.2fr",
+      align: "center",
+      render: (val) => {
+        const currentVal = (val || "pending").toLowerCase();
+
+        const bg =
+          currentVal === "paid"
+            ? colors.successLight
+            : colors.warningLight;
+
+        const text =
+          currentVal === "paid"
+            ? colors.success
+            : colors.warning;
+
+        return (
+          <span
+            className="text-[10px] font-semibold px-2.5 py-1 rounded-md border uppercase tracking-wider"
+            style={{
+              backgroundColor: bg,
+              color: text,
+              borderColor: text,
+            }}
+          >
+            {val || "Pending"}
+          </span>
+        );
+      },
+    },
+
+    {
+      key: "actions",
+      label: "Actions",
+      width: "1fr",
+      align: "center",
+      render: (_, row) => {
+        const isPaid =
+          row.salaryPaidStatus?.toLowerCase() === "paid";
+
+        return (
+          <Button
+            size="sm"
+            bg={isPaid ? colors.danger : colors.success}
+            text={colors.cardBg}
+            onClick={async () => {
+              try {
+                const payload = {
+                  userIds: [row.userId],
+                  status: isPaid ? "pending" : "paid",
+                  month: row.month,
+                  year: row.year,
+                };
+
+                const { data } = await axiosInstance.patch(
+                  "/api/v1/salary-leave/payroll/bulk-status",
+                  payload
+                );
+
+                if (data.success) {
+                  notify.success(
+                    "Updated",
+                    `Salary marked as ${isPaid ? "Pending" : "Paid"
+                    }`
+                  );
+
+                  fetchData();
+                }
+              } catch (error) {
+                notify.error(
+                  "Update Failed",
+                  error.response?.data?.message ||
+                  "Unable to update status."
+                );
+              }
+            }}
+          >
+            {isPaid ? "Mark Unpaid" : "Mark Paid"}
+          </Button>
+        );
+      },
+    },
+  ];
   // return (
   //   <div className="py-2 pb-10 h-full flex flex-col gap-6">
   //     {/* ─── Header ─── */}
@@ -1353,10 +1352,10 @@ export default function Finance() {
 
 
 
-return (
-  <div className="py-2 pb-10 h-full flex flex-col gap-6">
-    {/* Header */}
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-card-border pb-6">
+  return (
+    <div className="py-2 pb-10 h-full flex flex-col gap-6">
+      {/* Header */}
+      {/* <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-card-border pb-6">
       <div>
         <h2 className="text-2xl font-bold text-text-primary">
           Payroll{" "}
@@ -1380,219 +1379,255 @@ return (
       >
         Generate Payroll
       </Button>
-    </div>
-
-    {/* Stats */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <StatsCard
-        icon={IndianRupee}
-        iconBg={colors.accentLight}
-        iconColor={colors.accentDark}
-        value={
-          loading
-            ? "..."
-            : `₹${(stats.grossPayroll || 0).toLocaleString()}`
-        }
-        label="Gross Payroll"
-      />
-
-      <StatsCard
-        icon={Wallet}
-        iconBg={colors.successLight}
-        iconColor={colors.success}
-        value={
-          loading
-            ? "..."
-            : `₹${(stats.netPayout || 0).toLocaleString()}`
-        }
-        label="Net Payout"
-      />
-
-      <StatsCard
-        icon={Users}
-        iconBg={colors.blueLight}
-        iconColor={colors.blue}
-        value={loading ? "..." : stats.totalEmployees || 0}
-        label="Employees Paid"
-      />
-
-      <StatsCard
-        icon={Calendar}
-        iconBg={colors.purpleLight}
-        iconColor={colors.purple}
-        value={loading ? "..." : stats.totalWorkingDays || 0}
-        label="Total Working Days"
-      />
-    </div>
-
-    {/* Table */}
-    <div className="bg-card border border-card-border rounded-xl flex-1 flex flex-col overflow-hidden mt-2">
-
+    </div> */}
       <div
-        className="p-4 border-b border-card-border flex flex-col sm:flex-row items-center gap-4"
+        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6"
         style={{
-          backgroundColor: colors.inputBg,
+          borderBottom: `1px solid ${colors.cardBorder}`,
         }}
       >
-        <div className="w-full flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h2
+            className="text-2xl font-bold"
+            style={{ color: colors.textPrimary }}
+          >
+            Payroll{" "}
+            <span style={{ color: colors.accent }}>
+              Management
+            </span>
+          </h2>
 
-          {/* Search */}
-          <div className="w-full lg:max-w-md">
-            <SearchBar
-              placeholder="Search employee..."
-              value={searchQuery}
-              onChange={setSearchQuery}
-            />
-          </div>
+          <p
+            className="text-sm mt-1"
+            style={{ color: colors.textSecondary }}
+          >
+            Manage, generate, and track employee compensation.
+          </p>
+        </div>
 
-          {/* Filters */}
-          <div className="flex flex-wrap items-center gap-3">
+        <Button
+          variant="custom"
+          bg={colors.blue}
+          text={colors.cardBg}
+          icon={Plus}
+          size="sm"
+          onClick={() => setIsModalOpen(true)}
+        >
+          Generate Payroll
+        </Button>
+      </div>
 
-            <FilterDropDown
-              width="170px"
-              defaultLabel="Role"
-              options={["Admin", "Manager", "Employee"]}
-              onSelect={(value) => {
-                setRoleFilter(value.toLowerCase());
-                setPage(1);
-              }}
-            />
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatsCard
+          icon={IndianRupee}
+          iconBg={colors.accentLight}
+          iconColor={colors.accentDark}
+          value={
+            loading
+              ? "..."
+              : `₹${(stats.grossPayroll || 0).toLocaleString()}`
+          }
+          label="Gross Payroll"
+        />
 
-            <FilterDropDown
-              width="170px"
-              defaultLabel="Department"
-              options={["HR", "Sales", "IT", "Finance"]}
-              onSelect={(value) => {
-                setDepartmentFilter(value);
-                setPage(1);
-              }}
-            />
+        <StatsCard
+          icon={Wallet}
+          iconBg={colors.successLight}
+          iconColor={colors.success}
+          value={
+            loading
+              ? "..."
+              : `₹${(stats.netPayout || 0).toLocaleString()}`
+          }
+          label="Net Payout"
+        />
 
-            <FilterDropDown
-              width="170px"
-              defaultLabel="Salary Status"
-              options={["Generated", "Paid", "Pending"]}
-              onSelect={(value) => {
-                setStatusFilter(value.toLowerCase());
-                setPage(1);
-              }}
-            />
+        <StatsCard
+          icon={Users}
+          iconBg={colors.blueLight}
+          iconColor={colors.blue}
+          value={loading ? "..." : stats.totalEmployees || 0}
+          label="Employees Paid"
+        />
 
-            {/* Download */}
-            <Button
-              size="sm"
-              bg={colors.orange}
-              text={colors.cardBg}
-              onClick={async () => {
-                try {
-                  const queryParams = new URLSearchParams();
+        <StatsCard
+          icon={Calendar}
+          iconBg={colors.purpleLight}
+          iconColor={colors.purple}
+          value={loading ? "..." : stats.totalWorkingDays || 0}
+          label="Total Working Days"
+        />
+      </div>
 
-                  if (debouncedSearch) {
-                    queryParams.append("search", debouncedSearch);
-                  }
+      {/* Table */}
+      <div className="  rounded-xl flex-1 flex flex-col overflow-hidden mt-2">
 
-                  if (roleFilter) {
-                    queryParams.append("role", roleFilter);
-                  }
+        <div
+          className="p-4 border-b  flex flex-col sm:flex-row items-center gap-4"
+          style={{
+            backgroundColor: colors.inputBg,
+          }}
+        >
+          <div className="w-full flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
-                  if (departmentFilter) {
-                    queryParams.append("department", departmentFilter);
-                  }
 
-                  if (statusFilter) {
-                    queryParams.append("status", statusFilter);
-                  }
+            <div className="w-full lg:max-w-md">
+              <SearchBar
+                placeholder="Search employee..."
+                value={searchQuery}
+                onChange={setSearchQuery}
+              />
+            </div>
 
-                  const response = await axiosInstance.get(
-                    `/api/v1/payroll/download?${queryParams.toString()}`,
-                    {
-                      responseType: "blob",
+
+            <div className="flex flex-wrap items-center gap-3">
+
+              <FilterDropDown
+                width="170px"
+                defaultLabel="Role"
+                options={["Admin", "Manager", "Employee"]}
+                onSelect={(value) => {
+                  setRoleFilter(value.toLowerCase());
+                  setPage(1);
+                }}
+              />
+
+              <FilterDropDown
+                width="170px"
+                defaultLabel="Department"
+                options={["HR", "Sales", "IT", "Finance"]}
+                onSelect={(value) => {
+                  setDepartmentFilter(value);
+                  setPage(1);
+                }}
+              />
+
+              <FilterDropDown
+                width="170px"
+                defaultLabel="Salary Status"
+                options={["Generated", "Paid", "Pending"]}
+                onSelect={(value) => {
+                  setStatusFilter(value.toLowerCase());
+                  setPage(1);
+                }}
+              />
+
+
+              <Button
+                size="sm"
+                bg={colors.orange}
+                text={colors.cardBg}
+                onClick={async () => {
+                  try {
+                    const queryParams = new URLSearchParams();
+
+                    if (debouncedSearch) {
+                      queryParams.append("search", debouncedSearch);
                     }
-                  );
 
-                  const blob = new Blob([response.data], {
-                    type: "text/csv",
-                  });
+                    if (roleFilter) {
+                      queryParams.append("role", roleFilter);
+                    }
 
-                  const url = window.URL.createObjectURL(blob);
+                    if (departmentFilter) {
+                      queryParams.append("department", departmentFilter);
+                    }
 
-                  const link = document.createElement("a");
-                  link.href = url;
-                  link.download = "payroll-report.csv";
+                    if (statusFilter) {
+                      queryParams.append("status", statusFilter);
+                    }
 
-                  document.body.appendChild(link);
-                  link.click();
+                    const response = await axiosInstance.get(
+                      `/api/v1/payroll/download?${queryParams.toString()}`,
+                      {
+                        responseType: "blob",
+                      }
+                    );
 
-                  link.remove();
-                  window.URL.revokeObjectURL(url);
+                    const blob = new Blob([response.data], {
+                      type: "text/csv",
+                    });
 
-                  notify.success(
-                    "Downloaded",
-                    "Payroll CSV downloaded successfully"
-                  );
-                } catch (error) {
-                  notify.error(
-                    "Download Failed",
-                    error.response?.data?.message ||
+                    const url = window.URL.createObjectURL(blob);
+
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = "payroll-report.csv";
+
+                    document.body.appendChild(link);
+                    link.click();
+
+                    link.remove();
+                    window.URL.revokeObjectURL(url);
+
+                    notify.success(
+                      "Downloaded",
+                      "Payroll CSV downloaded successfully"
+                    );
+                  } catch (error) {
+                    notify.error(
+                      "Download Failed",
+                      error.response?.data?.message ||
                       "Unable to download payroll report."
-                  );
-                }
-              }}
-            >
-              Download CSV
-            </Button>
+                    );
+                  }
+                }}
+              >
+                Download CSV
+              </Button>
 
-            {/* Salary History */}
-            <Button
-              size="sm"
-              bg={colors.purple}
-              text={colors.cardBg}
-              onClick={() => setSalaryHistoryOpen(true)}
-            >
-              Salary History
-            </Button>
 
-            {/* Mark Paid */}
-            <Button
-              size="sm"
-              bg={colors.success}
-              text={colors.cardBg}
-              disabled={selectedEmployees.length === 0}
-              onClick={() => handleBulkStatusUpdate("paid")}
-            >
-              Mark Paid ({selectedEmployees.length})
-            </Button>
+              <Button
+                size="sm"
+                bg={colors.purple}
+                text={colors.cardBg}
+                onClick={() => setSalaryHistoryOpen(true)}
+              >
+                Salary History
+              </Button>
+
+              {/* Mark Paid */}
+              <Button
+                size="sm"
+                bg={colors.success}
+                text={colors.cardBg}
+                disabled={selectedEmployees.length === 0}
+                onClick={() => handleBulkStatusUpdate("paid")}
+              >
+                Mark Paid ({selectedEmployees.length})
+              </Button>
+            </div>
+          </div>
+        </div>
+
+
+        <div className="w-full overflow-x-auto">
+          <div className="min-w-[2000px]">
+            <DataTable
+              columns={columns}
+              data={records}
+              loading={loading}
+              paginationMode="server"
+              page={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
           </div>
         </div>
       </div>
 
-      {/* Data Table */}
-      <div className="w-full overflow-x-auto">
-        <div className="min-w-[2000px]">
-          <DataTable
-            columns={columns}
-            data={records}
-            loading={loading}
-            paginationMode="server"
-            page={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          />
-        </div>
-      </div>
+      {/* Modals */}
+      <GeneratePayrollModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onGenerate={handleGeneratePayroll}
+      />
+
+      <SalaryHistoryModal
+        open={salaryHistoryOpen}
+        onClose={() => setSalaryHistoryOpen(false)}
+      />
     </div>
-
-    {/* Modals */}
-    <GeneratePayrollModal
-      open={isModalOpen}
-      onClose={() => setIsModalOpen(false)}
-      onGenerate={handleGeneratePayroll}
-    />
-
-    <SalaryHistoryModal
-      open={salaryHistoryOpen}
-      onClose={() => setSalaryHistoryOpen(false)}
-    />
-  </div>
-);
+  );
 }

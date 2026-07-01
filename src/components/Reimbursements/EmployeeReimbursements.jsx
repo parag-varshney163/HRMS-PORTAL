@@ -50,16 +50,44 @@ const EmployeeReimbursements = () => {
   }, []);
 
   // ─── ACTION: APPLY ───
+  // const handleApplyReimbursement = async (formData) => {
+  //   try {
+  //     const { data } = await axiosInstance.post(
+  //       "/api/v1/reimbursement",
+  //       formData,
+  //     );
+  //     if (data.success) {
+  //       notify.success(
+  //         "Submitted",
+  //         "Your expense claim has been submitted for approval.",
+  //       );
+  //       fetchData();
+  //       return { success: true };
+  //     }
+  //   } catch (error) {
+  //     notify.error(
+  //       "Submission Failed",
+  //       error.response?.data?.message || "Could not submit your reimbursement.",
+  //     );
+  //     return { success: false, message: error.response?.data?.message };
+  //   }
+  // };
   const handleApplyReimbursement = async (formData) => {
     try {
       const { data } = await axiosInstance.post(
         "/api/v1/reimbursement",
         formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
+
       if (data.success) {
         notify.success(
           "Submitted",
-          "Your expense claim has been submitted for approval.",
+          "Your expense claim has been submitted for approval."
         );
         fetchData();
         return { success: true };
@@ -67,12 +95,14 @@ const EmployeeReimbursements = () => {
     } catch (error) {
       notify.error(
         "Submission Failed",
-        error.response?.data?.message || "Could not submit your reimbursement.",
+        error.response?.data?.message || "Could not submit your reimbursement."
       );
-      return { success: false, message: error.response?.data?.message };
+      return {
+        success: false,
+        message: error.response?.data?.message,
+      };
     }
   };
-
   // ─── HELPER: STATUS BADGES ───
   // const renderStatusBadge = (req) => {
   //   let style = "bg-gray-500/10 text-gray-400 border-gray-500/20";
@@ -104,56 +134,56 @@ const EmployeeReimbursements = () => {
   //   );
   // };
   const renderStatusBadge = (req) => {
-  let badgeStyle = {
-    background: colors.inputBg,
-    color: colors.textSecondary,
-    border: `1px solid ${colors.cardBorder}`,
+    let badgeStyle = {
+      background: colors.inputBg,
+      color: colors.textSecondary,
+      border: `1px solid ${colors.cardBorder}`,
+    };
+
+    let text = req.status || "Pending";
+    const status = text.toLowerCase();
+
+    if (status.includes("approved")) {
+      badgeStyle = {
+        background: colors.successLight,
+        color: colors.success,
+        border: `1px solid ${colors.success}`,
+      };
+      text = "Fully Approved";
+    } else if (status.includes("reject")) {
+      badgeStyle = {
+        background: colors.dangerLight,
+        color: colors.danger,
+        border: `1px solid ${colors.danger}`,
+      };
+      text = "Rejected";
+    } else if (status.includes("pending_manager")) {
+      badgeStyle = {
+        background: colors.warningLight,
+        color: colors.warning,
+        border: `1px solid ${colors.warning}`,
+      };
+      text = "Pending Manager";
+    } else if (status.includes("pending")) {
+      badgeStyle = {
+        background: colors.blueLight,
+        color: colors.blue,
+        border: `1px solid ${colors.blue}`,
+      };
+      text = "Pending Admin";
+    } else {
+      text = text.replace(/_/g, " ");
+    }
+
+    return (
+      <span
+        className="text-[10px] sm:text-xs font-semibold px-2.5 py-1 rounded-md uppercase tracking-wider"
+        style={badgeStyle}
+      >
+        {text}
+      </span>
+    );
   };
-
-  let text = req.status || "Pending";
-  const status = text.toLowerCase();
-
-  if (status.includes("approved")) {
-    badgeStyle = {
-      background: colors.successLight,
-      color: colors.success,
-      border: `1px solid ${colors.success}`,
-    };
-    text = "Fully Approved";
-  } else if (status.includes("reject")) {
-    badgeStyle = {
-      background: colors.dangerLight,
-      color: colors.danger,
-      border: `1px solid ${colors.danger}`,
-    };
-    text = "Rejected";
-  } else if (status.includes("pending_manager")) {
-    badgeStyle = {
-      background: colors.warningLight,
-      color: colors.warning,
-      border: `1px solid ${colors.warning}`,
-    };
-    text = "Pending Manager";
-  } else if (status.includes("pending")) {
-    badgeStyle = {
-      background: colors.blueLight,
-      color: colors.blue,
-      border: `1px solid ${colors.blue}`,
-    };
-    text = "Pending Admin";
-  } else {
-    text = text.replace(/_/g, " ");
-  }
-
-  return (
-    <span
-      className="text-[10px] sm:text-xs font-semibold px-2.5 py-1 rounded-md uppercase tracking-wider"
-      style={badgeStyle}
-    >
-      {text}
-    </span>
-  );
-};
 
   const totalPending = (stats.pendingManager || 0) + (stats.pendingAdmin || 0);
 
@@ -280,208 +310,208 @@ const EmployeeReimbursements = () => {
   // );
 
   return (
-  <div className="py-2 pb-6 w-full h-full flex flex-col animate-in fade-in">
-    {/* ─── Header ─── */}
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-      <div>
-        <h2
-          className="text-2xl font-bold"
-          style={{ color: colors.textPrimary }}
-        >
-          My{" "}
-          <span style={{ color: colors.accent }}>
-            Reimbursements
-          </span>
-        </h2>
-
-        <p
-          className="text-sm mt-1"
-          style={{ color: colors.textSecondary }}
-        >
-          Track your personal expense claims.
-        </p>
-      </div>
-
-      <Button
-        variant="custom"
-        bg={colors.blue}
-        text={colors.cardBg}
-        icon={Plus}
-        size="sm"
-        onClick={() => setApplyModalOpen(true)}
-      >
-        Apply Reimbursement
-      </Button>
-    </div>
-
-    {/* ─── Personal Stats Grid ─── */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <StatsCard
-        icon={FileText}
-        iconBg={colors.blueLight}
-        iconColor={colors.blue}
-        value={loading ? "..." : stats.totalRequests}
-        label="Total Requests"
-      />
-
-      <StatsCard
-        icon={Clock}
-        iconBg={colors.warningLight}
-        iconColor={colors.warning}
-        value={loading ? "..." : totalPending}
-        label="Total Pending"
-      />
-
-      <StatsCard
-        icon={CheckCircle}
-        iconBg={colors.successLight}
-        iconColor={colors.success}
-        value={loading ? "..." : stats.approved}
-        label="Approved"
-      />
-
-      <StatsCard
-        icon={DollarSign}
-        iconBg={colors.purpleLight}
-        iconColor={colors.purple}
-        value={
-          loading
-            ? "..."
-            : `$${stats.totalApprovedAmount?.toLocaleString()}`
-        }
-        label="Approved Amount"
-      />
-    </div>
-
-    <div
-      className="pb-3 mb-4"
-      style={{
-        borderBottom: `1px solid ${colors.cardBorder}`,
-      }}
-    >
-      <h3
-        className="text-lg font-bold"
-        style={{ color: colors.textPrimary }}
-      >
-        My History
-      </h3>
-    </div>
-
-    {/* ─── Requests List ─── */}
-    <div className="flex-1">
-      {loading ? (
-        <div
-          className="py-10 text-center animate-pulse"
-          style={{ color: colors.textSecondary }}
-        >
-          Loading your requests...
-        </div>
-      ) : requests.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {requests.map((req) => (
-            <div
-              key={req._id}
-              className="rounded-xl p-5 flex flex-col transition-colors"
-              style={{
-                background: colors.cardBg,
-                border: `1px solid ${colors.cardBorder}`,
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.borderColor = colors.accent)
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.borderColor = colors.cardBorder)
-              }
-            >
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <h4
-                    className="text-base font-bold"
-                    style={{ color: colors.textPrimary }}
-                  >
-                    {req.reimbursementType}
-                  </h4>
-
-                  <p
-                    className="text-xs mt-1"
-                    style={{ color: colors.textSecondary }}
-                  >
-                    Submitted on{" "}
-                    {new Date(
-                      req.createdAt || req.expenseDate
-                    ).toLocaleDateString()}
-                  </p>
-                </div>
-
-                <p
-                  className="text-lg font-bold"
-                  style={{ color: colors.accent }}
-                >
-                  ${req.amount || 0}
-                </p>
-              </div>
-
-              <div
-                className="mb-4 text-sm line-clamp-2"
-                style={{ color: colors.textSecondary }}
-              >
-                {req.description}
-              </div>
-
-              <div
-                className="mt-auto pt-4 flex items-center justify-between"
-                style={{
-                  borderTop: `1px solid ${colors.cardBorder}`,
-                }}
-              >
-                {renderStatusBadge(req)}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div
-          className="flex flex-col items-center justify-center py-16 rounded-xl mt-4"
-          style={{
-            background: colors.cardBg,
-            border: `2px dashed ${colors.cardBorder}`,
-            color: colors.textSecondary,
-          }}
-        >
-          <Inbox
-            size={48}
-            className="mb-4"
-            style={{
-              color: colors.textMuted,
-              opacity: 0.5,
-            }}
-          />
-
-          <p
-            className="text-lg font-bold"
+    <div className="py-2 pb-6 w-full h-full flex flex-col animate-in fade-in">
+      {/* ─── Header ─── */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h2
+            className="text-2xl font-bold"
             style={{ color: colors.textPrimary }}
           >
-            No claims yet
-          </p>
+            My{" "}
+            <span style={{ color: colors.accent }}>
+              Reimbursements
+            </span>
+          </h2>
 
           <p
             className="text-sm mt-1"
             style={{ color: colors.textSecondary }}
           >
-            You haven't submitted any reimbursement requests.
+            Track your personal expense claims.
           </p>
         </div>
-      )}
-    </div>
 
-    <ApplyReimbursementModal
-      key={isApplyModalOpen ? "open" : "closed"}
-      open={isApplyModalOpen}
-      onClose={() => setApplyModalOpen(false)}
-      onSubmit={handleApplyReimbursement}
-    />
-  </div>
-);
+        <Button
+          variant="custom"
+          bg={colors.blue}
+          text={colors.cardBg}
+          icon={Plus}
+          size="sm"
+          onClick={() => setApplyModalOpen(true)}
+        >
+          Apply Reimbursement
+        </Button>
+      </div>
+
+      {/* ─── Personal Stats Grid ─── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <StatsCard
+          icon={FileText}
+          iconBg={colors.blueLight}
+          iconColor={colors.blue}
+          value={loading ? "..." : stats.totalRequests}
+          label="Total Requests"
+        />
+
+        <StatsCard
+          icon={Clock}
+          iconBg={colors.warningLight}
+          iconColor={colors.warning}
+          value={loading ? "..." : totalPending}
+          label="Total Pending"
+        />
+
+        <StatsCard
+          icon={CheckCircle}
+          iconBg={colors.successLight}
+          iconColor={colors.success}
+          value={loading ? "..." : stats.approved}
+          label="Approved"
+        />
+
+        <StatsCard
+          icon={DollarSign}
+          iconBg={colors.purpleLight}
+          iconColor={colors.purple}
+          value={
+            loading
+              ? "..."
+              : `$${stats.totalApprovedAmount?.toLocaleString()}`
+          }
+          label="Approved Amount"
+        />
+      </div>
+
+      <div
+        className="pb-3 mb-4"
+        style={{
+          borderBottom: `1px solid ${colors.cardBorder}`,
+        }}
+      >
+        <h3
+          className="text-lg font-bold"
+          style={{ color: colors.textPrimary }}
+        >
+          My History
+        </h3>
+      </div>
+
+      {/* ─── Requests List ─── */}
+      <div className="flex-1">
+        {loading ? (
+          <div
+            className="py-10 text-center animate-pulse"
+            style={{ color: colors.textSecondary }}
+          >
+            Loading your requests...
+          </div>
+        ) : requests.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {requests.map((req) => (
+              <div
+                key={req._id}
+                className="rounded-xl p-5 flex flex-col transition-colors"
+                style={{
+                  background: colors.cardBg,
+                  border: `1px solid ${colors.cardBorder}`,
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.borderColor = colors.accent)
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.borderColor = colors.cardBorder)
+                }
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h4
+                      className="text-base font-bold"
+                      style={{ color: colors.textPrimary }}
+                    >
+                      {req.reimbursementType}
+                    </h4>
+
+                    <p
+                      className="text-xs mt-1"
+                      style={{ color: colors.textSecondary }}
+                    >
+                      Submitted on{" "}
+                      {new Date(
+                        req.createdAt || req.expenseDate
+                      ).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  <p
+                    className="text-lg font-bold"
+                    style={{ color: colors.accent }}
+                  >
+                    ${req.amount || 0}
+                  </p>
+                </div>
+
+                <div
+                  className="mb-4 text-sm line-clamp-2"
+                  style={{ color: colors.textSecondary }}
+                >
+                  {req.description}
+                </div>
+
+                <div
+                  className="mt-auto pt-4 flex items-center justify-between"
+                  style={{
+                    borderTop: `1px solid ${colors.cardBorder}`,
+                  }}
+                >
+                  {renderStatusBadge(req)}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div
+            className="flex flex-col items-center justify-center py-16 rounded-xl mt-4"
+            style={{
+              background: colors.cardBg,
+              border: `2px dashed ${colors.cardBorder}`,
+              color: colors.textSecondary,
+            }}
+          >
+            <Inbox
+              size={48}
+              className="mb-4"
+              style={{
+                color: colors.textMuted,
+                opacity: 0.5,
+              }}
+            />
+
+            <p
+              className="text-lg font-bold"
+              style={{ color: colors.textPrimary }}
+            >
+              No claims yet
+            </p>
+
+            <p
+              className="text-sm mt-1"
+              style={{ color: colors.textSecondary }}
+            >
+              You haven't submitted any reimbursement requests.
+            </p>
+          </div>
+        )}
+      </div>
+
+      <ApplyReimbursementModal
+        key={isApplyModalOpen ? "open" : "closed"}
+        open={isApplyModalOpen}
+        onClose={() => setApplyModalOpen(false)}
+        onSubmit={handleApplyReimbursement}
+      />
+    </div>
+  );
 };
 
 export default EmployeeReimbursements;

@@ -185,6 +185,94 @@ export default function OfferLetters() {
   // };
 
   // ─── DATA TABLE COLUMNS ───
+  // const columns = [
+  //   {
+  //     key: "candidate",
+  //     label: "Candidate Info",
+  //     width: "2fr",
+  //     align: "left",
+  //     render: (_, row) => (
+  //       <div className="min-w-0">
+  //         <p className="text-sm font-bold text-text-primary truncate">
+  //           {row.candidateName}
+  //         </p>
+  //         <p className="text-xs text-text-secondary truncate">
+  //           Dept. {row.department}
+  //         </p>
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     key: "designation",
+  //     label: "Role",
+  //     width: "1.5fr",
+  //     align: "left",
+  //     render: (val, row) => (
+  //       <div className="min-w-0">
+  //         <p className="text-sm font-semibold text-text-primary truncate">
+  //           {val}
+  //         </p>
+  //         <p className="text-xs text-text-secondary truncate capitalize">
+  //           {row.templateType}
+  //         </p>
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     key: "ctc",
+  //     label: "CTC",
+  //     width: "1fr",
+  //     align: "center",
+  //     render: (val) => {
+  //       // 'val' is already the number (e.g., 288000)
+  //       return (
+  //         <span className="font-bold text-text-primary">
+  //           ₹{(val || 0).toLocaleString("en-IN")}
+  //         </span>
+  //       );
+  //     },
+  //   },
+  //   {
+  //     key: "dateOfJoining",
+  //     label: "Joining Date",
+  //     width: "1fr",
+  //     align: "left",
+  //     render: (val) => (
+  //       <span className="text-sm text-text-secondary">
+  //         {val ? new Date(val).toLocaleDateString() : "-"}
+  //       </span>
+  //     ),
+  //   },
+  //   {
+  //     key: "actions",
+  //     label: "Actions",
+  //     width: "1fr",
+  //     align: "right",
+  //     render: (_, row) => {
+  //       const documentUrl = row.documentUrl || row.url || row.pdfUrl;
+  //       return (
+  //         <div className="flex justify-end gap-2">
+  //           {documentUrl && (
+  //             <button
+  //               onClick={() => window.open(documentUrl, "_blank")}
+  //               className="p-1.5 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 rounded-xl transition-colors cursor-pointer"
+  //               title="Download PDF"
+  //             >
+  //               <Download size={16} />
+  //             </button>
+  //           )}
+  //           {/* <button
+  //             onClick={() => handleSendEmail(row)}
+  //             className="p-1.5 bg-green-500/10 text-green-400 hover:bg-green-500/20 rounded-xl transition-colors cursor-pointer"
+  //             title="Email to Candidate"
+  //           >
+  //             <Mail size={16} />
+  //           </button> */}
+  //         </div>
+  //       );
+  //     },
+  //   },
+  // ];
   const columns = [
     {
       key: "candidate",
@@ -193,10 +281,17 @@ export default function OfferLetters() {
       align: "left",
       render: (_, row) => (
         <div className="min-w-0">
-          <p className="text-sm font-bold text-text-primary truncate">
+          <p
+            className="text-sm font-bold truncate"
+            style={{ color: colors.textPrimary }}
+          >
             {row.candidateName}
           </p>
-          <p className="text-xs text-text-secondary truncate">
+
+          <p
+            className="text-xs truncate"
+            style={{ color: colors.textSecondary }}
+          >
             Dept. {row.department}
           </p>
         </div>
@@ -209,10 +304,17 @@ export default function OfferLetters() {
       align: "left",
       render: (val, row) => (
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-text-primary truncate">
+          <p
+            className="text-sm font-semibold truncate"
+            style={{ color: colors.textPrimary }}
+          >
             {val}
           </p>
-          <p className="text-xs text-text-secondary truncate capitalize">
+
+          <p
+            className="text-xs truncate capitalize"
+            style={{ color: colors.textSecondary }}
+          >
             {row.templateType}
           </p>
         </div>
@@ -223,14 +325,14 @@ export default function OfferLetters() {
       label: "CTC",
       width: "1fr",
       align: "center",
-      render: (val) => {
-        // 'val' is already the number (e.g., 288000)
-        return (
-          <span className="font-bold text-text-primary">
-            ₹{(val || 0).toLocaleString("en-IN")}
-          </span>
-        );
-      },
+      render: (val) => (
+        <span
+          className="font-bold"
+          style={{ color: colors.textPrimary }}
+        >
+          ₹{(val || 0).toLocaleString("en-IN")}
+        </span>
+      ),
     },
     {
       key: "dateOfJoining",
@@ -238,7 +340,10 @@ export default function OfferLetters() {
       width: "1fr",
       align: "left",
       render: (val) => (
-        <span className="text-sm text-text-secondary">
+        <span
+          className="text-sm"
+          style={{ color: colors.textSecondary }}
+        >
           {val ? new Date(val).toLocaleDateString() : "-"}
         </span>
       ),
@@ -249,25 +354,32 @@ export default function OfferLetters() {
       width: "1fr",
       align: "right",
       render: (_, row) => {
-        const documentUrl = row.documentUrl || row.url || row.pdfUrl;
+        const documentUrl =
+          row.documentUrl || row.url || row.pdfUrl;
+
         return (
           <div className="flex justify-end gap-2">
             {documentUrl && (
               <button
                 onClick={() => window.open(documentUrl, "_blank")}
-                className="p-1.5 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 rounded-xl transition-colors cursor-pointer"
                 title="Download PDF"
+                className="p-1.5 rounded-xl transition-colors cursor-pointer"
+                style={{
+                  background: colors.blueLight,
+                  color: colors.blue,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = colors.blue;
+                  e.currentTarget.style.color = colors.cardBg;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = colors.blueLight;
+                  e.currentTarget.style.color = colors.blue;
+                }}
               >
                 <Download size={16} />
               </button>
             )}
-            {/* <button
-              onClick={() => handleSendEmail(row)}
-              className="p-1.5 bg-green-500/10 text-green-400 hover:bg-green-500/20 rounded-xl transition-colors cursor-pointer"
-              title="Email to Candidate"
-            >
-              <Mail size={16} />
-            </button> */}
           </div>
         );
       },
