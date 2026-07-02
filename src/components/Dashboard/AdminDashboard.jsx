@@ -555,7 +555,7 @@ export default function AdminDashboard() {
               value={
                 loading
                   ? "..."
-                  : `$${(data.stats.avgMonthlyPayroll || 0).toLocaleString()}`
+                  : `₹${(data.stats.avgMonthlyPayroll || 0).toLocaleString()}`
               }
               trendText="Current Month"
               trendColor={colors.orange}
