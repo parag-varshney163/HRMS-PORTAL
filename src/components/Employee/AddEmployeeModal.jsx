@@ -34,6 +34,8 @@ const blankForm = {
   workLocation: "office",
   reportingManager: "", // Captures manager _id
   systemRole: "employee",
+  weekoff: [],
+  workingHours: "",
 };
 
 export default function AddEmployeeModal({
@@ -117,6 +119,15 @@ export default function AddEmployeeModal({
             initialData.employment?.systemRole ||
             initialData.user?.role ||
             "employee",
+          weekoff:
+            initialData.weekoff ||
+            initialData.employment?.weekoff ||
+            [],
+
+          workingHours:
+            initialData.workingHours ||
+            initialData.employment?.workingHours ||
+            "",
         });
       } else {
         setForm(blankForm);
@@ -199,732 +210,266 @@ export default function AddEmployeeModal({
     ? formatName(selectedDeptObj.name)
     : "Select Department...";
 
-//   return (
-//     <div
-//       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-//       // 🚨 FIX 1: Prevent closing if currently submitting!
-//       onClick={() => {
-//         if (!isSubmitting) onClose();
-//       }}
-//     >
-//       <div
-//         className="bg-card border border-card-border rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col"
-//         onClick={(e) => e.stopPropagation()}
-//       >
-//         {/* HEADER */}
-//         <div className="p-6 pb-0 sticky top-0 bg-card z-10 shrink-0">
-//           <div className="flex items-center justify-between mb-4">
-//             <h2 className="text-xl font-bold text-text-primary">
-//               {isEditMode ? "Edit Employee Record" : "Onboard New Employee"}
-//             </h2>
-//             <button
-//               type="button"
-//               onClick={onClose}
-//               disabled={isSubmitting} // 🚨 FIX 2: Disable X button during save
-//               className="text-text-secondary hover:text-text-primary p-1 rounded-lg hover:bg-hover transition-colors bg-transparent border-none cursor-pointer disabled:opacity-50"
-//             >
-//               <X size={20} />
-//             </button>
-//           </div>
-
-//           {/* 🚨 TABS NAVIGATION */}
-//           <div className="flex border-b border-card-border">
-//             <button
-//               type="button"
-//               onClick={() => setActiveTab("personal")}
-//               className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold border-b-2 transition-colors cursor-pointer ${activeTab === "personal" ? "border-accent text-accent" : "border-transparent text-text-secondary hover:text-text-primary"}`}
-//             >
-//               <User size={16} /> Personal Details
-//             </button>
-//             <button
-//               type="button"
-//               onClick={() => setActiveTab("employment")}
-//               className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold border-b-2 transition-colors cursor-pointer ${activeTab === "employment" ? "border-accent text-accent" : "border-transparent text-text-secondary hover:text-text-primary"}`}
-//             >
-//               <Briefcase size={16} /> Employment Details
-//             </button>
-//           </div>
-//         </div>
-
-//         {/* FORM */}
-//         {/* <form onSubmit={handleSubmit} className="p-6 space-y-4"> */}
-//         <form
-//           onSubmit={(e) => {
-//             if (activeTab !== "employment") {
-//               e.preventDefault();
-//               return;
-//             }
-
-//             handleSubmit(e);
-//           }}
-//           className="p-6 space-y-4"
-//         >
-//           {/* ========================================== */}
-//           {/* TAB 1: PERSONAL DETAILS                    */}
-//           {/* ========================================== */}
-//           {activeTab === "personal" && (
-//             <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//                 <div>
-//                   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                     First Name <span className="text-danger">*</span>
-//                   </label>
-//                   <input
-//                     type="text"
-//                     value={form.firstName}
-//                     onChange={(e) => handleChange("firstName", e.target.value)}
-//                     className={`w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border text-sm outline-none focus:border-btn transition-colors ${errors.firstName ? "border-danger" : "border-card-border"}`}
-//                   />
-//                   {errors.firstName && (
-//                     <p className="text-xs text-danger mt-1">
-//                       {errors.firstName}
-//                     </p>
-//                   )}
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                     Last Name <span className="text-danger">*</span>
-//                   </label>
-//                   <input
-//                     type="text"
-//                     value={form.lastName}
-//                     onChange={(e) => handleChange("lastName", e.target.value)}
-//                     className={`w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border text-sm outline-none focus:border-btn transition-colors ${errors.lastName ? "border-danger" : "border-card-border"}`}
-//                   />
-//                   {errors.lastName && (
-//                     <p className="text-xs text-danger mt-1">
-//                       {errors.lastName}
-//                     </p>
-//                   )}
-//                 </div>
-//               </div>
-
-//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//                 <div>
-//                   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                     Email <span className="text-danger">*</span>
-//                   </label>
-//                   <input
-//                     type="email"
-//                     value={form.email}
-//                     onChange={(e) => handleChange("email", e.target.value)}
-//                     className={`w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border text-sm outline-none focus:border-btn transition-colors ${errors.email ? "border-danger" : "border-card-border"}`}
-//                   />
-//                   {errors.email && (
-//                     <p className="text-xs text-danger mt-1">{errors.email}</p>
-//                   )}
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                     Phone Number <span className="text-danger">*</span>
-//                   </label>
-//                   <input
-//                     type="tel"
-//                     value={form.phoneNumber}
-//                     onChange={(e) =>
-//                       handleChange("phoneNumber", e.target.value)
-//                     }
-//                     className={`w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border text-sm outline-none focus:border-btn transition-colors ${errors.phoneNumber ? "border-danger" : "border-card-border"}`}
-//                   />
-//                   {errors.phoneNumber && (
-//                     <p className="text-xs text-danger mt-1">
-//                       {errors.phoneNumber}
-//                     </p>
-//                   )}
-//                 </div>
-//               </div>
-
-//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//                 <div>
-//                   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                     Gender
-//                   </label>
-//                   <select
-//                     value={form.gender}
-//                     onChange={(e) => handleChange("gender", e.target.value)}
-//                     className="w-full appearance-none bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none cursor-pointer focus:border-btn transition-colors"
-//                   >
-//                     <option value="" disabled>
-//                       Select Gender
-//                     </option>
-//                     <option value="male">Male</option>
-//                     <option value="female">Female</option>
-//                     <option value="other">Other</option>
-//                   </select>
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                     Date of Birth
-//                   </label>
-//                   <input
-//                     type="date"
-//                     value={form.birthdate}
-//                     onChange={(e) => handleChange("birthdate", e.target.value)}
-//                     className="w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none focus:border-btn transition-colors [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-50"
-//                   />
-//                 </div>
-//               </div>
-
-//               <div>
-//                 <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                   Address
-//                 </label>
-//                 <textarea
-//                   rows="2"
-//                   value={form.address}
-//                   onChange={(e) => handleChange("address", e.target.value)}
-//                   className="w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none focus:border-btn transition-colors resize-none"
-//                 />
-//               </div>
-
-//               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-//                 <div>
-//                   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                     City
-//                   </label>
-//                   <input
-//                     type="text"
-//                     value={form.city}
-//                     onChange={(e) => handleChange("city", e.target.value)}
-//                     className="w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none focus:border-btn transition-colors"
-//                   />
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                     State
-//                   </label>
-//                   <input
-//                     type="text"
-//                     value={form.state}
-//                     onChange={(e) => handleChange("state", e.target.value)}
-//                     className="w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none focus:border-btn transition-colors"
-//                   />
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                     Zip Code
-//                   </label>
-//                   <input
-//                     type="text"
-//                     value={form.zipCode}
-//                     onChange={(e) => handleChange("zipCode", e.target.value)}
-//                     className="w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none focus:border-btn transition-colors"
-//                   />
-//                 </div>
-//               </div>
-//             </div>
-//           )}
-
-//           {/* ========================================== */}
-//           {/* TAB 2: EMPLOYMENT DETAILS                  */}
-//           {/* ========================================== */}
-//           {activeTab === "employment" && (
-//             <div className="space-y-4 animate-in fade-in slide-in-from-left-4 duration-300">
-//               {loadingData && (
-//                 <div className="flex justify-center py-2 text-accent text-sm gap-2">
-//                   <Loader2 size={16} className="animate-spin" /> Fetching Org
-//                   Data...
-//                 </div>
-//               )}
-
-//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//                 <div>
-//                   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                     Joining Date
-//                   </label>
-//                   <input
-//                     type="date"
-//                     value={form.joiningDate}
-//                     onChange={(e) =>
-//                       handleChange("joiningDate", e.target.value)
-//                     }
-//                     className="w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none focus:border-btn transition-colors [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-50"
-//                   />
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                     System Role
-//                   </label>
-//                   <select
-//                     value={form.systemRole}
-//                     onChange={(e) => handleChange("systemRole", e.target.value)}
-//                     className="w-full appearance-none bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none cursor-pointer focus:border-btn transition-colors"
-//                   >
-//                     <option value="employee">Employee</option>
-//                     <option value="manager">Manager</option>
-//                     <option value="admin">Admin</option>
-//                     <option value={"hr"}>HR</option>
-//                   </select>
-//                 </div>
-//               </div>
-
-//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-card-border pt-4">
-//                 <div>
-//                   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                     Department
-//                   </label>
-//                   <FilterDropDown
-//                     key={`dept-${departmentLabel}`}
-//                     options={departmentOptions}
-//                     defaultLabel={departmentLabel}
-//                     width="100%"
-//                     onSelect={(selectedName) => {
-//                       const dept = departments.find(
-//                         (d) => formatName(d.name) === selectedName,
-//                       );
-//                       if (dept) handleChange("department", dept._id);
-//                     }}
-//                   />
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                     Designation (Job Title)
-//                   </label>
-//                   <input
-//                     type="text"
-//                     placeholder="e.g. Software Engineer"
-//                     value={form.designation}
-//                     onChange={(e) =>
-//                       handleChange("designation", e.target.value)
-//                     }
-//                     className="w-full bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none focus:border-btn transition-colors"
-//                   />
-//                 </div>
-//               </div>
-
-//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//                 <div>
-//                   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                     Employment Type
-//                   </label>
-//                   <select
-//                     value={form.employmentType}
-//                     onChange={(e) =>
-//                       handleChange("employmentType", e.target.value)
-//                     }
-//                     className="w-full appearance-none bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none cursor-pointer focus:border-btn transition-colors"
-//                   >
-//                     <option value="full_time">Full Time</option>
-//                     <option value="part_time">Part Time</option>
-//                     <option value="contract">Contract</option>
-//                     <option value="internship">Internship</option>
-//                   </select>
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                     Work Location
-//                   </label>
-//                   <select
-//                     value={form.workLocation}
-//                     onChange={(e) =>
-//                       handleChange("workLocation", e.target.value)
-//                     }
-//                     className="w-full appearance-none bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none cursor-pointer focus:border-btn transition-colors"
-//                   >
-//                     <option value="office">Office</option>
-//                     <option value="remote">Remote</option>
-//                     <option value="hybrid">Hybrid</option>
-//                   </select>
-//                 </div>
-//               </div>
-
-//               {/* <div className="border-t border-card-border pt-4">
-//                 <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//                   Reporting Manager
-//                 </label>
-//                 <select
-//                   value={form.reportingManager}
-//                   onChange={(e) =>
-//                     handleChange("reportingManager", e.target.value)
-//                   }
-//                   className="w-full appearance-none bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none cursor-pointer focus:border-btn transition-colors"
-//                 >
-//                   <option value="">No Manager (Top Level)</option>
-//                   {managers.map((m) => (
-//                     <option key={m._id} value={m._id}>
-//                       {m.firstName} {m.lastName}
-//                     </option>
-//                   ))}
-//                 </select>
-//               </div> */}
-//               <div className="border-t border-card-border pt-4">
-//   <label className="block text-sm font-semibold text-text-primary mb-1.5">
-//     Reporting Manager
-//   </label>
-
-//   <select
-//     value={form.reportingManager}
-//     onChange={(e) =>
-//       handleChange("reportingManager", e.target.value)
-//     }
-//     className="w-full appearance-none bg-input text-text-primary px-4 py-2.5 rounded-xl border border-card-border text-sm outline-none cursor-pointer focus:border-btn transition-colors"
-//   >
-//     <option value="">No Manager (Top Level)</option>
-
-//     {managers.map((manager) => (
-//       <option key={manager._id} value={manager._id}>
-//         {manager.name} ({manager.userId})
-//       </option>
-//     ))}
-//   </select>
-// </div>
-//             </div>
-//           )}
-
-//           {/* BUTTONS */}
-//           <div className="flex gap-3 pt-6 shrink-0 border-t border-card-border mt-6">
-//             <button
-//               type="button"
-//               onClick={onClose}
-//               disabled={isSubmitting}
-//               className="flex-1 py-2.5 rounded-xl bg-input text-text-secondary border border-card-border text-sm font-semibold hover:bg-hover transition-colors cursor-pointer disabled:opacity-50"
-//             >
-//               Cancel
-//             </button>
-
-//             {activeTab === "personal" ? (
-//               // <button
-//               //   type="button"
-//               //   onClick={() => setActiveTab("employment")}
-//               //   className="flex-1 py-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 text-sm font-semibold hover:bg-blue-500/20 transition-colors cursor-pointer"
-//               // >
-//               //   Next: Job Details ➔
-//               // </button>
-//               <button
-//                 type="button"
-//                 onClick={handleNext}
-//                 className="flex-1 py-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 text-sm font-semibold hover:bg-blue-500/20 transition-colors cursor-pointer"
-//               >
-//                 Next: Job Details ➔
-//               </button>
-//             ) : (
-//               <button
-//                 type="submit"
-//                 disabled={isSubmitting}
-//                 className="flex-1 py-2.5 rounded-xl bg-btn text-white border-none text-sm font-semibold hover:bg-btn-hover transition-colors cursor-pointer disabled:opacity-70"
-//               >
-//                 {isSubmitting
-//                   ? "Saving..."
-//                   : isEditMode
-//                     ? "Save All Changes"
-//                     : "Complete Onboarding"}
-//               </button>
-//             )}
-//           </div>
-//         </form>
-//       </div>
-//     </div>
-//   );
-
   return (
-  <div
-    className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm p-4"
-    style={{ backgroundColor: "rgba(31, 41, 55, 0.60)" }}
-    onClick={() => {
-      if (!isSubmitting) onClose();
-    }}
-  >
     <div
-      className="rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col"
-      style={{
-        backgroundColor: colors.cardBg,
-        border: `1px solid ${colors.cardBorder}`,
+      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm p-4"
+      style={{ backgroundColor: "rgba(31, 41, 55, 0.60)" }}
+      onClick={() => {
+        if (!isSubmitting) onClose();
       }}
-      onClick={(e) => e.stopPropagation()}
     >
-      {/* HEADER */}
       <div
-        className="p-6 pb-0 sticky top-0 z-10 shrink-0"
-        style={{ backgroundColor: colors.cardBg }}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>
-            {isEditMode ? "Edit Employee Record" : "Onboard New Employee"}
-          </h2>
-
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={isSubmitting}
-            className="p-1 rounded-lg transition-colors bg-transparent border-none cursor-pointer disabled:opacity-50"
-            style={{ color: colors.textSecondary }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = colors.hover;
-              e.currentTarget.style.color = colors.textPrimary;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = colors.textSecondary;
-            }}
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        {/* TABS */}
-        <div
-          className="flex"
-          style={{ borderBottom: `1px solid ${colors.cardBorder}` }}
-        >
-          <button
-            type="button"
-            onClick={() => setActiveTab("personal")}
-            className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold border-b-2 transition-colors cursor-pointer bg-transparent"
-            style={{
-              borderBottomColor:
-                activeTab === "personal" ? colors.accent : "transparent",
-              color:
-                activeTab === "personal"
-                  ? colors.accentDark
-                  : colors.textSecondary,
-            }}
-          >
-            <User size={16} />
-            Personal Details
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab("employment")}
-            className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold border-b-2 transition-colors cursor-pointer bg-transparent"
-            style={{
-              borderBottomColor:
-                activeTab === "employment" ? colors.accent : "transparent",
-              color:
-                activeTab === "employment"
-                  ? colors.accentDark
-                  : colors.textSecondary,
-            }}
-          >
-            <Briefcase size={16} />
-            Employment Details
-          </button>
-        </div>
-      </div>
-
-      <form
-        onSubmit={(e) => {
-          if (activeTab !== "employment") {
-            e.preventDefault();
-            return;
-          }
-
-          handleSubmit(e);
+        className="rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col"
+        style={{
+          backgroundColor: colors.cardBg,
+          border: `1px solid ${colors.cardBorder}`,
         }}
-        className="p-6 space-y-4"
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* PERSONAL DETAILS */}
-        {activeTab === "personal" && (
-          <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  className="block text-sm font-semibold mb-1.5"
-                  style={{ color: colors.textPrimary }}
-                >
-                  First Name <span style={{ color: colors.danger }}>*</span>
-                </label>
+        {/* HEADER */}
+        <div
+          className="p-6 pb-0 sticky top-0 z-10 shrink-0"
+          style={{ backgroundColor: colors.cardBg }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>
+              {isEditMode ? "Edit Employee Record" : "Onboard New Employee"}
+            </h2>
 
-                <input
-                  type="text"
-                  value={form.firstName}
-                  onChange={(e) => handleChange("firstName", e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-colors"
-                  style={{
-                    backgroundColor: colors.inputBg,
-                    color: colors.textPrimary,
-                    borderColor: errors.firstName
-                      ? colors.danger
-                      : colors.cardBorder,
-                  }}
-                />
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isSubmitting}
+              className="p-1 rounded-lg transition-colors bg-transparent border-none cursor-pointer disabled:opacity-50"
+              style={{ color: colors.textSecondary }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = colors.hover;
+                e.currentTarget.style.color = colors.textPrimary;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = colors.textSecondary;
+              }}
+            >
+              <X size={20} />
+            </button>
+          </div>
 
-                {errors.firstName && (
-                  <p className="text-xs mt-1" style={{ color: colors.danger }}>
-                    {errors.firstName}
-                  </p>
-                )}
-              </div>
+          {/* TABS */}
+          <div
+            className="flex"
+            style={{ borderBottom: `1px solid ${colors.cardBorder}` }}
+          >
+            <button
+              type="button"
+              onClick={() => setActiveTab("personal")}
+              className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold border-b-2 transition-colors cursor-pointer bg-transparent"
+              style={{
+                borderBottomColor:
+                  activeTab === "personal" ? colors.accent : "transparent",
+                color:
+                  activeTab === "personal"
+                    ? colors.accentDark
+                    : colors.textSecondary,
+              }}
+            >
+              <User size={16} />
+              Personal Details
+            </button>
 
-              <div>
-                <label
-                  className="block text-sm font-semibold mb-1.5"
-                  style={{ color: colors.textPrimary }}
-                >
-                  Last Name <span style={{ color: colors.danger }}>*</span>
-                </label>
+            <button
+              type="button"
+              onClick={() => setActiveTab("employment")}
+              className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold border-b-2 transition-colors cursor-pointer bg-transparent"
+              style={{
+                borderBottomColor:
+                  activeTab === "employment" ? colors.accent : "transparent",
+                color:
+                  activeTab === "employment"
+                    ? colors.accentDark
+                    : colors.textSecondary,
+              }}
+            >
+              <Briefcase size={16} />
+              Employment Details
+            </button>
+          </div>
+        </div>
 
-                <input
-                  type="text"
-                  value={form.lastName}
-                  onChange={(e) => handleChange("lastName", e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-colors"
-                  style={{
-                    backgroundColor: colors.inputBg,
-                    color: colors.textPrimary,
-                    borderColor: errors.lastName
-                      ? colors.danger
-                      : colors.cardBorder,
-                  }}
-                />
+        <form
+          onSubmit={(e) => {
+            if (activeTab !== "employment") {
+              e.preventDefault();
+              return;
+            }
 
-                {errors.lastName && (
-                  <p className="text-xs mt-1" style={{ color: colors.danger }}>
-                    {errors.lastName}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  className="block text-sm font-semibold mb-1.5"
-                  style={{ color: colors.textPrimary }}
-                >
-                  Email <span style={{ color: colors.danger }}>*</span>
-                </label>
-
-                <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                  style={{
-                    backgroundColor: colors.inputBg,
-                    color: colors.textPrimary,
-                    borderColor: errors.email ? colors.danger : colors.cardBorder,
-                  }}
-                />
-
-                {errors.email && (
-                  <p className="text-xs mt-1" style={{ color: colors.danger }}>
-                    {errors.email}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label
-                  className="block text-sm font-semibold mb-1.5"
-                  style={{ color: colors.textPrimary }}
-                >
-                  Phone Number <span style={{ color: colors.danger }}>*</span>
-                </label>
-
-                <input
-                  type="tel"
-                  value={form.phoneNumber}
-                  onChange={(e) =>
-                    handleChange("phoneNumber", e.target.value)
-                  }
-                  className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                  style={{
-                    backgroundColor: colors.inputBg,
-                    color: colors.textPrimary,
-                    borderColor: errors.phoneNumber
-                      ? colors.danger
-                      : colors.cardBorder,
-                  }}
-                />
-
-                {errors.phoneNumber && (
-                  <p className="text-xs mt-1" style={{ color: colors.danger }}>
-                    {errors.phoneNumber}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  className="block text-sm font-semibold mb-1.5"
-                  style={{ color: colors.textPrimary }}
-                >
-                  Gender
-                </label>
-
-                <select
-                  value={form.gender}
-                  onChange={(e) => handleChange("gender", e.target.value)}
-                  className="w-full appearance-none px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer"
-                  style={{
-                    backgroundColor: colors.inputBg,
-                    color: colors.textPrimary,
-                    borderColor: colors.cardBorder,
-                  }}
-                >
-                  <option value="" disabled>
-                    Select Gender
-                  </option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label
-                  className="block text-sm font-semibold mb-1.5"
-                  style={{ color: colors.textPrimary }}
-                >
-                  Date of Birth
-                </label>
-
-                <input
-                  type="date"
-                  value={form.birthdate}
-                  onChange={(e) => handleChange("birthdate", e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                  style={{
-                    backgroundColor: colors.inputBg,
-                    color: colors.textPrimary,
-                    borderColor: colors.cardBorder,
-                  }}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                className="block text-sm font-semibold mb-1.5"
-                style={{ color: colors.textPrimary }}
-              >
-                Address
-              </label>
-
-              <textarea
-                rows="2"
-                value={form.address}
-                onChange={(e) => handleChange("address", e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none resize-none"
-                style={{
-                  backgroundColor: colors.inputBg,
-                  color: colors.textPrimary,
-                  borderColor: colors.cardBorder,
-                }}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                ["City", "city"],
-                ["State", "state"],
-                ["Zip Code", "zipCode"],
-              ].map(([label, field]) => (
-                <div key={field}>
+            handleSubmit(e);
+          }}
+          className="p-6 space-y-4"
+        >
+          {/* PERSONAL DETAILS */}
+          {activeTab === "personal" && (
+            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
                   <label
                     className="block text-sm font-semibold mb-1.5"
                     style={{ color: colors.textPrimary }}
                   >
-                    {label}
+                    First Name <span style={{ color: colors.danger }}>*</span>
                   </label>
 
                   <input
                     type="text"
-                    value={form[field]}
-                    onChange={(e) => handleChange(field, e.target.value)}
+                    value={form.firstName}
+                    onChange={(e) => handleChange("firstName", e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-colors"
+                    style={{
+                      backgroundColor: colors.inputBg,
+                      color: colors.textPrimary,
+                      borderColor: errors.firstName
+                        ? colors.danger
+                        : colors.cardBorder,
+                    }}
+                  />
+
+                  {errors.firstName && (
+                    <p className="text-xs mt-1" style={{ color: colors.danger }}>
+                      {errors.firstName}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label
+                    className="block text-sm font-semibold mb-1.5"
+                    style={{ color: colors.textPrimary }}
+                  >
+                    Last Name <span style={{ color: colors.danger }}>*</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    value={form.lastName}
+                    onChange={(e) => handleChange("lastName", e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-colors"
+                    style={{
+                      backgroundColor: colors.inputBg,
+                      color: colors.textPrimary,
+                      borderColor: errors.lastName
+                        ? colors.danger
+                        : colors.cardBorder,
+                    }}
+                  />
+
+                  {errors.lastName && (
+                    <p className="text-xs mt-1" style={{ color: colors.danger }}>
+                      {errors.lastName}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    className="block text-sm font-semibold mb-1.5"
+                    style={{ color: colors.textPrimary }}
+                  >
+                    Email <span style={{ color: colors.danger }}>*</span>
+                  </label>
+
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => handleChange("email", e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                    style={{
+                      backgroundColor: colors.inputBg,
+                      color: colors.textPrimary,
+                      borderColor: errors.email ? colors.danger : colors.cardBorder,
+                    }}
+                  />
+
+                  {errors.email && (
+                    <p className="text-xs mt-1" style={{ color: colors.danger }}>
+                      {errors.email}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label
+                    className="block text-sm font-semibold mb-1.5"
+                    style={{ color: colors.textPrimary }}
+                  >
+                    Phone Number <span style={{ color: colors.danger }}>*</span>
+                  </label>
+
+                  <input
+                    type="tel"
+                    value={form.phoneNumber}
+                    onChange={(e) =>
+                      handleChange("phoneNumber", e.target.value)
+                    }
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                    style={{
+                      backgroundColor: colors.inputBg,
+                      color: colors.textPrimary,
+                      borderColor: errors.phoneNumber
+                        ? colors.danger
+                        : colors.cardBorder,
+                    }}
+                  />
+
+                  {errors.phoneNumber && (
+                    <p className="text-xs mt-1" style={{ color: colors.danger }}>
+                      {errors.phoneNumber}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    className="block text-sm font-semibold mb-1.5"
+                    style={{ color: colors.textPrimary }}
+                  >
+                    Gender
+                  </label>
+
+                  <select
+                    value={form.gender}
+                    onChange={(e) => handleChange("gender", e.target.value)}
+                    className="w-full appearance-none px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer"
+                    style={{
+                      backgroundColor: colors.inputBg,
+                      color: colors.textPrimary,
+                      borderColor: colors.cardBorder,
+                    }}
+                  >
+                    <option value="" disabled>
+                      Select Gender
+                    </option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label
+                    className="block text-sm font-semibold mb-1.5"
+                    style={{ color: colors.textPrimary }}
+                  >
+                    Date of Birth
+                  </label>
+
+                  <input
+                    type="date"
+                    value={form.birthdate}
+                    onChange={(e) => handleChange("birthdate", e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
                     style={{
                       backgroundColor: colors.inputBg,
@@ -933,139 +478,325 @@ export default function AddEmployeeModal({
                     }}
                   />
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
+              </div>
 
-        {/* EMPLOYMENT DETAILS */}
-        {activeTab === "employment" && (
-          <div className="space-y-4 animate-in fade-in slide-in-from-left-4 duration-300">
-            {loadingData && (
+              <div>
+                <label
+                  className="block text-sm font-semibold mb-1.5"
+                  style={{ color: colors.textPrimary }}
+                >
+                  Address
+                </label>
+
+                <textarea
+                  rows="2"
+                  value={form.address}
+                  onChange={(e) => handleChange("address", e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none resize-none"
+                  style={{
+                    backgroundColor: colors.inputBg,
+                    color: colors.textPrimary,
+                    borderColor: colors.cardBorder,
+                  }}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  ["City", "city"],
+                  ["State", "state"],
+                  ["Zip Code", "zipCode"],
+                ].map(([label, field]) => (
+                  <div key={field}>
+                    <label
+                      className="block text-sm font-semibold mb-1.5"
+                      style={{ color: colors.textPrimary }}
+                    >
+                      {label}
+                    </label>
+
+                    <input
+                      type="text"
+                      value={form[field]}
+                      onChange={(e) => handleChange(field, e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                      style={{
+                        backgroundColor: colors.inputBg,
+                        color: colors.textPrimary,
+                        borderColor: colors.cardBorder,
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* EMPLOYMENT DETAILS */}
+          {activeTab === "employment" && (
+            <div className="space-y-4 animate-in fade-in slide-in-from-left-4 duration-300">
+              {loadingData && (
+                <div
+                  className="flex justify-center py-2 text-sm gap-2"
+                  style={{ color: colors.accentDark }}
+                >
+                  <Loader2 size={16} className="animate-spin" />
+                  Fetching Org Data...
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    className="block text-sm font-semibold mb-1.5"
+                    style={{ color: colors.textPrimary }}
+                  >
+                    Joining Date
+                  </label>
+
+                  <input
+                    type="date"
+                    value={form.joiningDate}
+                    onChange={(e) =>
+                      handleChange("joiningDate", e.target.value)
+                    }
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                    style={{
+                      backgroundColor: colors.inputBg,
+                      color: colors.textPrimary,
+                      borderColor: colors.cardBorder,
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    className="block text-sm font-semibold mb-1.5"
+                    style={{ color: colors.textPrimary }}
+                  >
+                    System Role
+                  </label>
+
+                  <select
+                    value={form.systemRole}
+                    onChange={(e) => handleChange("systemRole", e.target.value)}
+                    className="w-full appearance-none px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer"
+                    style={{
+                      backgroundColor: colors.inputBg,
+                      color: colors.textPrimary,
+                      borderColor: colors.cardBorder,
+                    }}
+                  >
+                    <option value="employee">Employee</option>
+                    <option value="manager">Manager</option>
+                    <option value="admin">Admin</option>
+                    <option value="hr">HR</option>
+                  </select>
+                </div>
+              </div>
+
               <div
-                className="flex justify-center py-2 text-sm gap-2"
-                style={{ color: colors.accentDark }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4"
+                style={{ borderTop: `1px solid ${colors.cardBorder}` }}
               >
-                <Loader2 size={16} className="animate-spin" />
-                Fetching Org Data...
+                <div>
+                  <label
+                    className="block text-sm font-semibold mb-1.5"
+                    style={{ color: colors.textPrimary }}
+                  >
+                    Department
+                  </label>
+
+                  <FilterDropDown
+                    key={`dept-${departmentLabel}`}
+                    options={departmentOptions}
+                    defaultLabel={departmentLabel}
+                    width="100%"
+                    onSelect={(selectedName) => {
+                      const dept = departments.find(
+                        (d) => formatName(d.name) === selectedName,
+                      );
+
+                      if (dept) handleChange("department", dept._id);
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    className="block text-sm font-semibold mb-1.5"
+                    style={{ color: colors.textPrimary }}
+                  >
+                    Designation (Job Title)
+                  </label>
+
+                  <input
+                    type="text"
+                    placeholder="e.g. Software Engineer"
+                    value={form.designation}
+                    onChange={(e) =>
+                      handleChange("designation", e.target.value)
+                    }
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                    style={{
+                      backgroundColor: colors.inputBg,
+                      color: colors.textPrimary,
+                      borderColor: colors.cardBorder,
+                    }}
+                  />
+                </div>
               </div>
-            )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    className="block text-sm font-semibold mb-1.5"
+                    style={{ color: colors.textPrimary }}
+                  >
+                    Employment Type
+                  </label>
+
+                  <select
+                    value={form.employmentType}
+                    onChange={(e) =>
+                      handleChange("employmentType", e.target.value)
+                    }
+                    className="w-full appearance-none px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer"
+                    style={{
+                      backgroundColor: colors.inputBg,
+                      color: colors.textPrimary,
+                      borderColor: colors.cardBorder,
+                    }}
+                  >
+                    <option value="full_time">Full Time</option>
+                    <option value="part_time">Part Time</option>
+                    <option value="contract">Contract</option>
+                    <option value="internship">Internship</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label
+                    className="block text-sm font-semibold mb-1.5"
+                    style={{ color: colors.textPrimary }}
+                  >
+                    Work Location
+                  </label>
+
+                  <select
+                    value={form.workLocation}
+                    onChange={(e) =>
+                      handleChange("workLocation", e.target.value)
+                    }
+                    className="w-full appearance-none px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer"
+                    style={{
+                      backgroundColor: colors.inputBg,
+                      color: colors.textPrimary,
+                      borderColor: colors.cardBorder,
+                    }}
+                  >
+                    <option value="office">Office</option>
+                    <option value="remote">Remote</option>
+                    <option value="hybrid">Hybrid</option>
+                  </select>
+                </div>
+              </div>
+              <div className="mt-4">
                 <label
-                  className="block text-sm font-semibold mb-1.5"
-                  style={{ color: colors.textPrimary }}
-                >
-                  Joining Date
-                </label>
-
-                <input
-                  type="date"
-                  value={form.joiningDate}
-                  onChange={(e) =>
-                    handleChange("joiningDate", e.target.value)
-                  }
-                  className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                  className="block mb-2"
                   style={{
-                    backgroundColor: colors.inputBg,
                     color: colors.textPrimary,
-                    borderColor: colors.cardBorder,
+                    fontWeight: 600,
                   }}
-                />
-              </div>
-
-              <div>
-                <label
-                  className="block text-sm font-semibold mb-1.5"
-                  style={{ color: colors.textPrimary }}
                 >
-                  System Role
+                  Week Off
                 </label>
 
-                <select
-                  value={form.systemRole}
-                  onChange={(e) => handleChange("systemRole", e.target.value)}
-                  className="w-full appearance-none px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer"
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday",
+                  ].map((day) => (
+                    <label
+                      key={day}
+                      className="flex items-center gap-2"
+                      style={{ color: colors.textPrimary }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={form.weekoff?.includes(day)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setForm((prev) => ({
+                              ...prev,
+                              weekoff: [...prev.weekoff, day],
+                            }));
+                          } else {
+                            setForm((prev) => ({
+                              ...prev,
+                              weekoff: prev.weekoff.filter(
+                                (item) => item !== day
+                              ),
+                            }));
+                          }
+                        }}
+                      />
+
+                      {day}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-4">
+                <label
+                  className="block mb-2"
                   style={{
-                    backgroundColor: colors.inputBg,
                     color: colors.textPrimary,
-                    borderColor: colors.cardBorder,
+                    fontWeight: 600,
                   }}
                 >
-                  <option value="employee">Employee</option>
-                  <option value="manager">Manager</option>
-                  <option value="admin">Admin</option>
-                  <option value="hr">HR</option>
-                </select>
-              </div>
-            </div>
-
-            <div
-              className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4"
-              style={{ borderTop: `1px solid ${colors.cardBorder}` }}
-            >
-              <div>
-                <label
-                  className="block text-sm font-semibold mb-1.5"
-                  style={{ color: colors.textPrimary }}
-                >
-                  Department
-                </label>
-
-                <FilterDropDown
-                  key={`dept-${departmentLabel}`}
-                  options={departmentOptions}
-                  defaultLabel={departmentLabel}
-                  width="100%"
-                  onSelect={(selectedName) => {
-                    const dept = departments.find(
-                      (d) => formatName(d.name) === selectedName,
-                    );
-
-                    if (dept) handleChange("department", dept._id);
-                  }}
-                />
-              </div>
-
-              <div>
-                <label
-                  className="block text-sm font-semibold mb-1.5"
-                  style={{ color: colors.textPrimary }}
-                >
-                  Designation (Job Title)
+                  Working Hours
                 </label>
 
                 <input
                   type="text"
-                  placeholder="e.g. Software Engineer"
-                  value={form.designation}
+                  placeholder="09:00 - 18:00"
+                  value={form.workingHours}
                   onChange={(e) =>
-                    handleChange("designation", e.target.value)
+                    setForm((prev) => ({
+                      ...prev,
+                      workingHours: e.target.value,
+                    }))
                   }
-                  className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                  className="w-full rounded-xl px-3 py-2"
                   style={{
-                    backgroundColor: colors.inputBg,
+                    background: colors.cardBg,
+                    border: `1px solid ${colors.cardBorder}`,
                     color: colors.textPrimary,
-                    borderColor: colors.cardBorder,
                   }}
                 />
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div
+                className="pt-4"
+                style={{ borderTop: `1px solid ${colors.cardBorder}` }}
+              >
                 <label
                   className="block text-sm font-semibold mb-1.5"
                   style={{ color: colors.textPrimary }}
                 >
-                  Employment Type
+                  Reporting Manager
                 </label>
 
                 <select
-                  value={form.employmentType}
+                  value={form.reportingManager}
                   onChange={(e) =>
-                    handleChange("employmentType", e.target.value)
+                    handleChange("reportingManager", e.target.value)
                   }
                   className="w-full appearance-none px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer"
                   style={{
@@ -1074,135 +805,78 @@ export default function AddEmployeeModal({
                     borderColor: colors.cardBorder,
                   }}
                 >
-                  <option value="full_time">Full Time</option>
-                  <option value="part_time">Part Time</option>
-                  <option value="contract">Contract</option>
-                  <option value="internship">Internship</option>
-                </select>
-              </div>
+                  <option value="">No Manager (Top Level)</option>
 
-              <div>
-                <label
-                  className="block text-sm font-semibold mb-1.5"
-                  style={{ color: colors.textPrimary }}
-                >
-                  Work Location
-                </label>
-
-                <select
-                  value={form.workLocation}
-                  onChange={(e) =>
-                    handleChange("workLocation", e.target.value)
-                  }
-                  className="w-full appearance-none px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer"
-                  style={{
-                    backgroundColor: colors.inputBg,
-                    color: colors.textPrimary,
-                    borderColor: colors.cardBorder,
-                  }}
-                >
-                  <option value="office">Office</option>
-                  <option value="remote">Remote</option>
-                  <option value="hybrid">Hybrid</option>
+                  {managers.map((manager) => (
+                    <option key={manager._id} value={manager._id}>
+                      {manager.name} ({manager.userId})
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
+          )}
 
-            <div
-              className="pt-4"
-              style={{ borderTop: `1px solid ${colors.cardBorder}` }}
-            >
-              <label
-                className="block text-sm font-semibold mb-1.5"
-                style={{ color: colors.textPrimary }}
-              >
-                Reporting Manager
-              </label>
-
-              <select
-                value={form.reportingManager}
-                onChange={(e) =>
-                  handleChange("reportingManager", e.target.value)
-                }
-                className="w-full appearance-none px-4 py-2.5 rounded-xl border text-sm outline-none cursor-pointer"
-                style={{
-                  backgroundColor: colors.inputBg,
-                  color: colors.textPrimary,
-                  borderColor: colors.cardBorder,
-                }}
-              >
-                <option value="">No Manager (Top Level)</option>
-
-                {managers.map((manager) => (
-                  <option key={manager._id} value={manager._id}>
-                    {manager.name} ({manager.userId})
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
-
-        {/* FOOTER BUTTONS */}
-        <div
-          className="flex gap-3 pt-6 shrink-0 mt-6"
-          style={{ borderTop: `1px solid ${colors.cardBorder}` }}
-        >
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={isSubmitting}
-            className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50"
-            style={{
-              backgroundColor: colors.inputBg,
-              color: colors.textSecondary,
-              border: `1px solid ${colors.cardBorder}`,
-            }}
+          {/* FOOTER BUTTONS */}
+          <div
+            className="flex gap-3 pt-6 shrink-0 mt-6"
+            style={{ borderTop: `1px solid ${colors.cardBorder}` }}
           >
-            Cancel
-          </button>
-
-          {activeTab === "personal" ? (
             <button
               type="button"
-              onClick={handleNext}
-              className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
-              style={{
-                backgroundColor: colors.blueLight,
-                color: colors.blue,
-                border: `1px solid ${colors.blue}`,
-              }}
-            >
-              Next: Job Details ➔
-            </button>
-          ) : (
-            <button
-              type="submit"
+              onClick={onClose}
               disabled={isSubmitting}
-              className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-70 border-none"
+              className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50"
               style={{
-                backgroundColor: colors.buttonBg,
-                color: "#FFFFFF",
-              }}
-              onMouseEnter={(e) => {
-                if (!isSubmitting) {
-                  e.currentTarget.style.backgroundColor = colors.buttonHover;
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = colors.buttonBg;
+                backgroundColor: colors.inputBg,
+                color: colors.textSecondary,
+                border: `1px solid ${colors.cardBorder}`,
               }}
             >
-              {isSubmitting
-                ? "Saving..."
-                : isEditMode
-                  ? "Save All Changes"
-                  : "Complete Onboarding"}
+              Cancel
             </button>
-          )}
-        </div>
-      </form>
+
+            {activeTab === "personal" ? (
+              <button
+                type="button"
+                onClick={handleNext}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
+                style={{
+                  backgroundColor: colors.blueLight,
+                  color: colors.blue,
+                  border: `1px solid ${colors.blue}`,
+                }}
+              >
+                Next: Job Details ➔
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-70 border-none"
+                style={{
+                  backgroundColor: colors.buttonBg,
+                  color: "#FFFFFF",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSubmitting) {
+                    e.currentTarget.style.backgroundColor = colors.buttonHover;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.buttonBg;
+                }}
+              >
+                {isSubmitting
+                  ? "Saving..."
+                  : isEditMode
+                    ? "Save All Changes"
+                    : "Complete Onboarding"}
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
-);
+  );
 }

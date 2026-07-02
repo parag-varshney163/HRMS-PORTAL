@@ -400,7 +400,7 @@ export default function EmployeeDetailsModal({ open, onClose, employee }) {
             />
           </SectionCard>
 
-          <SectionCard title="Employment Details">
+          {/* <SectionCard title="Employment Details">
             <InfoRow
               icon={Building2}
               label="Department"
@@ -419,6 +419,67 @@ export default function EmployeeDetailsModal({ open, onClose, employee }) {
               value={
                 employee?.employment?.joiningDate
                   ? new Date(employee.employment.joiningDate).toLocaleDateString()
+                  : "N/A"
+              }
+            />
+          </SectionCard> */}
+          <SectionCard title="Employment Details">
+            <InfoRow
+              icon={Building2}
+              label="Department"
+              value={departmentName}
+            />
+
+            <InfoRow
+              icon={BadgeCheck}
+              label="Designation"
+              value={designationName}
+            />
+
+            <InfoRow
+              icon={User}
+              label="Role"
+              value={employee?.employment?.systemRole || user.role}
+            />
+
+            <InfoRow
+              icon={BadgeCheck}
+              label="Status"
+              value={employee?.employment?.status || statusValue}
+            />
+
+            <InfoRow
+              icon={Calendar}
+              label="Joining Date"
+              value={
+                employee?.employment?.joiningDate
+                  ? new Date(employee.employment.joiningDate).toLocaleDateString()
+                  : "N/A"
+              }
+            />
+
+            <InfoRow
+              icon={Calendar}
+              label="Week Off"
+              value={
+                employee?.employment?.weekoff?.length
+                  ? employee.employment.weekoff.join(", ")
+                  : "N/A"
+              }
+            />
+
+            <InfoRow
+              icon={Calendar}
+              label="Working Hours"
+              value={employee?.employment?.workingHours || "N/A"}
+            />
+
+            <InfoRow
+              icon={User}
+              label="Reporting Manager"
+              value={
+                employee?.employment?.reportingManager
+                  ? `${employee.employment.reportingManager.firstName} ${employee.employment.reportingManager.lastName}`
                   : "N/A"
               }
             />

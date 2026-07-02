@@ -143,6 +143,8 @@ const Employees = () => {
     systemRole: apiData.systemRole || "employee",
     leaveBalance: apiData.leaveBalance || {},
     utilisationRate: apiData.utilisationRate || "0%",
+    weekoff: apiData.weekoff || [],
+workingHours: apiData.workingHours || "",
   });
 
   // ─── 400ms DEBOUNCE EFFECT ───
@@ -267,6 +269,8 @@ const Employees = () => {
           employmentType: formData.employmentType,
           workLocation: formData.workLocation,
           systemRole: formData.systemRole || "employee",
+           weekoff: formData.weekoff,
+  workingHours: formData.workingHours,
           status: "active",
         };
 
