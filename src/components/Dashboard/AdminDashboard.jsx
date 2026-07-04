@@ -725,7 +725,7 @@ export default function AdminDashboard() {
                       className="text-xs"
                       style={{ color: colors.textSecondary }}
                     >
-                      {h.type || "Public Holiday"}
+                      {h.title || "Public Holiday"}
                     </p>
                   </div>
                 </div>
