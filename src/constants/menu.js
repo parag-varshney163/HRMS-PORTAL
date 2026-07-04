@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, CalendarOff, Clock, Wallet, FileSignature, Receipt, Megaphone, Banknote, ClipboardList, Files, Network, Settings, LogOut, UserMinus, UserPlus } from "lucide-react";
+import { LayoutDashboard, Users, CalendarOff, Clock, Wallet, FileSignature, Receipt, Megaphone, Banknote, ClipboardList, Files, Network, Settings, LogOut, UserMinus, UserPlus, Activity } from "lucide-react";
 
 
 const MENU_ITEMS = [
@@ -88,6 +88,12 @@ const MENU_ITEMS = [
     name: "Settings",
     icon: Settings,
     path: "/settings",
+    allowedRoles: ["admin", "hr"],
+  },
+   {
+    name: "Audit Logs",
+    icon: Activity,
+    path: "/audit-logs",
     allowedRoles: ["admin", "hr"],
   },
   {

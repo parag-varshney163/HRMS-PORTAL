@@ -17,6 +17,7 @@ const ROUTES = {
   SETTINGS: "/settings",
   OFFER_LETTERS: "/offer-letters",
   ANNOUNCEMENTS: "/announcements",
+  AUDIT_LOGS:"/audit-logs",
   UNAUTHORIZED: "/unauthorized",
 };
 

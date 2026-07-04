@@ -17,37 +17,6 @@ import Button from "../components/ui/Button";
 import colors from "../constants/colors.js";
 
 
-// const STATS_CONFIG = [
-//   {
-//     key: "total",
-//     label: "Total Employees",
-//     icon: Users,
-//     iconBg: "bg-blue-500/20",
-//     iconColor: "text-blue-400",
-//   },
-//   {
-//     key: "active",
-//     label: "Active",
-//     icon: UserCheck,
-//     iconBg: "bg-green-500/20",
-//     iconColor: "text-green-400",
-//   },
-//   {
-//     key: "onLeave",
-//     label: "On Leave",
-//     icon: Clock,
-//     iconBg: "bg-yellow-500/20",
-//     iconColor: "text-yellow-400",
-//   },
-//   {
-//     key: "inactive",
-//     label: "Inactive",
-//     icon: UserX,
-//     iconBg: "bg-red-500/20",
-//     iconColor: "text-red-400",
-//   },
-// ];
-
 const STATS_CONFIG = [
   {
     key: "total",
@@ -144,7 +113,7 @@ const Employees = () => {
     leaveBalance: apiData.leaveBalance || {},
     utilisationRate: apiData.utilisationRate || "0%",
     weekoff: apiData.weekoff || [],
-workingHours: apiData.workingHours || "",
+    workingHours: apiData.workingHours || "",
   });
 
   // ─── 400ms DEBOUNCE EFFECT ───
@@ -269,8 +238,8 @@ workingHours: apiData.workingHours || "",
           employmentType: formData.employmentType,
           workLocation: formData.workLocation,
           systemRole: formData.systemRole || "employee",
-           weekoff: formData.weekoff,
-  workingHours: formData.workingHours,
+          weekoff: formData.weekoff,
+          workingHours: formData.workingHours,
           status: "active",
         };
 

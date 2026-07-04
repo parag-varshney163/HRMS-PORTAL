@@ -308,6 +308,18 @@ const Navbar = ({ callName, toggleSidebar }) => {
             System <AccentText>Settings</AccentText>
           </>
         );
+        case "/recruitment":
+        return (
+          <>
+            System <AccentText>Recruitment</AccentText>
+          </>
+        );
+        case "/audit-logs":
+        return (
+          <>
+            Audit <AccentText>Logs</AccentText>
+          </>
+        );
 
       case "/resignations":
         return <AccentText>Resignations</AccentText>;
