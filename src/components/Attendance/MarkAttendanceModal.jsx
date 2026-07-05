@@ -18,10 +18,12 @@ export default function MarkAttendanceModal({
     const [saving, setSaving] = useState(false);
 
     const [users, setUsers] = useState([]);
+    const today = new Date().toISOString().split("T")[0];
 
     const [form, setForm] = useState({
         userId: "",
-        date: new Date().toISOString().split("T")[0],
+        fromDate: today,
+        toDate: today,
         status: "present",
         notes: "",
     });
@@ -59,6 +61,13 @@ export default function MarkAttendanceModal({
             notify.error("Validation", "Please select employee.");
             return;
         }
+        if (form.toDate < form.fromDate) {
+            notify.error(
+                "Validation",
+                "To Date cannot be earlier than From Date."
+            );
+            return;
+        }
 
         try {
             setSaving(true);
@@ -77,7 +86,8 @@ export default function MarkAttendanceModal({
 
                 setForm({
                     userId: "",
-                    date: new Date().toISOString().split("T")[0],
+                    fromDate: today,
+                    toDate:today,
                     status: "present",
                     notes: "",
                 });
@@ -171,7 +181,7 @@ export default function MarkAttendanceModal({
 
                     {/* Date */}
 
-                    <div>
+                    {/* <div>
                         <label
                             className="block text-sm mb-2"
                             style={{
@@ -197,6 +207,60 @@ export default function MarkAttendanceModal({
                                 color: colors.textPrimary,
                             }}
                         />
+                    </div> */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label
+                                className="block text-sm mb-2"
+                                style={{ color: colors.textPrimary }}
+                            >
+                                From Date
+                            </label>
+
+                            <input
+                                type="date"
+                                value={form.fromDate}
+                                onChange={(e) =>
+                                    setForm({
+                                        ...form,
+                                        fromDate: e.target.value,
+                                    })
+                                }
+                                className="w-full rounded-lg px-4 py-3"
+                                style={{
+                                    background: colors.inputBg,
+                                    border: `1px solid ${colors.cardBorder}`,
+                                    color: colors.textPrimary,
+                                }}
+                            />
+                        </div>
+
+                        <div>
+                            <label
+                                className="block text-sm mb-2"
+                                style={{ color: colors.textPrimary }}
+                            >
+                                To Date
+                            </label>
+
+                            <input
+                                type="date"
+                                value={form.toDate}
+                                min={form.fromDate}
+                                onChange={(e) =>
+                                    setForm({
+                                        ...form,
+                                        toDate: e.target.value,
+                                    })
+                                }
+                                className="w-full rounded-lg px-4 py-3"
+                                style={{
+                                    background: colors.inputBg,
+                                    border: `1px solid ${colors.cardBorder}`,
+                                    color: colors.textPrimary,
+                                }}
+                            />
+                        </div>
                     </div>
 
                     {/* Status */}
@@ -227,7 +291,7 @@ export default function MarkAttendanceModal({
                             }}
                         >
                             <option value="present">Present</option>
-                            
+
                             <option value="half_day">Half Day</option>
                             <option value="absent">Absent</option>
                         </select>
