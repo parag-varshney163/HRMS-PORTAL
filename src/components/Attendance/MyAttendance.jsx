@@ -134,234 +134,6 @@ export default function MyAttendance() {
         (a, b) => new Date(b.date) - new Date(a.date)
       )[0]
       : null;
-
-  // ─── FETCH PERSONAL DATA ───
-  // const fetchPersonalData = useCallback(async () => {
-  //   try {
-  //     const { data } = await axiosInstance.get("/api/v1/attendance/user");
-  //     if (data.success && data.data) {
-  //       setPersonalStats({
-  //         attendanceRate: data.data.attendanceRate || "0%",
-  //         lateDays: data.data.lateDays || 0,
-  //       });
-
-  //       // const history = data.data.history || [];
-  //       // setAttendanceHistory(history);
-  //       const history =
-  //         data.data.history ||
-  //         data.data.attendances ||
-  //         [];
-  //       setAttendanceHistory((prev) => {
-  //         const today = new Date();
-
-  //         const hasToday = history.some((r) => {
-  //           const d = new Date(r.date);
-  //           return (
-  //             d.getDate() === today.getDate() &&
-  //             d.getMonth() === today.getMonth() &&
-  //             d.getFullYear() === today.getFullYear()
-  //           );
-  //         });
-
-  //         if (!hasToday) {
-  //           return [
-  //             ...history,
-  //             {
-  //               date: today,
-  //               status: "present",
-  //             },
-  //           ];
-  //         }
-
-  //         return history;
-  //       });
-
-  //       const sortedHistory = [...history].sort(
-  //         (a, b) =>
-  //           new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date),
-  //       );
-  //       const latestSession = sortedHistory[0];
-  //       const now = new Date();
-
-  //       // 🚨 SHIFT COMPLETED LOGIC: Check if they already finished a shift TODAY
-  //       if (latestSession && latestSession.checkOut) {
-  //         const sessionDate = new Date(
-  //           latestSession.createdAt || latestSession.date,
-  //         );
-  //         if (
-  //           now.getDate() === sessionDate.getDate() &&
-  //           now.getMonth() === sessionDate.getMonth() &&
-  //           now.getFullYear() === sessionDate.getFullYear()
-  //         ) {
-  //           setCompletedShiftHours(
-  //             latestSession.totalWorkingHours || "Shift Ended",
-  //           );
-  //         }
-  //       }
-
-  //       let activeCheckInTime = null;
-  //       const stored = localStorage.getItem(STORAGE_KEY);
-
-  //       if (stored) {
-  //         const storedDate = new Date(stored);
-  //         if (now.getTime() - storedDate.getTime() < 24 * 60 * 60 * 1000) {
-  //           activeCheckInTime = storedDate;
-  //         } else {
-  //           localStorage.removeItem(STORAGE_KEY);
-  //         }
-  //       }
-
-  //       // if (
-  //       //   !activeCheckInTime &&
-  //       //   latestSession &&
-  //       //   latestSession.checkIn &&
-  //       //   !latestSession.checkOut
-  //       // ) {
-  //       //   const sessionDate = new Date(
-  //       //     latestSession.createdAt || latestSession.date || now,
-  //       //   );
-
-  //       //   if (typeof latestSession.checkIn === "string") {
-  //       //     const timeMatch = latestSession.checkIn.match(
-  //       //       /(\d{1,2}):(\d{2})\s*(AM|PM)?/i,
-  //       //     );
-  //       //     if (timeMatch) {
-  //       //       let hours = parseInt(timeMatch[1], 10);
-  //       //       const minutes = parseInt(timeMatch[2], 10);
-  //       //       const modifier = timeMatch[3];
-
-  //       //       if (modifier) {
-  //       //         if (modifier.toUpperCase() === "PM" && hours < 12) hours += 12;
-  //       //         if (modifier.toUpperCase() === "AM" && hours === 12) hours = 0;
-  //       //       }
-
-  //       //       sessionDate.setHours(hours, minutes, 0, 0);
-  //       //     }
-  //       //   }
-
-  //       //   if (now.getTime() - sessionDate.getTime() < 24 * 60 * 60 * 1000) {
-  //       //     activeCheckInTime = sessionDate;
-  //       //     localStorage.setItem(STORAGE_KEY, activeCheckInTime.toISOString());
-  //       //   }
-  //       // }
-  //       if (
-  //         !activeCheckInTime &&
-  //         latestSession &&
-  //         latestSession.checkInAt &&
-  //         !latestSession.checkOut
-  //       ) {
-  //         const sessionDate = new Date(latestSession.checkInAt);
-
-  //         // Restore only if it's today's attendance
-  //         if (
-  //           sessionDate.getDate() === now.getDate() &&
-  //           sessionDate.getMonth() === now.getMonth() &&
-  //           sessionDate.getFullYear() === now.getFullYear()
-  //         ) {
-  //           activeCheckInTime = sessionDate;
-  //           localStorage.setItem(STORAGE_KEY, sessionDate.toISOString());
-  //         }
-  //       }
-
-  //       if (activeCheckInTime) {
-  //         setIsCheckedIn(true);
-  //         setCheckInTime(activeCheckInTime);
-  //       } else {
-  //         setIsCheckedIn(false);
-  //         setCheckInTime(null);
-  //         localStorage.removeItem(STORAGE_KEY);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to fetch personal attendance", error);
-  //   }
-  // }, []);
-  //   const fetchPersonalData = useCallback(async () => {
-  //   try {
-  //     const { data } = await axiosInstance.get("/api/v1/attendance/user");
-
-  //     if (data.success && data.data) {
-  //       setPersonalStats({
-  //         attendanceRate: data.data.attendanceRate || "0%",
-  //         lateDays: data.data.lateDays || 0,
-  //       });
-
-  //       const history = data.data.history || data.data.attendances || [];
-
-  //       // Convert API data
-  //       const formattedHistory = history.map((item) => ({
-  //         ...item,
-  //         date: new Date(item.date),
-  //         checkInAt: item.checkInAt ? new Date(item.checkInAt) : null,
-  //       }));
-
-  //       setAttendanceHistory(formattedHistory);
-
-  //       const sortedHistory = [...formattedHistory].sort(
-  //         (a, b) =>
-  //           new Date(b.checkInAt || b.createdAt || b.date) -
-  //           new Date(a.checkInAt || a.createdAt || a.date)
-  //       );
-
-  //       const latestSession = sortedHistory[0];
-  //       const now = new Date();
-
-  //       // Today's completed shift
-  //       if (
-  //         latestSession &&
-  //         latestSession.checkOut &&
-  //         new Date(latestSession.date).toDateString() === now.toDateString()
-  //       ) {
-  //         setCompletedShiftHours(
-  //           latestSession.totalWorkingHours || "Shift Ended"
-  //         );
-  //       } else {
-  //         setCompletedShiftHours(null);
-  //       }
-
-  //       let activeCheckInTime = null;
-
-  //       // Restore from local storage
-  //       const stored = localStorage.getItem(STORAGE_KEY);
-
-  //       if (stored) {
-  //         const storedDate = new Date(stored);
-
-  //         if (storedDate.toDateString() === now.toDateString()) {
-  //           activeCheckInTime = storedDate;
-  //         } else {
-  //           localStorage.removeItem(STORAGE_KEY);
-  //         }
-  //       }
-
-  //       // Restore from backend if browser storage missing
-  //       if (
-  //         !activeCheckInTime &&
-  //         latestSession &&
-  //         latestSession.checkInAt &&
-  //         !latestSession.checkOut
-  //       ) {
-  //         const sessionDate = new Date(latestSession.checkInAt);
-
-  //         if (sessionDate.toDateString() === now.toDateString()) {
-  //           activeCheckInTime = sessionDate;
-  //           localStorage.setItem(STORAGE_KEY, sessionDate.toISOString());
-  //         }
-  //       }
-
-  //       if (activeCheckInTime) {
-  //         setIsCheckedIn(true);
-  //         setCheckInTime(activeCheckInTime);
-  //       } else {
-  //         setIsCheckedIn(false);
-  //         setCheckInTime(null);
-  //         localStorage.removeItem(STORAGE_KEY);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to fetch personal attendance", error);
-  //   }
-  // }, []);
   const fetchPersonalData = useCallback(async () => {
     try {
       const { data } = await axiosInstance.get("/api/v1/attendance/user");
@@ -379,6 +151,7 @@ export default function MyAttendance() {
         ...item,
         date: new Date(item.date),
         checkInAt: item.checkInAt ? new Date(item.checkInAt) : null,
+        checkOutAt: item.checkOutAt ? new Date(item.checkOutAt) : null,
       }));
 
       setAttendanceHistory(formattedHistory);
@@ -403,20 +176,23 @@ export default function MyAttendance() {
         } else {
           setCheckInTime(null);
         }
-        if (latestSession?.checkOut) {
-          const [hours, minutes] = latestSession.checkOut.split(":");
+        // if (latestSession?.checkOut) {
+        //   const [hours, minutes] = latestSession.checkOut.split(":");
 
-          const checkoutDate = new Date(latestSession.date);
-          checkoutDate.setHours(hours);
-          checkoutDate.setMinutes(minutes);
+        //   const checkoutDate = new Date(latestSession.date);
+        //   checkoutDate.setHours(hours);
+        //   checkoutDate.setMinutes(minutes);
 
-          setCheckOutTime(checkoutDate);
-        } else {
-          setCheckOutTime(null);
-        }
+        //   setCheckOutTime(checkoutDate);
+        // } else {
+        //   setCheckOutTime(null);
+        // }
+        setCheckOutTime(
+          latestSession?.checkOutAt ? new Date(latestSession.checkOutAt) : null
+        );
         // Show completed shift after checkout
         if (
-          latestSession.checkOut &&
+          latestSession.checkOutAt &&
           new Date(latestSession.date).toDateString() === now.toDateString()
         ) {
           setCompletedShiftHours(
@@ -427,7 +203,7 @@ export default function MyAttendance() {
         // User is still checked in
         if (
           latestSession.checkInAt &&
-          !latestSession.checkOut &&
+          !latestSession.checkOutAt &&
           new Date(latestSession.date).toDateString() === now.toDateString()
         ) {
           setIsCheckedIn(true);
@@ -452,70 +228,7 @@ export default function MyAttendance() {
   useEffect(() => {
     fetchPersonalData();
   }, [fetchPersonalData]);
-
-  // ─── CHECK IN ───
-  // const handleCheckIn = async () => {
-  //   try {
-  //     setIsSubmitting(true);
-  //     setActionType("checkin");
-  //     const loc = await getLocation();
-  //     if (loc) {
-  //       setCoords(loc);
-  //       setLocation("Office Location (Verified)");
-  //     }
-
-  //     const body = { notes: remarks };
-  //     if (loc) {
-  //       body.latitude = loc.latitude;
-  //       body.longitude = loc.longitude;
-  //     }
-
-  //     const { data } = await axiosInstance.post(
-  //       "/api/v1/attendance/check-in",
-  //       body,
-  //     );
-  //     if (data.success) {
-  //       notify.success("Checked In", "You have been clocked in successfully.");
-  //       const now = new Date();
-  //       setCheckInTime(now);
-  //       setIsCheckedIn(true);
-  //       setCompletedShiftHours(null); // Reset completed status if checking in again
-  //       localStorage.setItem(STORAGE_KEY, now.toISOString());
-  //       fetchPersonalData();
-  //     }
-  //     setAttendanceHistory((prev) => {
-  //       const today = new Date();
-
-  //       // check if already exists
-  //       const exists = prev.find((r) => {
-  //         const d = new Date(r.date);
-  //         return (
-  //           d.getDate() === today.getDate() &&
-  //           d.getMonth() === today.getMonth() &&
-  //           d.getFullYear() === today.getFullYear()
-  //         );
-  //       });
-
-  //       if (exists) return prev;
-
-  //       return [
-  //         ...prev,
-  //         {
-  //           date: today,
-  //           status: "present", // ✅ THIS MAKES IT GREEN
-  //         },
-  //       ];
-  //     });
-  //   } catch (error) {
-  //     notify.error(
-  //       "Check-in Failed",
-  //       error.response?.data?.message || "Unable to clock in.",
-  //     );
-  //   } finally {
-  //     setIsSubmitting(false);
-  //     setActionType(null);
-  //   }
-  // };
+  ;
   const handleCheckIn = async () => {
     try {
       setIsSubmitting(true);
@@ -570,108 +283,6 @@ export default function MyAttendance() {
       setActionType(null);
     }
   };
-
-  // ─── CHECK OUT ───
-  // const handleCheckOut = async () => {
-  //   try {
-  //     setIsSubmitting(true);
-  //     setActionType("checkout");
-  //     const loc = await getLocation();
-  //     if (loc) {
-  //       setCoords(loc);
-  //       setLocation("Office Location (Verified)");
-  //     }
-
-  //     const body = {};
-  //     if (loc) {
-  //       body.latitude = loc.latitude;
-  //       body.longitude = loc.longitude;
-  //     }
-
-  //     const { data } = await axiosInstance.put(
-  //       "/api/v1/attendance/check-out",
-  //       body,
-  //     );
-  //     if (data.success) {
-  //       const workedHours = data.data?.totalWorkingHours || elapsedTime;
-  //       notify.success(
-  //         "Checked Out Successfully",
-  //         `Great work today! Total hours: ${workedHours}`,
-  //       );
-
-  //       setIsCheckedIn(false);
-  //       setCheckInTime(null);
-  //       setRemarks("");
-  //       setCompletedShiftHours(workedHours); // 🚨 SAVE FINAL TIME
-  //       localStorage.removeItem(STORAGE_KEY);
-  //       fetchPersonalData();
-  //     }
-  //   } catch (error) {
-  //     notify.error(
-  //       "Check-out Failed",
-  //       error.response?.data?.message || "Unable to clock out.",
-  //     );
-  //   } finally {
-  //     setIsSubmitting(false);
-  //     setActionType(null);
-  //   }
-  // };
-  //   const handleCheckOut = async () => {
-  //   try {
-  //     setIsSubmitting(true);
-  //     setActionType("checkout");
-
-  //     const loc = await getLocation();
-
-  //     if (loc) {
-  //       setCoords(loc);
-  //       setLocation("Office Location (Verified)");
-  //     }
-
-  //     const body = {};
-
-  //     if (loc) {
-  //       body.latitude = loc.latitude;
-  //       body.longitude = loc.longitude;
-  //     }
-
-  //     const { data } = await axiosInstance.put(
-  //       "/api/v1/attendance/check-out",
-  //       body
-  //     );
-
-  //     if (data.success) {
-  //       const workedHours =
-  //         data.data?.totalWorkingHours || elapsedTime;
-
-  //       notify.success(
-  //         "Checked Out Successfully",
-  //         `Great work today! Total hours: ${workedHours}`
-  //       );
-
-  //       setIsCheckedIn(false);
-
-  //       // Don't clear immediately
-  //       // fetchPersonalData() will restore today's check-in & check-out
-  //       setRemarks("");
-
-  //       setCompletedShiftHours(workedHours);
-
-  //       localStorage.removeItem(STORAGE_KEY);
-
-  //       // Refresh latest attendance
-  //       await fetchPersonalData();
-  //     }
-  //   } catch (error) {
-  //     notify.error(
-  //       "Check-out Failed",
-  //       error.response?.data?.message || "Unable to clock out."
-  //     );
-  //   } finally {
-  //     setIsSubmitting(false);
-  //     setActionType(null);
-  //   }
-  // };
   const handleCheckOut = async () => {
     try {
       setIsSubmitting(true);
@@ -743,145 +354,6 @@ export default function MyAttendance() {
   return (
 
     <div className="w-full flex flex-col gap-6">
-      {/* TOP CHECK-IN BAR */}
-      {/* <div
-        className="rounded-2xl px-5 py-6"
-        style={{
-          background: colors.cardBg,
-          border: `1px solid ${colors.cardBorder}`,
-        }}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 items-center">
-        
-          <div className="flex items-center gap-4">
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center"
-              style={{
-                background: `${colors.success}15`,
-                border: `1px solid ${colors.success}70`,
-                color: colors.success,
-              }}
-            >
-              <LogIn size={28} />
-            </div>
-
-            <div>
-              <p
-                className="text-sm font-medium"
-                style={{ color: colors.textSecondary }}
-              >
-                Check in
-              </p>
-              <p
-                className="text-2xl font-bold"
-                style={{ color: colors.success }}
-              >
-                {checkInTime
-                  ? checkInTime.toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })
-                  : "--:--"}
-              </p>
-            </div>
-          </div>
-
-          
-          <div
-            className="flex items-center gap-4 md:border-l md:pl-6"
-            style={{ borderColor: colors.cardBorder }}
-          >
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center"
-              style={{
-                background: `${colors.danger}10`,
-                border: `1px solid ${colors.danger}70`,
-                color: colors.danger,
-              }}
-            >
-              <LogOut size={28} />
-            </div>
-
-            <div>
-              <p
-                className="text-sm font-medium"
-                style={{ color: colors.textSecondary }}
-              >
-                Check Out
-              </p>
-              <p
-                className="text-2xl font-bold"
-                style={{ color: colors.danger }}
-              >
-                {completedShiftHours ? "Done" : "--"}
-              </p>
-            </div>
-          </div>
-
-          
-          <div
-            className="flex items-center gap-4 md:border-l md:pl-6"
-            style={{ borderColor: colors.cardBorder }}
-          >
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center"
-              style={{
-                background: `${colors.accent}20`,
-                border: `1px solid ${colors.accent}70`,
-                color: colors.accent,
-              }}
-            >
-              <Clock size={28} />
-            </div>
-
-            <div>
-              <p
-                className="text-sm font-medium"
-                style={{ color: colors.textSecondary }}
-              >
-                Shift Time
-              </p>
-              <p
-                className="text-xl font-bold"
-                style={{ color: colors.accent }}
-              >
-                12:00 PM - 09:00 PM
-              </p>
-            </div>
-          </div>
-
-          
-          <div className="flex justify-start md:justify-end">
-            {isCheckedIn ? (
-              <Button
-                variant="custom"
-                bg="#F2B6B6"
-                text={colors.textPrimary}
-                size="sm"
-                icon={LogOut}
-                onClick={handleCheckOut}
-                disabled={isSubmitting}
-                className="rounded-xl px-6 py-3"
-              >
-                {actionType === "checkout" ? "Checking Out..." : "Clock Out"}
-              </Button>
-            ) : (
-              <Button
-                variant="custom"
-                bg={colors.accent}
-                text="#fff"
-                size="sm"
-                icon={LogIn}
-                onClick={handleCheckIn}
-                disabled={isSubmitting || completedShiftHours}
-                className="rounded-xl px-6 py-3"
-              >
-                {actionType === "checkin" ? "Checking In..." : "Clock In"}
-              </Button>
-            )}
-          </div>
-        </div>
-      </div> */}
       <div
         className="rounded-2xl px-5 py-6"
         style={{
@@ -916,7 +388,10 @@ export default function MyAttendance() {
                 className="text-2xl font-bold"
                 style={{ color: colors.success }}
               >
-                {formatIST(checkInTime)}
+                {/* {formatIST(checkInTime)} */}
+                {todayRecord?.checkInAt
+                  ? formatIST(todayRecord.checkInAt)
+                  : "--:--"}
               </p>
 
               <p
@@ -958,6 +433,9 @@ export default function MyAttendance() {
                 style={{ color: colors.danger }}
               >
                 {/* {formatIST(checkOutTime)} */}
+                {/* {todayRecord?.checkOutAt
+                  ? formatIST(todayRecord.checkOutAt)
+                  : "--:--"} */}
                 {todayRecord?.checkOutAt
                   ? formatIST(todayRecord.checkOutAt)
                   : "--:--"}
@@ -1041,188 +519,6 @@ export default function MyAttendance() {
           </div>
         </div>
       </div>
-
-      {/* ATTENDANCE + CALENDAR */}
-      {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        <div
-          className="rounded-2xl p-6 min-h-[330px]"
-          style={{
-            background: colors.cardBg,
-            border: `1px solid ${colors.cardBorder}`,
-          }}
-        >
-          <h2
-            className="text-lg font-bold mb-7"
-            style={{ color: colors.textPrimary }}
-          >
-            My Attendance
-          </h2>
-
-          <div className="flex flex-col sm:flex-row items-center gap-8">
-            
-            <div
-              className="w-56 h-56 rounded-full flex flex-col items-center justify-center"
-              style={{
-                background: `conic-gradient(${colors.accent} ${isCheckedIn ? "65%" : "0%"
-                  }, #F4E7B3 ${isCheckedIn ? "65%" : "0%"}, #F4E7B3 100%)`,
-              }}
-            >
-              <div
-                className="w-44 h-44 rounded-full flex flex-col items-center justify-center"
-                style={{ background: colors.cardBg }}
-              >
-                <p
-                  className="text-3xl font-bold"
-                  style={{ color: colors.textPrimary }}
-                >
-                  {completedShiftHours || elapsedTime}
-                </p>
-                <p
-                  className="text-sm mt-1"
-                  style={{ color: colors.textSecondary }}
-                >
-                  Today's Work Time
-                </p>
-              </div>
-            </div>
-
-            
-            <div className="flex-1 w-full">
-              <div
-                className="pb-5 mb-5"
-                style={{ borderBottom: `1px solid ${colors.cardBorder}` }}
-              >
-                <p
-                  className="font-bold text-lg"
-                  style={{ color: colors.success }}
-                >
-                  {isCheckedIn ? "✓ Checked In" : "Not Checked In"}
-                </p>
-
-                <p
-                  className="text-sm"
-                  style={{ color: colors.textSecondary }}
-                >
-                  {checkInTime
-                    ? checkInTime.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
-                    : "No check-in recorded"}
-                </p>
-              </div>
-
-              <p
-                className="font-bold text-lg mb-2"
-                style={{ color: colors.textPrimary }}
-              >
-                Status
-              </p>
-
-              <span
-                className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium"
-                style={{
-                  background: `${colors.success}20`,
-                  color: colors.success,
-                }}
-              >
-                <span
-                  className="w-2 h-2 rounded-full"
-                  style={{ background: colors.success }}
-                />
-                {isCheckedIn ? "Present" : "Absent"}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        
-        <div
-          className="rounded-2xl p-6 min-h-[330px]"
-          style={{
-            background: colors.cardBg,
-            border: `1px solid ${colors.cardBorder}`,
-          }}
-        >
-          <h2
-            className="text-lg font-bold mb-7"
-            style={{ color: colors.textPrimary }}
-          >
-            Attendance Report
-          </h2>
-
-          <div className="grid grid-cols-7 gap-y-4 text-center">
-            {Array.from({
-              length: new Date(
-                new Date().getFullYear(),
-                new Date().getMonth(),
-                1,
-              ).getDay(),
-            }).map((_, i) => (
-              <div key={`empty-${i}`} />
-            ))}
-
-            {Array.from({
-              length: new Date(
-                new Date().getFullYear(),
-                new Date().getMonth() + 1,
-                0,
-              ).getDate(),
-            }).map((_, i) => {
-              const day = i + 1;
-              const today = new Date();
-
-              const record = attendanceHistory.find((r) => {
-                const d = new Date(r.date);
-                return (
-                  d.getDate() === day &&
-                  d.getMonth() === today.getMonth() &&
-                  d.getFullYear() === today.getFullYear()
-                );
-              });
-
-              let bg = "transparent";
-              let textColor = colors.textPrimary;
-
-              if (record?.status === "present") {
-                bg = colors.accent;
-              } else if (record?.status === "absent") {
-                bg = colors.danger;
-                textColor = "#fff";
-              } else if (day < today.getDate()) {
-                bg = `${colors.accent}35`;
-              }
-
-              return (
-                <div key={day} className="flex justify-center">
-                  <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium"
-                    style={{
-                      background: bg,
-                      color: textColor,
-                    }}
-                  >
-                    {day}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="grid grid-cols-7 mt-6 text-center">
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-              <span
-                key={day}
-                className="text-sm font-medium"
-                style={{ color: colors.textPrimary }}
-              >
-                {day}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div> */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* ================= MY ATTENDANCE ================= */}
