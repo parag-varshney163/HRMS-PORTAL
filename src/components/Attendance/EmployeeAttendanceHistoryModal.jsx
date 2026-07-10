@@ -638,11 +638,11 @@ const convertUtcToIst = (timeString) => {
                     </div>
 
                     <div style={{ color: colors.textSecondary }}>
-                      {convertUtcToIst(item.checkIn || "--")}
+                      {(item.checkIn || "--")}
                     </div>
 
                     <div style={{ color: colors.textSecondary }}>
-                      {convertUtcToIst(item.checkOut || "--")}
+                      {(item.checkOut || "--")}
                     </div>
 
                     <div
