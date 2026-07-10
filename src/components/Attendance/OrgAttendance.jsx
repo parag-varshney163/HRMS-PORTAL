@@ -29,6 +29,9 @@ import Button from "../ui/Button"; // Reusable Button component
 
 
 // Reusable Button component
+
+
+// Reusable Button component
 // ─────────────────────────────────────────────────────────────────────────────
 export default function OrgAttendance() {
   const notify = useNotification();
@@ -211,8 +214,8 @@ export default function OrgAttendance() {
       width: "1.2fr",
       align: "center",
       render: (_, row) => {
-        const istCheckIn = convertUtcToIst(row.checkIn);
-        const istCheckOut = convertUtcToIst(row.checkOut);
+        const istCheckIn = (row.checkIn);
+        const istCheckOut = (row.checkOut);
 
         return (
           <div className="flex flex-col items-center">

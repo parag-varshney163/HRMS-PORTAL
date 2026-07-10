@@ -113,7 +113,15 @@ const Employees = () => {
     leaveBalance: apiData.leaveBalance || {},
     utilisationRate: apiData.utilisationRate || "0%",
     weekoff: apiData.weekoff || [],
-    workingHours: apiData.workingHours || "",
+    loginTime:
+      apiData.loginTime ||
+      apiData.employment?.loginTime ||
+      "",
+
+    logoutTime:
+      apiData.logoutTime ||
+      apiData.employment?.logoutTime ||
+      "",
   });
 
   // ─── 400ms DEBOUNCE EFFECT ───
@@ -338,6 +346,7 @@ const Employees = () => {
 
   // ─── HANDLER: OPEN EDIT MODAL ───
   const handleEditEmployee = (employee) => {
+
     let { firstName, lastName } = employee;
     if (!firstName || !lastName) {
       const parts = employee.name.split(" ");

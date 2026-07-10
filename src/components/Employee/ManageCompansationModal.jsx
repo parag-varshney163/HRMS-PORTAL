@@ -209,6 +209,20 @@ export default function ManageCompensationModal({ open, onClose, onSuccess }) {
           "Success",
           "Compensation & Banking details saved successfully.",
         );
+        const warnings = data.data?.warnings;
+
+        if (warnings) {
+          const message = [
+            warnings.pan && `PAN: ${warnings.pan}`,
+            warnings.bank && `Bank: ${warnings.bank}`,
+          ]
+            .filter(Boolean)
+            .join("\n");
+
+          if (message) {
+            notify.warning("Verification Warnings", message);
+          }
+        }
         if (onSuccess) onSuccess();
         onClose();
       }

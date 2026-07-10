@@ -470,8 +470,13 @@ export default function EmployeeDetailsModal({ open, onClose, employee }) {
 
             <InfoRow
               icon={Calendar}
-              label="Working Hours"
-              value={employee?.employment?.workingHours || "N/A"}
+              label="Log in Time"
+              value={employee?.employment?.loginTime || "N/A"}
+            />
+             <InfoRow
+              icon={Calendar}
+              label="Log out Time"
+              value={employee?.employment?.logoutTime || "N/A"}
             />
 
             <InfoRow
