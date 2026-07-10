@@ -35,7 +35,9 @@ const blankForm = {
   reportingManager: "", // Captures manager _id
   systemRole: "employee",
   weekoff: [],
-  workingHours: "",
+  // workingHours: "",
+  loginTime: "",
+  logoutTime: "",
 };
 
 export default function AddEmployeeModal({
@@ -124,9 +126,18 @@ export default function AddEmployeeModal({
             initialData.employment?.weekoff ||
             [],
 
-          workingHours:
-            initialData.workingHours ||
-            initialData.employment?.workingHours ||
+          // workingHours:
+          //   initialData.workingHours ||
+          //   initialData.employment?.workingHours ||
+          //   "",
+          loginTime:
+            initialData.loginTime ||
+            initialData.employment?.loginTime ||
+            "",
+
+          logoutTime:
+            initialData.logoutTime ||
+            initialData.employment?.logoutTime ||
             "",
         });
       } else {
@@ -146,12 +157,27 @@ export default function AddEmployeeModal({
 
   const validate = () => {
     const newErrors = {};
+
     if (!form.firstName?.trim()) newErrors.firstName = "Required";
     if (!form.lastName?.trim()) newErrors.lastName = "Required";
     if (!form.email?.trim()) newErrors.email = "Required";
     if (!form.phoneNumber?.trim()) newErrors.phoneNumber = "Required";
-    // Add employment validation if needed
-    // if (!form.department) newErrors.department = "Required";
+
+    // Login & Logout Time Validation
+    const timeRegex = /^(0[1-9]|1[0-2]):([0-5][0-9]) (AM|PM)$/;
+
+    if (!form.loginTime?.trim()) {
+      newErrors.loginTime = "Required";
+    } else if (!timeRegex.test(form.loginTime.trim())) {
+      newErrors.loginTime = "Format should be like 09:00 AM";
+    }
+
+    if (!form.logoutTime?.trim()) {
+      newErrors.logoutTime = "Required";
+    } else if (!timeRegex.test(form.logoutTime.trim())) {
+      newErrors.logoutTime = "Format should be like 06:00 PM";
+    }
+
     return newErrors;
   };
   const handleNext = (e) => {
@@ -752,7 +778,7 @@ export default function AddEmployeeModal({
                   ))}
                 </div>
               </div>
-              <div className="mt-4">
+              {/* <div className="mt-4">
                 <label
                   className="block mb-2"
                   style={{
@@ -780,6 +806,77 @@ export default function AddEmployeeModal({
                     color: colors.textPrimary,
                   }}
                 />
+              </div> */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label
+                    className="block text-sm font-semibold mb-1.5"
+                    style={{ color: colors.textPrimary }}
+                  >
+                    Login Time
+                  </label>
+
+                  <input
+                    type="text"
+                    placeholder="09:00 AM"
+                    value={form.loginTime}
+                    onChange={(e) =>
+                      handleChange("loginTime", e.target.value.toUpperCase())
+                    }
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                    style={{
+                      backgroundColor: colors.inputBg,
+                      color: colors.textPrimary,
+                      borderColor: errors.loginTime
+                        ? colors.danger
+                        : colors.cardBorder,
+                    }}
+                  />
+
+                  {errors.loginTime && (
+                    <p
+                      className="text-xs mt-1"
+                      style={{ color: colors.danger }}
+                    >
+                      {errors.loginTime}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label
+                    className="block text-sm font-semibold mb-1.5"
+                    style={{ color: colors.textPrimary }}
+                  >
+                    Logout Time
+                  </label>
+
+                  <input
+                    type="text"
+                    placeholder="06:00 PM"
+                    value={form.logoutTime}
+                    onChange={(e) =>
+                      handleChange("logoutTime", e.target.value.toUpperCase())
+                    }
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                    style={{
+                      backgroundColor: colors.inputBg,
+                      color: colors.textPrimary,
+                      borderColor: errors.logoutTime
+                        ? colors.danger
+                        : colors.cardBorder,
+                    }}
+                  />
+
+                  {errors.logoutTime && (
+                    <p
+                      className="text-xs mt-1"
+                      style={{ color: colors.danger }}
+                    >
+                      {errors.logoutTime}
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div

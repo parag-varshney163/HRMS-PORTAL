@@ -412,7 +412,7 @@ const EmployeeAttendanceRecords = () => {
           className="text-sm font-bold"
           style={{ color: colors.success }}
         >
-          {convertUtcToIst(row.checkIn) || "--:--"}
+          {(row.checkIn) || "--:--"}
         </span>
       ),
     },
@@ -426,7 +426,7 @@ const EmployeeAttendanceRecords = () => {
           className="text-sm font-bold"
           style={{ color: colors.danger }}
         >
-          {convertUtcToIst(row.checkOut) || "--:--"}
+          {(row.checkOut) || "--:--"}
         </span>
       ),
     },

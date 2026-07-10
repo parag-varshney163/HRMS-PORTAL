@@ -239,7 +239,9 @@ const Employees = () => {
           workLocation: formData.workLocation,
           systemRole: formData.systemRole || "employee",
           weekoff: formData.weekoff,
-          workingHours: formData.workingHours,
+          // workingHours: formData.workingHours,
+          loginTime: formData.loginTime,
+          logoutTime: formData.logoutTime,
           status: "active",
         };
 
