@@ -320,6 +320,12 @@ const Navbar = ({ callName, toggleSidebar }) => {
             Audit <AccentText>Logs</AccentText>
           </>
         );
+        case "/attendence-view":
+        return (
+          <>
+            Attendence <AccentText>View</AccentText>
+          </>
+        );
 
       case "/resignations":
         return <AccentText>Resignations</AccentText>;

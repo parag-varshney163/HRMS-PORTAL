@@ -12,6 +12,7 @@ const ROUTES = {
   RESIGNATIONS: "resignations",
   PAYROLL: "/payroll",
   ATTENDENCE: "/attendence",
+  ATTENDENCE_VIEW:"/attendence-view",
   DOCUMENTS: "/documents",
   ORG_CHART: "/org-chart",
   SETTINGS: "/settings",

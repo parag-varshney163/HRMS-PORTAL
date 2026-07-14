@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, CalendarOff, Clock, Wallet, FileSignature, Receipt, Megaphone, Banknote, ClipboardList, Files, Network, Settings, LogOut, UserMinus, UserPlus, Activity } from "lucide-react";
+import { LayoutDashboard, Users, CalendarOff, Clock, Wallet, FileSignature, Receipt, Megaphone, Banknote, ClipboardList, Files, Network, Settings, LogOut, UserMinus, UserPlus, Activity, AlertCircle } from "lucide-react";
 
 
 const MENU_ITEMS = [
@@ -36,6 +36,11 @@ const MENU_ITEMS = [
     name: "Attendance",
     icon: Clock,     path: "/attendence",
     allowedRoles: ["admin", "hr", "manager", "employee"],
+  },
+   {
+    name: "Attendance View",
+    icon: AlertCircle,     path: "/attendence-view",
+    allowedRoles: ["admin", "hr", "manager"],
   },
   {
     name: "Leaves",

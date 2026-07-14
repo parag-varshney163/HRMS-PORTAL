@@ -249,6 +249,7 @@ import ResetPassword from "./pages/ResetPassword";
 import UpdatePassword from "./pages/UpdatePassword";
 import colors from "./constants/colors";
 import AuditLogs from "./pages/AuditLogs";
+import AttendanceView from "./pages/AttendanceView";
 
 // ─── Lazy-loaded Public Pages ───
 const WelcomePage = lazy(() => import("./pages/WelcomePage"));
@@ -497,6 +498,17 @@ function App() {
                 permissionKey="moderationPanel"
               >
                 <AuditLogs />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.ATTENDENCE_VIEW}
+            element={
+              <ProtectedRoute
+                section="moderationDashboard"
+                permissionKey="moderationPanel"
+              >
+                <AttendanceView />
               </ProtectedRoute>
             }
           />
