@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { getMonthDays, getMonthName, attendanceMap, } from "./calendarUtils";
+import { attendanceMap, getMonthDays, getMonthName } from "./CalendarUtils";
 import colors from "../../constants/colors";
 import AttendenceDay from "./AttendenceDay";
 
