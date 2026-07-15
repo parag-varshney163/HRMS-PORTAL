@@ -191,21 +191,39 @@ export default function MyAttendance() {
           latestSession?.checkOutAt ? new Date(latestSession.checkOutAt) : null
         );
         // Show completed shift after checkout
-        if (
-          latestSession.checkOutAt &&
-          new Date(latestSession.date).toDateString() === now.toDateString()
-        ) {
+        // if (
+        //   latestSession.checkOutAt &&
+        //   new Date(latestSession.date).toDateString() === now.toDateString()
+        // ) {
+        //   setCompletedShiftHours(
+        //     latestSession.totalWorkingHours || "Shift Ended"
+        //   );
+        // }
+        // Show completed shift after checkout
+        if (latestSession.checkOutAt) {
           setCompletedShiftHours(
             latestSession.totalWorkingHours || "Shift Ended"
           );
         }
 
         // User is still checked in
-        if (
-          latestSession.checkInAt &&
-          !latestSession.checkOutAt &&
-          new Date(latestSession.date).toDateString() === now.toDateString()
-        ) {
+        // if (
+        //   latestSession.checkInAt &&
+        //   !latestSession.checkOutAt &&
+        //   new Date(latestSession.date).toDateString() === now.toDateString()
+        // ) {
+        //   setIsCheckedIn(true);
+        //   setCheckInTime(new Date(latestSession.checkInAt));
+
+        //   localStorage.setItem(
+        //     STORAGE_KEY,
+        //     new Date(latestSession.checkInAt).toISOString()
+        //   );
+        // } else {
+        //   localStorage.removeItem(STORAGE_KEY);
+        // }
+        // User is still checked in
+        if (latestSession.checkInAt && !latestSession.checkOutAt) {
           setIsCheckedIn(true);
           setCheckInTime(new Date(latestSession.checkInAt));
 
@@ -214,6 +232,7 @@ export default function MyAttendance() {
             new Date(latestSession.checkInAt).toISOString()
           );
         } else {
+          setIsCheckedIn(false);
           localStorage.removeItem(STORAGE_KEY);
         }
       } else {
