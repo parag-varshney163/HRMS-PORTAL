@@ -200,10 +200,16 @@ export default function MyAttendance() {
         //   );
         // }
         // Show completed shift after checkout
-        if (latestSession.checkOutAt) {
+        const isToday =
+          new Date(latestSession.date).toDateString() ===
+          new Date().toDateString();
+
+        if (latestSession.checkOutAt && isToday) {
           setCompletedShiftHours(
             latestSession.totalWorkingHours || "Shift Ended"
           );
+        } else {
+          setCompletedShiftHours(null);
         }
 
         // User is still checked in
@@ -223,7 +229,11 @@ export default function MyAttendance() {
         //   localStorage.removeItem(STORAGE_KEY);
         // }
         // User is still checked in
-        if (latestSession.checkInAt && !latestSession.checkOutAt) {
+        if (
+          latestSession.checkInAt &&
+          !latestSession.checkOutAt &&
+          isToday
+        ) {
           setIsCheckedIn(true);
           setCheckInTime(new Date(latestSession.checkInAt));
 
@@ -233,6 +243,7 @@ export default function MyAttendance() {
           );
         } else {
           setIsCheckedIn(false);
+          setCheckInTime(null);
           localStorage.removeItem(STORAGE_KEY);
         }
       } else {
