@@ -134,6 +134,127 @@ export default function MyAttendance() {
         (a, b) => new Date(b.date) - new Date(a.date)
       )[0]
       : null;
+  // const fetchPersonalData = useCallback(async () => {
+  //   try {
+  //     const { data } = await axiosInstance.get("/api/v1/attendance/user");
+
+  //     if (!data.success || !data.data) return;
+
+  //     setPersonalStats({
+  //       attendanceRate: data.data.attendanceRate || "0%",
+  //       lateDays: data.data.lateDays || 0,
+  //     });
+
+  //     const history = data.data.history || data.data.attendances || [];
+
+  //     const formattedHistory = history.map((item) => ({
+  //       ...item,
+  //       date: new Date(item.date),
+  //       checkInAt: item.checkInAt ? new Date(item.checkInAt) : null,
+  //       checkOutAt: item.checkOutAt ? new Date(item.checkOutAt) : null,
+  //     }));
+
+  //     setAttendanceHistory(formattedHistory);
+
+  //     const sortedHistory = [...formattedHistory].sort(
+  //       (a, b) =>
+  //         new Date(b.checkInAt || b.createdAt || b.date) -
+  //         new Date(a.checkInAt || a.createdAt || a.date)
+  //     );
+
+  //     const latestSession = sortedHistory[0];
+  //     const now = new Date();
+
+  //     // Default values
+  //     setIsCheckedIn(false);
+  //     setCompletedShiftHours(null);
+
+  //     if (latestSession) {
+  //       // Always show latest check-in
+  //       if (latestSession.checkInAt) {
+  //         setCheckInTime(new Date(latestSession.checkInAt));
+  //       } else {
+  //         setCheckInTime(null);
+  //       }
+  //       // if (latestSession?.checkOut) {
+  //       //   const [hours, minutes] = latestSession.checkOut.split(":");
+
+  //       //   const checkoutDate = new Date(latestSession.date);
+  //       //   checkoutDate.setHours(hours);
+  //       //   checkoutDate.setMinutes(minutes);
+
+  //       //   setCheckOutTime(checkoutDate);
+  //       // } else {
+  //       //   setCheckOutTime(null);
+  //       // }
+  //       setCheckOutTime(
+  //         latestSession?.checkOutAt ? new Date(latestSession.checkOutAt) : null
+  //       );
+  //       // Show completed shift after checkout
+  //       // if (
+  //       //   latestSession.checkOutAt &&
+  //       //   new Date(latestSession.date).toDateString() === now.toDateString()
+  //       // ) {
+  //       //   setCompletedShiftHours(
+  //       //     latestSession.totalWorkingHours || "Shift Ended"
+  //       //   );
+  //       // }
+  //       // Show completed shift after checkout
+  //       const isToday =
+  //         new Date(latestSession.date).toDateString() ===
+  //         new Date().toDateString();
+
+  //       if (latestSession.checkOutAt && isToday) {
+  //         setCompletedShiftHours(
+  //           latestSession.totalWorkingHours || "Shift Ended"
+  //         );
+  //       } else {
+  //         setCompletedShiftHours(null);
+  //       }
+
+  //       // User is still checked in
+  //       // if (
+  //       //   latestSession.checkInAt &&
+  //       //   !latestSession.checkOutAt &&
+  //       //   new Date(latestSession.date).toDateString() === now.toDateString()
+  //       // ) {
+  //       //   setIsCheckedIn(true);
+  //       //   setCheckInTime(new Date(latestSession.checkInAt));
+
+  //       //   localStorage.setItem(
+  //       //     STORAGE_KEY,
+  //       //     new Date(latestSession.checkInAt).toISOString()
+  //       //   );
+  //       // } else {
+  //       //   localStorage.removeItem(STORAGE_KEY);
+  //       // }
+  //       // User is still checked in
+  //       if (
+  //         latestSession.checkInAt &&
+  //         !latestSession.checkOutAt &&
+  //         isToday
+  //       ) {
+  //         setIsCheckedIn(true);
+  //         setCheckInTime(new Date(latestSession.checkInAt));
+
+  //         localStorage.setItem(
+  //           STORAGE_KEY,
+  //           new Date(latestSession.checkInAt).toISOString()
+  //         );
+  //       } else {
+  //         setIsCheckedIn(false);
+  //         setCheckInTime(null);
+  //         localStorage.removeItem(STORAGE_KEY);
+  //       }
+  //     } else {
+  //       setCheckInTime(null);
+  //       localStorage.removeItem(STORAGE_KEY);
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to fetch personal attendance", error);
+  //   }
+  // }, []);
+
   const fetchPersonalData = useCallback(async () => {
     try {
       const { data } = await axiosInstance.get("/api/v1/attendance/user");
@@ -156,105 +277,81 @@ export default function MyAttendance() {
 
       setAttendanceHistory(formattedHistory);
 
+      // Sort latest first
       const sortedHistory = [...formattedHistory].sort(
         (a, b) =>
           new Date(b.checkInAt || b.createdAt || b.date) -
           new Date(a.checkInAt || a.createdAt || a.date)
       );
 
-      const latestSession = sortedHistory[0];
-      const now = new Date();
+      /**
+       * Prefer active attendance (checked-in but not checked-out)
+       * This fixes overnight shifts.
+       */
+      const activeSession = sortedHistory.find(
+        (item) => item.checkInAt && !item.checkOutAt
+      );
 
-      // Default values
+      /**
+       * Otherwise use latest completed attendance
+       */
+      const latestSession = activeSession || sortedHistory[0];
+
+      // Reset defaults
       setIsCheckedIn(false);
       setCompletedShiftHours(null);
+      setCheckInTime(null);
+      setCheckOutTime(null);
 
-      if (latestSession) {
-        // Always show latest check-in
-        if (latestSession.checkInAt) {
-          setCheckInTime(new Date(latestSession.checkInAt));
-        } else {
-          setCheckInTime(null);
-        }
-        // if (latestSession?.checkOut) {
-        //   const [hours, minutes] = latestSession.checkOut.split(":");
-
-        //   const checkoutDate = new Date(latestSession.date);
-        //   checkoutDate.setHours(hours);
-        //   checkoutDate.setMinutes(minutes);
-
-        //   setCheckOutTime(checkoutDate);
-        // } else {
-        //   setCheckOutTime(null);
-        // }
-        setCheckOutTime(
-          latestSession?.checkOutAt ? new Date(latestSession.checkOutAt) : null
-        );
-        // Show completed shift after checkout
-        // if (
-        //   latestSession.checkOutAt &&
-        //   new Date(latestSession.date).toDateString() === now.toDateString()
-        // ) {
-        //   setCompletedShiftHours(
-        //     latestSession.totalWorkingHours || "Shift Ended"
-        //   );
-        // }
-        // Show completed shift after checkout
-        const isToday =
-          new Date(latestSession.date).toDateString() ===
-          new Date().toDateString();
-
-        if (latestSession.checkOutAt && isToday) {
-          setCompletedShiftHours(
-            latestSession.totalWorkingHours || "Shift Ended"
-          );
-        } else {
-          setCompletedShiftHours(null);
-        }
-
-        // User is still checked in
-        // if (
-        //   latestSession.checkInAt &&
-        //   !latestSession.checkOutAt &&
-        //   new Date(latestSession.date).toDateString() === now.toDateString()
-        // ) {
-        //   setIsCheckedIn(true);
-        //   setCheckInTime(new Date(latestSession.checkInAt));
-
-        //   localStorage.setItem(
-        //     STORAGE_KEY,
-        //     new Date(latestSession.checkInAt).toISOString()
-        //   );
-        // } else {
-        //   localStorage.removeItem(STORAGE_KEY);
-        // }
-        // User is still checked in
-        if (
-          latestSession.checkInAt &&
-          !latestSession.checkOutAt &&
-          isToday
-        ) {
-          setIsCheckedIn(true);
-          setCheckInTime(new Date(latestSession.checkInAt));
-
-          localStorage.setItem(
-            STORAGE_KEY,
-            new Date(latestSession.checkInAt).toISOString()
-          );
-        } else {
-          setIsCheckedIn(false);
-          setCheckInTime(null);
-          localStorage.removeItem(STORAGE_KEY);
-        }
-      } else {
-        setCheckInTime(null);
+      if (!latestSession) {
         localStorage.removeItem(STORAGE_KEY);
+        return;
       }
+
+      // Check In
+      if (latestSession.checkInAt) {
+        setCheckInTime(new Date(latestSession.checkInAt));
+      }
+
+      // Check Out
+      if (latestSession.checkOutAt) {
+        setCheckOutTime(new Date(latestSession.checkOutAt));
+      }
+
+      /**
+       * ACTIVE SHIFT
+       * Works even after midnight.
+       */
+      if (
+        latestSession.checkInAt &&
+        !latestSession.checkOutAt
+      ) {
+        setIsCheckedIn(true);
+
+        localStorage.setItem(
+          STORAGE_KEY,
+          new Date(latestSession.checkInAt).toISOString()
+        );
+
+        return;
+      }
+
+      /**
+       * COMPLETED SHIFT
+       */
+      if (latestSession.checkOutAt) {
+        setCompletedShiftHours(
+          latestSession.totalWorkingHours || "Shift Ended"
+        );
+      }
+
+      setIsCheckedIn(false);
+
+      localStorage.removeItem(STORAGE_KEY);
     } catch (error) {
       console.error("Failed to fetch personal attendance", error);
     }
   }, []);
-
   useEffect(() => {
     fetchPersonalData();
   }, [fetchPersonalData]);
@@ -371,16 +468,31 @@ export default function MyAttendance() {
       setActionType(null);
     }
   };
-  const todayRecord = attendanceHistory.find((r) => {
-    const d = new Date(r.date);
-    const today = new Date();
+  // const todayRecord = attendanceHistory.find((r) => {
+  //   const d = new Date(r.date);
+  //   const today = new Date();
 
-    return (
-      d.getDate() === today.getDate() &&
-      d.getMonth() === today.getMonth() &&
-      d.getFullYear() === today.getFullYear()
-    );
-  });
+  //   return (
+  //     d.getDate() === today.getDate() &&
+  //     d.getMonth() === today.getMonth() &&
+  //     d.getFullYear() === today.getFullYear()
+  //   );
+  // });
+  const today = new Date();
+
+  const todayRecord =
+    attendanceHistory.find(
+      (r) => r.checkInAt && !r.checkOutAt
+    ) ||
+    attendanceHistory.find((r) => {
+      const d = new Date(r.date);
+
+      return (
+        d.getDate() === today.getDate() &&
+        d.getMonth() === today.getMonth() &&
+        d.getFullYear() === today.getFullYear()
+      );
+    });
   return (
 
     <div className="w-full flex flex-col gap-6">
@@ -538,7 +650,7 @@ export default function MyAttendance() {
                 size="sm"
                 icon={LogIn}
                 onClick={handleCheckIn}
-                disabled={isSubmitting || completedShiftHours}
+                disabled={isSubmitting || isCheckedIn}
                 className="rounded-xl px-6 py-3"
               >
                 {actionType === "checkin"
@@ -567,16 +679,31 @@ export default function MyAttendance() {
           </h2>
 
           {(() => {
-            const todayRecord = attendanceHistory.find((r) => {
-              const d = new Date(r.date);
-              const today = new Date();
+            // const todayRecord = attendanceHistory.find((r) => {
+            //   const d = new Date(r.date);
+            //   const today = new Date();
 
-              return (
-                d.getDate() === today.getDate() &&
-                d.getMonth() === today.getMonth() &&
-                d.getFullYear() === today.getFullYear()
-              );
-            });
+            //   return (
+            //     d.getDate() === today.getDate() &&
+            //     d.getMonth() === today.getMonth() &&
+            //     d.getFullYear() === today.getFullYear()
+            //   );
+            // });
+            const today = new Date();
+
+            const todayRecord =
+              attendanceHistory.find(
+                (r) => r.checkInAt && !r.checkOutAt
+              ) ||
+              attendanceHistory.find((r) => {
+                const d = new Date(r.date);
+
+                return (
+                  d.getDate() === today.getDate() &&
+                  d.getMonth() === today.getMonth() &&
+                  d.getFullYear() === today.getFullYear()
+                );
+              });
 
             return (
               <div className="flex flex-col sm:flex-row items-center gap-8">
