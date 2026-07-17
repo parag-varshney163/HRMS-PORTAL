@@ -6,7 +6,18 @@ import colors from "../../constants/colors";
 import AttendenceDay from "./AttendenceDay";
 
 
-const AttendenceCalendar = ({ employee, attendance = [], loading }) => {
+const weekDays = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+
+const AttendenceCalendar = ({ employee, attendance = [], loading, holidays = [] }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const month = currentDate.getMonth();
@@ -20,6 +31,19 @@ const AttendenceCalendar = ({ employee, attendance = [], loading }) => {
     return attendanceMap(attendance);
   }, [attendance]);
 
+  const holidayMap = useMemo(() => {
+    const map = {};
+
+    holidays.forEach((holiday) => {
+      // Use the API date exactly as received
+      const key = holiday.date.slice(0, 10);
+
+      map[key] = holiday;
+    });
+
+    return map;
+  }, [holidays]);
+
   const previousMonth = () => {
     setCurrentDate(new Date(year, month - 1, 1));
   };
@@ -27,6 +51,7 @@ const AttendenceCalendar = ({ employee, attendance = [], loading }) => {
   const nextMonth = () => {
     setCurrentDate(new Date(year, month + 1, 1));
   };
+  const weekOffs = employee?.weekoff || [];
 
   return (
     <div
@@ -129,14 +154,42 @@ const AttendenceCalendar = ({ employee, attendance = [], loading }) => {
 
       <div className="grid grid-cols-7 flex-1">
 
-        {days.map((day, index) => (
+        {/* {days.map((day, index) => (
           <AttendenceDay
             key={index}
             day={day}
             attendance={attendanceByDate[day.fullDate]}
+            holiday={holidayMap[day.fullDate]}
             loading={loading}
           />
-        ))}
+        ))} */}
+        {days.map((day, index) => {
+          const holiday = holidays.find((h) => {
+            const d = new Date(h.date);
+
+            return (
+              d.getFullYear() === year &&
+              d.getMonth() === month &&
+              d.getDate() === day.date
+            );
+          });
+
+          return (
+            <AttendenceDay
+              key={index}
+              day={day}
+              attendance={attendanceByDate[day.fullDate]}
+              isWeekOff={
+                !day.empty &&
+                employee?.weekoff?.includes(
+                  weekDays[new Date(year, month, day.date).getDay()]
+                )
+              }
+              holiday={holiday}
+              loading={loading}
+            />
+          );
+        })}
 
       </div>
     </div>

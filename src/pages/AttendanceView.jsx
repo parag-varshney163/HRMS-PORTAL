@@ -17,6 +17,7 @@ const AttendanceView = () => {
   const [attendanceLoading, setAttendanceLoading] = useState(false);
 
   const [search, setSearch] = useState("");
+  const [holidays, setHolidays] = useState([]);
 
   //----------------------------------------------------
   // Fetch Employees
@@ -41,6 +42,16 @@ const AttendanceView = () => {
       setEmployeeLoading(false);
     }
   };
+  const fetchHolidays = async () => {
+  try {
+    const res = await axiosInstance.get("api/v1/dashboard/holiday-events");
+
+    setHolidays(res.data?.data || []);
+  } catch (err) {
+    console.log(err);
+    setHolidays([]);
+  }
+};
 
   //----------------------------------------------------
   // Fetch Attendance
@@ -71,6 +82,7 @@ const AttendanceView = () => {
 
   useEffect(() => {
     fetchEmployees();
+    fetchHolidays();
   }, []);
 
   //----------------------------------------------------
@@ -127,6 +139,7 @@ const AttendanceView = () => {
             employee={selectedEmployee}
             attendance={attendance}
             loading={attendanceLoading}
+            holidays={holidays}
           />
         </div>
 

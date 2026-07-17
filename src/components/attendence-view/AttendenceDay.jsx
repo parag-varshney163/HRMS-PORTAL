@@ -23,8 +23,16 @@ const statusConfig = {
     text: colors.warning,
   },
 };
+const holidayConfig = {
+  bg: "#EDE9FE",       // light purple
+  text: "#7C3AED",     // purple
+};
+const weekOffConfig = {
+  bg: "#DBEAFE",
+  text: "#2563EB",
+};
 
-const AttendenceDay = ({ day, attendance, loading }) => {
+const AttendenceDay = ({ day, attendance, loading, holiday, isWeekOff }) => {
   // Empty Cell
   if (day.empty) {
     return (
@@ -40,24 +48,30 @@ const AttendenceDay = ({ day, attendance, loading }) => {
 
   const config =
     statusConfig[attendance?.status] || null;
+  // const isHoliday = !!holiday;
+  const isHoliday = !!holiday && !attendance;
+const showWeekOff = !attendance && !holiday && isWeekOff;
 
   return (
     <div
       className="border p-2 transition-all hover:shadow-sm"
       style={{
         borderColor: colors.cardBorder,
-        background: day.today
-          ? colors.accentLight
-          : colors.cardBg,
+       background: isHoliday
+  ? "#F5F3FF"
+  : showWeekOff
+    ? "#EFF6FF"
+    : day.today
+      ? colors.accentLight
+      : colors.cardBg,
       }}
     >
       {/* Date */}
 
       <div className="flex justify-between items-center mb-2">
         <span
-          className={`font-semibold ${
-            day.today ? "text-lg" : ""
-          }`}
+          className={`font-semibold ${day.today ? "text-lg" : ""
+            }`}
           style={{
             color: day.today
               ? colors.accentDark
@@ -106,6 +120,80 @@ const AttendenceDay = ({ day, attendance, loading }) => {
           />
         </div>
       )}
+      {/* Holiday */}
+
+      {!loading && isHoliday && (
+        <div
+          className="rounded-lg p-2"
+          style={{
+            background: holidayConfig.bg,
+          }}
+        >
+          <div
+            className="font-semibold text-xs"
+            style={{
+              color: holidayConfig.text,
+            }}
+          >
+            🎉 Holiday
+          </div>
+
+          <div
+            className="mt-2 text-xs font-medium"
+            style={{
+              color: holidayConfig.text,
+            }}
+          >
+            {holiday.title}
+          </div>
+
+          <div
+            className="mt-1 text-[11px]"
+            style={{
+              color: colors.textSecondary,
+            }}
+          >
+            Official Holiday
+          </div>
+        </div>
+      )}
+      {/* Week Off */}
+
+{!loading && showWeekOff && (
+  <div
+    className="rounded-lg p-2"
+    style={{
+      background: weekOffConfig.bg,
+    }}
+  >
+    <div
+      className="font-semibold text-xs"
+      style={{
+        color: weekOffConfig?.text,
+      }}
+    >
+      🌴 Week Off
+    </div>
+
+    <div
+      className="mt-2 text-xs font-medium"
+      style={{
+        color: weekOffConfig.text,
+      }}
+    >
+      Scheduled Off
+    </div>
+
+    <div
+      className="mt-1 text-[11px]"
+      style={{
+        color: colors.textSecondary,
+      }}
+    >
+      Weekly Holiday
+    </div>
+  </div>
+)}
 
       {/* Attendance */}
 
