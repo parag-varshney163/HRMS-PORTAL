@@ -70,6 +70,7 @@ export default function MyAttendance() {
     lateDays: 0,
   });
   const [attendanceHistory, setAttendanceHistory] = useState([]);
+  const [weekOffs, setWeekOffs] = useState([]);
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [checkOutTime, setCheckOutTime] = useState(null);
   // const [expanded, setExpanded] = useState(false);
@@ -134,127 +135,6 @@ export default function MyAttendance() {
         (a, b) => new Date(b.date) - new Date(a.date)
       )[0]
       : null;
-  // const fetchPersonalData = useCallback(async () => {
-  //   try {
-  //     const { data } = await axiosInstance.get("/api/v1/attendance/user");
-
-  //     if (!data.success || !data.data) return;
-
-  //     setPersonalStats({
-  //       attendanceRate: data.data.attendanceRate || "0%",
-  //       lateDays: data.data.lateDays || 0,
-  //     });
-
-  //     const history = data.data.history || data.data.attendances || [];
-
-  //     const formattedHistory = history.map((item) => ({
-  //       ...item,
-  //       date: new Date(item.date),
-  //       checkInAt: item.checkInAt ? new Date(item.checkInAt) : null,
-  //       checkOutAt: item.checkOutAt ? new Date(item.checkOutAt) : null,
-  //     }));
-
-  //     setAttendanceHistory(formattedHistory);
-
-  //     const sortedHistory = [...formattedHistory].sort(
-  //       (a, b) =>
-  //         new Date(b.checkInAt || b.createdAt || b.date) -
-  //         new Date(a.checkInAt || a.createdAt || a.date)
-  //     );
-
-  //     const latestSession = sortedHistory[0];
-  //     const now = new Date();
-
-  //     // Default values
-  //     setIsCheckedIn(false);
-  //     setCompletedShiftHours(null);
-
-  //     if (latestSession) {
-  //       // Always show latest check-in
-  //       if (latestSession.checkInAt) {
-  //         setCheckInTime(new Date(latestSession.checkInAt));
-  //       } else {
-  //         setCheckInTime(null);
-  //       }
-  //       // if (latestSession?.checkOut) {
-  //       //   const [hours, minutes] = latestSession.checkOut.split(":");
-
-  //       //   const checkoutDate = new Date(latestSession.date);
-  //       //   checkoutDate.setHours(hours);
-  //       //   checkoutDate.setMinutes(minutes);
-
-  //       //   setCheckOutTime(checkoutDate);
-  //       // } else {
-  //       //   setCheckOutTime(null);
-  //       // }
-  //       setCheckOutTime(
-  //         latestSession?.checkOutAt ? new Date(latestSession.checkOutAt) : null
-  //       );
-  //       // Show completed shift after checkout
-  //       // if (
-  //       //   latestSession.checkOutAt &&
-  //       //   new Date(latestSession.date).toDateString() === now.toDateString()
-  //       // ) {
-  //       //   setCompletedShiftHours(
-  //       //     latestSession.totalWorkingHours || "Shift Ended"
-  //       //   );
-  //       // }
-  //       // Show completed shift after checkout
-  //       const isToday =
-  //         new Date(latestSession.date).toDateString() ===
-  //         new Date().toDateString();
-
-  //       if (latestSession.checkOutAt && isToday) {
-  //         setCompletedShiftHours(
-  //           latestSession.totalWorkingHours || "Shift Ended"
-  //         );
-  //       } else {
-  //         setCompletedShiftHours(null);
-  //       }
-
-  //       // User is still checked in
-  //       // if (
-  //       //   latestSession.checkInAt &&
-  //       //   !latestSession.checkOutAt &&
-  //       //   new Date(latestSession.date).toDateString() === now.toDateString()
-  //       // ) {
-  //       //   setIsCheckedIn(true);
-  //       //   setCheckInTime(new Date(latestSession.checkInAt));
-
-  //       //   localStorage.setItem(
-  //       //     STORAGE_KEY,
-  //       //     new Date(latestSession.checkInAt).toISOString()
-  //       //   );
-  //       // } else {
-  //       //   localStorage.removeItem(STORAGE_KEY);
-  //       // }
-  //       // User is still checked in
-  //       if (
-  //         latestSession.checkInAt &&
-  //         !latestSession.checkOutAt &&
-  //         isToday
-  //       ) {
-  //         setIsCheckedIn(true);
-  //         setCheckInTime(new Date(latestSession.checkInAt));
-
-  //         localStorage.setItem(
-  //           STORAGE_KEY,
-  //           new Date(latestSession.checkInAt).toISOString()
-  //         );
-  //       } else {
-  //         setIsCheckedIn(false);
-  //         setCheckInTime(null);
-  //         localStorage.removeItem(STORAGE_KEY);
-  //       }
-  //     } else {
-  //       setCheckInTime(null);
-  //       localStorage.removeItem(STORAGE_KEY);
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to fetch personal attendance", error);
-  //   }
-  // }, []);
-
   const fetchPersonalData = useCallback(async () => {
     try {
       const { data } = await axiosInstance.get("/api/v1/attendance/user");
@@ -265,6 +145,7 @@ export default function MyAttendance() {
         attendanceRate: data.data.attendanceRate || "0%",
         lateDays: data.data.lateDays || 0,
       });
+      setWeekOffs(data.data.weekoff || []);
 
       const history = data.data.history || data.data.attendances || [];
 
@@ -468,16 +349,6 @@ export default function MyAttendance() {
       setActionType(null);
     }
   };
-  // const todayRecord = attendanceHistory.find((r) => {
-  //   const d = new Date(r.date);
-  //   const today = new Date();
-
-  //   return (
-  //     d.getDate() === today.getDate() &&
-  //     d.getMonth() === today.getMonth() &&
-  //     d.getFullYear() === today.getFullYear()
-  //   );
-  // });
   const today = new Date();
 
   const todayRecord =
@@ -679,16 +550,6 @@ export default function MyAttendance() {
           </h2>
 
           {(() => {
-            // const todayRecord = attendanceHistory.find((r) => {
-            //   const d = new Date(r.date);
-            //   const today = new Date();
-
-            //   return (
-            //     d.getDate() === today.getDate() &&
-            //     d.getMonth() === today.getMonth() &&
-            //     d.getFullYear() === today.getFullYear()
-            //   );
-            // });
             const today = new Date();
 
             const todayRecord =
@@ -891,22 +752,48 @@ export default function MyAttendance() {
                   d.getFullYear() === today.getFullYear()
                 );
               });
+              const currentYear = new Date().getFullYear();
+              const currentMonth = new Date().getMonth();
 
+              const currentDate = new Date(currentYear, currentMonth, day);
+
+              const weekDay = currentDate.toLocaleDateString("en-US", {
+                weekday: "long",
+              });
+
+              const isWeekOff = weekOffs.includes(weekDay);
+
+              // let bg = "transparent";
+              // let color = colors.textPrimary;
+
+              // if (record?.status === "present") {
+              //   bg = "#22C55E";
+              //   color = "#fff";
+              // }
+
+              // if (record?.status === "half_day") {
+              //   bg = "#EF4444";
+              //   color = "#fff";
+              // }
+
+              // if (record?.status === "absent") {
+              //   bg = "#991B1B";
+              //   color = "#fff";
+              // }
               let bg = "transparent";
               let color = colors.textPrimary;
 
               if (record?.status === "present") {
                 bg = "#22C55E";
                 color = "#fff";
-              }
-
-              if (record?.status === "half_day") {
+              } else if (record?.status === "half_day") {
+                bg = "#F59E0B";
+                color = "#fff";
+              } else if (record?.status === "absent") {
                 bg = "#EF4444";
                 color = "#fff";
-              }
-
-              if (record?.status === "absent") {
-                bg = "#991B1B";
+              } else if (isWeekOff) {
+                bg = "#6366F1";
                 color = "#fff";
               }
 
@@ -944,6 +831,13 @@ export default function MyAttendance() {
                 style={{ background: "#991B1B" }}
               ></span>
               Absent
+            </div>
+            <div className="flex items-center gap-2">
+              <span
+                className="w-3 h-3 rounded-full"
+                style={{ background: "#6366F1" }}
+              />
+              Week Off
             </div>
 
           </div>
