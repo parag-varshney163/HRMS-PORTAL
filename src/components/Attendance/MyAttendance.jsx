@@ -73,6 +73,7 @@ export default function MyAttendance() {
   const [weekOffs, setWeekOffs] = useState([]);
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [checkOutTime, setCheckOutTime] = useState(null);
+  const [holidays, setHolidays] = useState([]);
   // const [expanded, setExpanded] = useState(false);
 
   // ─── REAL-TIME RUNNING CLOCK ───
@@ -364,6 +365,33 @@ export default function MyAttendance() {
         d.getFullYear() === today.getFullYear()
       );
     });
+
+
+  useEffect(() => {
+    const fetchHolidays = async () => {
+      try {
+        const { data } = await axiosInstance.get(
+          "/api/v1/dashboard/holiday-events"
+        );
+
+        setHolidays(data.data || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchHolidays();
+  }, []);
+  const holidayMap = new Map();
+
+  holidays.forEach((holiday) => {
+    const d = new Date(holiday.date);
+
+    holidayMap.set(
+      `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`,
+      holiday
+    );
+  });
   return (
 
     <div className="w-full flex flex-col gap-6">
@@ -756,6 +784,11 @@ export default function MyAttendance() {
               const currentMonth = new Date().getMonth();
 
               const currentDate = new Date(currentYear, currentMonth, day);
+              const holiday = holidayMap.get(
+                `${currentDate.getFullYear()}-${currentDate.getMonth()}-${currentDate.getDate()}`
+              );
+
+              const isHoliday = !!holiday;
 
               const weekDay = currentDate.toLocaleDateString("en-US", {
                 weekday: "long",
@@ -792,6 +825,9 @@ export default function MyAttendance() {
               } else if (record?.status === "absent") {
                 bg = "#EF4444";
                 color = "#fff";
+              } else if (isHoliday) {
+                bg = colors.accent; 
+                color = "#111827";
               } else if (isWeekOff) {
                 bg = "#6366F1";
                 color = "#fff";
@@ -799,8 +835,18 @@ export default function MyAttendance() {
 
               return (
                 <div key={day} className="flex justify-center">
-                  <div
+                  {/* <div
                     className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold"
+                    style={{
+                      background: bg,
+                      color,
+                    }}
+                  >
+                    {day}
+                  </div> */}
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold cursor-pointer"
+                    title={holiday?.title || ""}
                     style={{
                       background: bg,
                       color,
@@ -838,6 +884,13 @@ export default function MyAttendance() {
                 style={{ background: "#6366F1" }}
               />
               Week Off
+            </div>
+            <div className="flex items-center gap-2">
+              <span
+                className="w-3 h-3 rounded-full"
+                style={{ background: colors.accent }}
+              />
+              Holiday
             </div>
 
           </div>

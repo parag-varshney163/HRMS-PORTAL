@@ -18,6 +18,10 @@ const AttendanceView = () => {
 
   const [search, setSearch] = useState("");
   const [holidays, setHolidays] = useState([]);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(40);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
 
   //----------------------------------------------------
   // Fetch Employees
@@ -43,31 +47,57 @@ const AttendanceView = () => {
     }
   };
   const fetchHolidays = async () => {
-  try {
-    const res = await axiosInstance.get("api/v1/dashboard/holiday-events");
+    try {
+      const res = await axiosInstance.get("api/v1/dashboard/holiday-events");
 
-    setHolidays(res.data?.data || []);
-  } catch (err) {
-    console.log(err);
-    setHolidays([]);
-  }
-};
+      setHolidays(res.data?.data || []);
+    } catch (err) {
+      console.log(err);
+      setHolidays([]);
+    }
+  };
 
   //----------------------------------------------------
   // Fetch Attendance
   //----------------------------------------------------
 
+  // const fetchAttendance = async (employeeId) => {
+  //   if (!employeeId) return;
+
+  //   try {
+  //     setAttendanceLoading(true);
+
+  //     const res = await axiosInstance.get(
+  //       `/api/v1/attendance/all?search=${employeeId}`
+  //     );
+
+  //     setAttendance(res.data?.data?.records || []);
+  //   } catch (err) {
+  //     console.log(err);
+  //     setAttendance([]);
+  //   } finally {
+  //     setAttendanceLoading(false);
+  //   }
+  // };
   const fetchAttendance = async (employeeId) => {
     if (!employeeId) return;
 
     try {
       setAttendanceLoading(true);
 
-      const res = await axiosInstance.get(
-        `/api/v1/attendance/all?search=${employeeId}`
-      );
+      const res = await axiosInstance.get("/api/v1/attendance/all", {
+        params: {
+          search: employeeId,
+          page,
+          limit,
+        },
+      });
 
-      setAttendance(res.data?.data?.records || []);
+      const data = res.data?.data;
+
+      setAttendance(data?.records || []);
+      setTotalPages(data?.totalPages || 1);
+      setTotalRecords(data?.total || 0);
     } catch (err) {
       console.log(err);
       setAttendance([]);
@@ -93,7 +123,7 @@ const AttendanceView = () => {
     if (selectedEmployee) {
       fetchAttendance(selectedEmployee.employeeId);
     }
-  }, [selectedEmployee]);
+  }, [selectedEmployee, page]);
 
   //----------------------------------------------------
   // Search Employees
