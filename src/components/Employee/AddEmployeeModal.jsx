@@ -46,6 +46,7 @@ export default function AddEmployeeModal({
   onSave,
   initialData,
 }) {
+  
   const notify = useNotification();
   const isEditMode = !!initialData;
 

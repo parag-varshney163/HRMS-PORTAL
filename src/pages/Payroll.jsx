@@ -529,40 +529,74 @@ export default function Finance() {
       ),
     },
 
+    // {
+    //   key: "employmentStatus",
+    //   label: "Employment Status",
+    //   width: "1.3fr",
+    //   align: "center",
+    //   render: (_, row) => {
+    //     const status =
+    //       row.employmentStatus ||
+    //       row.employeeStatus ||
+    //       "working";
+
+    //     const isWorking =
+    //       status.toLowerCase() === "working";
+
+    //     return (
+    //       <span
+    //         className="text-[10px] font-semibold px-2.5 py-1 rounded-md border uppercase tracking-wider"
+    //         style={{
+    //           backgroundColor: isWorking
+    //             ? colors.successLight
+    //             : colors.dangerLight,
+    //           color: isWorking
+    //             ? colors.success
+    //             : colors.danger,
+    //           borderColor: isWorking
+    //             ? colors.success
+    //             : colors.danger,
+    //         }}
+    //       >
+    //         {isWorking ? "Working" : "Resigned"}
+    //       </span>
+    //     );
+    //   },
+    // },
     {
-      key: "employmentStatus",
-      label: "Employment Status",
-      width: "1.3fr",
-      align: "center",
-      render: (_, row) => {
-        const status =
-          row.employmentStatus ||
-          row.employeeStatus ||
-          "working";
+  key: "employmentStatus",
+  label: "Employment Status",
+  width: "1.3fr",
+  align: "center",
+  render: (_, row) => {
+    const status = (
+      row.employmentStatus ||
+      row.employeeStatus ||
+      "active"
+    ).toLowerCase();
 
-        const isWorking =
-          status.toLowerCase() === "working";
+    const isActive = status === "active";
 
-        return (
-          <span
-            className="text-[10px] font-semibold px-2.5 py-1 rounded-md border uppercase tracking-wider"
-            style={{
-              backgroundColor: isWorking
-                ? colors.successLight
-                : colors.dangerLight,
-              color: isWorking
-                ? colors.success
-                : colors.danger,
-              borderColor: isWorking
-                ? colors.success
-                : colors.danger,
-            }}
-          >
-            {isWorking ? "Working" : "Resigned"}
-          </span>
-        );
-      },
-    },
+    return (
+      <span
+        className="text-[10px] font-semibold px-2.5 py-1 rounded-md border uppercase tracking-wider"
+        style={{
+          backgroundColor: isActive
+            ? colors.successLight
+            : colors.dangerLight,
+          color: isActive
+            ? colors.success
+            : colors.danger,
+          borderColor: isActive
+            ? colors.success
+            : colors.danger,
+        }}
+      >
+        {isActive ? "Active" : "Inactive"}
+      </span>
+    );
+  },
+},
 
     {
       key: "salaryPaidStatus",
