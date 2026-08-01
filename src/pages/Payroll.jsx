@@ -262,6 +262,27 @@ export default function Finance() {
   const [departmentFilter, setDepartmentFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [monthFilter, setMonthFilter] = useState("");
+  const [yearFilter, setYearFilter] = useState("");
+
+  const months = [
+    { label: "January", value: 1 },
+    { label: "February", value: 2 },
+    { label: "March", value: 3 },
+    { label: "April", value: 4 },
+    { label: "May", value: 5 },
+    { label: "June", value: 6 },
+    { label: "July", value: 7 },
+    { label: "August", value: 8 },
+    { label: "September", value: 9 },
+    { label: "October", value: 10 },
+    { label: "November", value: 11 },
+    { label: "December", value: 12 },
+  ];
+
+  const years = Array.from({ length: 6 }, (_, i) =>
+    (new Date().getFullYear() - i).toString()
+  );
 
   // Debounce search input
   useEffect(() => {
@@ -285,6 +306,13 @@ export default function Finance() {
       if (departmentFilter)
         queryParams.append("department", departmentFilter);
       if (statusFilter) queryParams.append("status", statusFilter);
+       if (monthFilter) {
+      queryParams.append("month", monthFilter);
+    }
+
+    if (yearFilter) {
+      queryParams.append("year", yearFilter);
+    }
 
       const [statsRes, listRes] = await Promise.allSettled([
         axiosInstance.get("/api/v1/payroll/stats"),
@@ -313,6 +341,8 @@ export default function Finance() {
     roleFilter,
     departmentFilter,
     statusFilter,
+    monthFilter,
+    yearFilter
   ]);
 
   useEffect(() => {
@@ -564,39 +594,39 @@ export default function Finance() {
     //   },
     // },
     {
-  key: "employmentStatus",
-  label: "Employment Status",
-  width: "1.3fr",
-  align: "center",
-  render: (_, row) => {
-    const status = (
-      row.employmentStatus ||
-      row.employeeStatus ||
-      "active"
-    ).toLowerCase();
+      key: "employmentStatus",
+      label: "Employment Status",
+      width: "1.3fr",
+      align: "center",
+      render: (_, row) => {
+        const status = (
+          row.employmentStatus ||
+          row.employeeStatus ||
+          "active"
+        ).toLowerCase();
 
-    const isActive = status === "active";
+        const isActive = status === "active";
 
-    return (
-      <span
-        className="text-[10px] font-semibold px-2.5 py-1 rounded-md border uppercase tracking-wider"
-        style={{
-          backgroundColor: isActive
-            ? colors.successLight
-            : colors.dangerLight,
-          color: isActive
-            ? colors.success
-            : colors.danger,
-          borderColor: isActive
-            ? colors.success
-            : colors.danger,
-        }}
-      >
-        {isActive ? "Active" : "Inactive"}
-      </span>
-    );
-  },
-},
+        return (
+          <span
+            className="text-[10px] font-semibold px-2.5 py-1 rounded-md border uppercase tracking-wider"
+            style={{
+              backgroundColor: isActive
+                ? colors.successLight
+                : colors.dangerLight,
+              color: isActive
+                ? colors.success
+                : colors.danger,
+              borderColor: isActive
+                ? colors.success
+                : colors.danger,
+            }}
+          >
+            {isActive ? "Active" : "Inactive"}
+          </span>
+        );
+      },
+    },
 
     {
       key: "salaryPaidStatus",
@@ -877,7 +907,7 @@ export default function Finance() {
             <div className="flex flex-wrap items-center gap-3">
 
               <FilterDropDown
-                width="170px"
+                width="120px"
                 defaultLabel="Role"
                 options={["Admin", "Manager", "Employee"]}
                 onSelect={(value) => {
@@ -887,7 +917,7 @@ export default function Finance() {
               />
 
               <FilterDropDown
-                width="170px"
+                width="120px"
                 defaultLabel="Department"
                 options={["HR", "Sales", "IT", "Finance"]}
                 onSelect={(value) => {
@@ -897,12 +927,30 @@ export default function Finance() {
               />
 
               <FilterDropDown
-                width="170px"
+                width="120px"
                 defaultLabel="Salary Status"
                 options={["Generated", "Paid", "Pending"]}
                 onSelect={(value) => {
                   setStatusFilter(value.toLowerCase());
                   setPage(1);
+                }}
+              />
+              <FilterDropDown
+                width="100px"
+                defaultLabel="Month"
+                options={months.map((m) => m.label)}
+                onSelect={(value) => {
+                  const selected = months.find((m) => m.label === value);
+                  setMonthFilter(selected?.value || "");
+                }}
+              />
+
+              <FilterDropDown
+                width="80px"
+                defaultLabel="Year"
+                options={years}
+                onSelect={(value) => {
+                  setYearFilter(value);
                 }}
               />
 
@@ -929,6 +977,13 @@ export default function Finance() {
 
                     if (statusFilter) {
                       queryParams.append("status", statusFilter);
+                    }
+                    if (monthFilter) {
+                      queryParams.append("month", monthFilter);
+                    }
+
+                    if (yearFilter) {
+                      queryParams.append("year", yearFilter);
                     }
 
                     const response = await axiosInstance.get(
