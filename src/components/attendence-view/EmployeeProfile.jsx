@@ -3,6 +3,16 @@ import colors from "../../constants/colors";
 
 
 const EmployeeProfile = ({ employee, attendance = [], loading }) => {
+  const now = new Date();
+
+  const currentMonthAttendance = attendance.filter((item) => {
+    const attendanceDate = new Date(item.date);
+
+    return (
+      attendanceDate.getMonth() === now.getMonth() &&
+      attendanceDate.getFullYear() === now.getFullYear()
+    );
+  });
   if (loading) {
     return (
       <div
@@ -42,23 +52,40 @@ const EmployeeProfile = ({ employee, attendance = [], loading }) => {
 
   if (!employee) return null;
 
-  const present = attendance.filter(
+  // const present = attendance.filter(
+  //   (item) => item.status === "present"
+  // ).length;
+
+  // const absent = attendance.filter(
+  //   (item) => item.status === "absent"
+  // ).length;
+
+  // const leave = attendance.filter(
+  //   (item) => item.status === "leave"
+  // ).length;
+
+  // const halfDay = attendance.filter(
+  //   (item) => item.status === "half_day"
+  // ).length;
+
+  // const totalDays = attendance.length;
+  const present = currentMonthAttendance.filter(
     (item) => item.status === "present"
   ).length;
 
-  const absent = attendance.filter(
+  const absent = currentMonthAttendance.filter(
     (item) => item.status === "absent"
   ).length;
 
-  const leave = attendance.filter(
-    (item) => item.status === "leave"
+  const leave = currentMonthAttendance.filter(
+    (item) => item.status === "on_leave"
   ).length;
 
-  const halfDay = attendance.filter(
+  const halfDay = currentMonthAttendance.filter(
     (item) => item.status === "half_day"
   ).length;
 
-  const totalDays = attendance.length;
+  const totalDays = currentMonthAttendance.length;
 
   const workingDays = present + halfDay;
 
