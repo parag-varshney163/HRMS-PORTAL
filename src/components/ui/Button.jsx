@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 // src/components/ui/Button.jsx
 import React from "react";
 
+
 const sizes = {
   sm: "px-3 py-1.5 text-sm",
   md: "px-4 py-2 text-base",
@@ -21,7 +22,7 @@ const variantClasses = {
 export default function Button({
   children,
   onClick,
-  size = "md",
+  size = "md", 
   variant = "primary",
   icon: Icon,
   className = "",
