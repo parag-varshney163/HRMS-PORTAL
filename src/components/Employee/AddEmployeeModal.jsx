@@ -698,7 +698,7 @@ export default function AddEmployeeModal({
                     <option value="full_time">Full Time</option>
                     <option value="part_time">Part Time</option>
                     <option value="contract">Contract</option>
-                    <option value="internship">Internship</option>
+                    <option value="intern">Internship</option>
                   </select>
                 </div>
 
