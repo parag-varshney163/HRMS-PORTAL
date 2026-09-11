@@ -796,11 +796,23 @@ export default function MyAttendance() {
               });
 
               const isWeekOff = weekOffs.includes(weekDay);
+              // const isLeave =
+              //   !record &&
+              //   !isFuture &&
+              //   !isHoliday &&
+              //   !isWeekOff;
+              const isApprovedLeave =
+                record?.status === "on_leave" ||
+                record?.status === "leave";
+
               const isLeave =
-                !record &&
-                !isFuture &&
-                !isHoliday &&
-                !isWeekOff;
+                isApprovedLeave ||
+                (
+                  !record &&
+                  !isFuture &&
+                  !isHoliday &&
+                  !isWeekOff
+                );
 
               // let bg = "transparent";
               // let color = colors.textPrimary;
@@ -808,15 +820,20 @@ export default function MyAttendance() {
               // if (record?.status === "present") {
               //   bg = "#22C55E";
               //   color = "#fff";
-              // }
-
-              // if (record?.status === "half_day") {
+              // } else if (record?.status === "half_day") {
+              //   bg = "#F59E0B";
+              //   color = "#fff";
+              // } else if (record?.status === "absent") {
               //   bg = "#EF4444";
               //   color = "#fff";
-              // }
-
-              // if (record?.status === "absent") {
-              //   bg = "#991B1B";
+              // } else if (isLeave) {
+              //   bg = "#F59E0B"; // orange
+              //   color = "#fff";
+              // } else if (isHoliday) {
+              //   bg = colors.accent;
+              //   color = "#111827";
+              // } else if (isWeekOff) {
+              //   bg = "#6366F1";
               //   color = "#fff";
               // }
               let bg = "transparent";
@@ -831,8 +848,15 @@ export default function MyAttendance() {
               } else if (record?.status === "absent") {
                 bg = "#EF4444";
                 color = "#fff";
+              } else if (
+                record?.status === "leave" ||
+                record?.status === "on_leave"
+              ) {
+                bg = "#F59E0B";
+                color = "#fff";
               } else if (isLeave) {
-                bg = "#F59E0B"; // orange
+                // No attendance record (unmarked leave)
+                bg = "#F59E0B";
                 color = "#fff";
               } else if (isHoliday) {
                 bg = colors.accent;
