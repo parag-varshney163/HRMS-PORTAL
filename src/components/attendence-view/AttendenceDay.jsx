@@ -50,20 +50,20 @@ const AttendenceDay = ({ day, attendance, loading, holiday, isWeekOff }) => {
     statusConfig[attendance?.status] || null;
   // const isHoliday = !!holiday;
   const isHoliday = !!holiday && !attendance;
-const showWeekOff = !attendance && !holiday && isWeekOff;
+  const showWeekOff = !attendance && !holiday && isWeekOff;
 
   return (
     <div
       className="border p-2 transition-all hover:shadow-sm"
       style={{
         borderColor: colors.cardBorder,
-       background: isHoliday
-  ? "#F5F3FF"
-  : showWeekOff
-    ? "#EFF6FF"
-    : day.today
-      ? colors.accentLight
-      : colors.cardBg,
+        background: isHoliday
+          ? "#F5F3FF"
+          : showWeekOff
+            ? "#EFF6FF"
+            : day.today
+              ? colors.accentLight
+              : colors.cardBg,
       }}
     >
       {/* Date */}
@@ -159,41 +159,41 @@ const showWeekOff = !attendance && !holiday && isWeekOff;
       )}
       {/* Week Off */}
 
-{!loading && showWeekOff && (
-  <div
-    className="rounded-lg p-2"
-    style={{
-      background: weekOffConfig.bg,
-    }}
-  >
-    <div
-      className="font-semibold text-xs"
-      style={{
-        color: weekOffConfig?.text,
-      }}
-    >
-      🌴 Week Off
-    </div>
+      {!loading && showWeekOff && (
+        <div
+          className="rounded-lg p-2"
+          style={{
+            background: weekOffConfig.bg,
+          }}
+        >
+          <div
+            className="font-semibold text-xs"
+            style={{
+              color: weekOffConfig?.text,
+            }}
+          >
+            🌴 Week Off
+          </div>
 
-    <div
-      className="mt-2 text-xs font-medium"
-      style={{
-        color: weekOffConfig.text,
-      }}
-    >
-      Scheduled Off
-    </div>
+          <div
+            className="mt-2 text-xs font-medium"
+            style={{
+              color: weekOffConfig.text,
+            }}
+          >
+            Scheduled Off
+          </div>
 
-    <div
-      className="mt-1 text-[11px]"
-      style={{
-        color: colors.textSecondary,
-      }}
-    >
-      Weekly Holiday
-    </div>
-  </div>
-)}
+          <div
+            className="mt-1 text-[11px]"
+            style={{
+              color: colors.textSecondary,
+            }}
+          >
+            Weekly Holiday
+          </div>
+        </div>
+      )}
 
       {/* Attendance */}
 

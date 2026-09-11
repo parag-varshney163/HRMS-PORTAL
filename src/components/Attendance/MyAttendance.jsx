@@ -784,6 +784,7 @@ export default function MyAttendance() {
               const currentMonth = new Date().getMonth();
 
               const currentDate = new Date(currentYear, currentMonth, day);
+              const isFuture = currentDate > new Date();
               const holiday = holidayMap.get(
                 `${currentDate.getFullYear()}-${currentDate.getMonth()}-${currentDate.getDate()}`
               );
@@ -795,6 +796,11 @@ export default function MyAttendance() {
               });
 
               const isWeekOff = weekOffs.includes(weekDay);
+              const isLeave =
+                !record &&
+                !isFuture &&
+                !isHoliday &&
+                !isWeekOff;
 
               // let bg = "transparent";
               // let color = colors.textPrimary;
@@ -825,8 +831,11 @@ export default function MyAttendance() {
               } else if (record?.status === "absent") {
                 bg = "#EF4444";
                 color = "#fff";
+              } else if (isLeave) {
+                bg = "#F59E0B"; // orange
+                color = "#fff";
               } else if (isHoliday) {
-                bg = colors.accent; 
+                bg = colors.accent;
                 color = "#111827";
               } else if (isWeekOff) {
                 bg = "#6366F1";
@@ -891,6 +900,13 @@ export default function MyAttendance() {
                 style={{ background: colors.accent }}
               />
               Holiday
+            </div>
+            <div className="flex items-center gap-2">
+              <span
+                className="w-3 h-3 rounded-full"
+                style={{ background: "#F59E0B" }}
+              />
+              Leave
             </div>
 
           </div>
