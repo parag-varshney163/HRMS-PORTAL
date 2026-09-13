@@ -801,18 +801,18 @@ export default function MyAttendance() {
               //   !isFuture &&
               //   !isHoliday &&
               //   !isWeekOff;
-              const isApprovedLeave =
-                record?.status === "on_leave" ||
-                record?.status === "leave";
-
               const isLeave =
-                isApprovedLeave ||
-                (
-                  !record &&
-                  !isFuture &&
-                  !isHoliday &&
-                  !isWeekOff
-                );
+                record?.status === "leave" ||
+                record?.status === "on_leave";
+
+              // const isLeave =
+              //   isApprovedLeave ||
+              //   (
+              //     !record &&
+              //     !isFuture &&
+              //     !isHoliday &&
+              //     !isWeekOff
+              //   );
 
               // let bg = "transparent";
               // let color = colors.textPrimary;
