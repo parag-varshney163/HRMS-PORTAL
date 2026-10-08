@@ -138,35 +138,35 @@ export default function OrgLeaves({ refreshTrigger, onOpenBalanceModal }) {
   //   );
   // };
   const renderStatusBadge = (val) => {
-  const status = val?.toLowerCase() || "pending";
+    const status = val?.toLowerCase() || "pending";
 
-  let bg = colors.warningLight;
-  let color = colors.warning;
-  let border = colors.warning;
+    let bg = colors.warningLight;
+    let color = colors.warning;
+    let border = colors.warning;
 
-  if (status === "approved") {
-    bg = colors.successLight;
-    color = colors.success;
-    border = colors.success;
-  } else if (status === "rejected") {
-    bg = colors.dangerLight;
-    color = colors.danger;
-    border = colors.danger;
-  }
+    if (status === "approved") {
+      bg = colors.successLight;
+      color = colors.success;
+      border = colors.success;
+    } else if (status === "rejected") {
+      bg = colors.dangerLight;
+      color = colors.danger;
+      border = colors.danger;
+    }
 
-  return (
-    <span
-      className="px-2.5 py-1 rounded-md border text-[10px] font-bold uppercase tracking-wider"
-      style={{
-        backgroundColor: bg,
-        color,
-        borderColor: border,
-      }}
-    >
-      {val || "Pending"}
-    </span>
-  );
-};
+    return (
+      <span
+        className="px-2.5 py-1 rounded-md border text-[10px] font-bold uppercase tracking-wider"
+        style={{
+          backgroundColor: bg,
+          color,
+          borderColor: border,
+        }}
+      >
+        {val || "Pending"}
+      </span>
+    );
+  };
 
   // ─── DATATABLE COLUMNS ───
   // const columns = [
@@ -280,144 +280,204 @@ export default function OrgLeaves({ refreshTrigger, onOpenBalanceModal }) {
   //   },
   // ];
   const columns = [
-  {
-    key: "employee",
-    label: "Employee",
-    width: "1.5fr",
-    align: "left",
-    render: (_, row) => (
-      <div className="min-w-0">
-        <p
-          className="text-sm font-bold truncate"
-          style={{ color: colors.textPrimary }}
-        >
-          {row.employeeName || "Unknown"}
-        </p>
-
-        <p
-          className="text-xs font-mono truncate"
-          style={{ color: colors.textSecondary }}
-        >
-          {row.employeeId || "-"}
-        </p>
-      </div>
-    ),
-  },
-
-  {
-    key: "leaveInfo",
-    label: "Leave Details",
-    width: "1.5fr",
-    align: "left",
-    render: (_, row) => (
-      <div className="min-w-0">
-        <p
-          className="text-sm font-medium truncate capitalize"
-          style={{ color: colors.textPrimary }}
-        >
-          {row.leaveType
-            ? row.leaveType.replace(/([A-Z])/g, " $1").trim()
-            : "Leave"}
-        </p>
-
-        <p
-          className="text-xs truncate mt-0.5"
-          style={{ color: colors.textSecondary }}
-        >
-          <span
-            className="font-semibold"
-            style={{ color: colors.accent }}
+    {
+      key: "employee",
+      label: "Employee",
+      width: "1.5fr",
+      align: "left",
+      render: (_, row) => (
+        <div className="min-w-0">
+          <p
+            className="text-sm font-bold truncate"
+            style={{ color: colors.textPrimary }}
           >
-            {row.totalDays || 0} Day(s)
-          </span>{" "}
-          •{" "}
-          {row.startDate
-            ? new Date(row.startDate).toLocaleDateString()
-            : "-"}
-        </p>
-      </div>
-    ),
-  },
+            {row.employeeName || "Unknown"}
+          </p>
 
-  {
-    key: "reason",
-    label: "Reason",
-    width: "1fr",
-    align: "left",
-    render: (val) => (
-      <span
-        className="text-xs truncate block max-w-[150px]"
-        title={val}
-        style={{ color: colors.textSecondary }}
-      >
-        {val || "-"}
-      </span>
-    ),
-  },
-
-  {
-    key: "status",
-    label: "Status",
-    width: "1fr",
-    align: "center",
-    render: (val) => renderStatusBadge(val),
-  },
-
-  {
-    key: "actions",
-    label: "Actions",
-    width: "1.5fr",
-    align: "right",
-    render: (_, row) => {
-      if (row.status?.toLowerCase() !== "pending") {
-        return (
-          <span
-            className="text-xs italic"
+          <p
+            className="text-xs font-mono truncate"
             style={{ color: colors.textSecondary }}
           >
-            Processed
-          </span>
-        );
-      }
-
-      return (
-        <div className="flex items-center justify-end gap-2">
-          <Button
-            variant="custom"
-            bg={colors.success}
-            hoverBg="#43A93A"
-            text="#FFFFFF"
-            size="sm"
-            icon={CheckCircle}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleUpdateStatus(row._id || row.id, "approved");
-            }}
-            className="px-3"
-          >
-            Approve
-          </Button>
-
-          <Button
-            variant="custom"
-            bg={colors.danger}
-            hoverBg="#D93B31"
-            text="#FFFFFF"
-            size="sm"
-            icon={XCircle}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleUpdateStatus(row._id || row.id, "rejected");
-            }}
-            className="px-3"
-          >
-            Reject
-          </Button>
+            {row.employeeId || "-"}
+          </p>
         </div>
-      );
+      ),
     },
-  },
-];
+
+    // {
+    //   key: "leaveInfo",
+    //   label: "Leave Details",
+    //   width: "1.5fr",
+    //   align: "left",
+    //   render: (_, row) => (
+    //     <div className="min-w-0">
+    //       <p
+    //         className="text-sm font-medium truncate capitalize"
+    //         style={{ color: colors.textPrimary }}
+    //       >
+    //         {row.leaveType
+    //           ? row.leaveType.replace(/([A-Z])/g, " $1").trim()
+    //           : "Leave"}
+    //       </p>
+
+    //       <p
+    //         className="text-xs truncate mt-0.5"
+    //         style={{ color: colors.textSecondary }}
+    //       >
+    //         <span
+    //           className="font-semibold"
+    //           style={{ color: colors.accent }}
+    //         >
+    //           {row.totalDays || 0} Day(s)
+    //         </span>{" "}
+    //         •{" "}
+    //         {row.startDate
+    //           ? new Date(row.startDate).toLocaleDateString()
+    //           : "-"}
+    //       </p>
+    //     </div>
+    //   ),
+    // },
+
+    {
+      key: "leaveInfo",
+      label: "Leave Details",
+      width: "1.8fr",
+      align: "left",
+      render: (_, row) => {
+        const formatDate = (date) => {
+          if (!date) return "-";
+
+          return new Date(date).toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            timeZone: "UTC",
+          });
+        };
+
+        return (
+          <div className="min-w-0 flex flex-col gap-1">
+            <p
+              className="text-sm font-medium truncate capitalize"
+              style={{ color: colors.textPrimary }}
+            >
+              {row.leaveType
+                ? row.leaveType.replace(/([A-Z])/g, " $1").trim()
+                : "Leave"}
+            </p>
+
+            <p
+              className="text-xs"
+              style={{ color: colors.textSecondary }}
+            >
+              <span
+                className="font-semibold"
+                style={{ color: colors.accent }}
+              >
+                {row.totalDays ?? 0} Day(s)
+              </span>
+            </p>
+
+            <div
+              className="flex flex-col gap-0.5 text-xs"
+              style={{ color: colors.textSecondary }}
+            >
+              <span>
+                <span className="font-medium">From:</span>{" "}
+                {formatDate(row.startDate)}
+              </span>
+
+              <span>
+                <span className="font-medium">To:</span>{" "}
+                {formatDate(row.endDate)}
+              </span>
+            </div>
+          </div>
+        );
+      },
+    },
+
+
+    {
+      key: "reason",
+      label: "Reason",
+      width: "1fr",
+      align: "left",
+      render: (val) => (
+        <span
+          className="text-xs truncate block max-w-[150px]"
+          title={val}
+          style={{ color: colors.textSecondary }}
+        >
+          {val || "-"}
+        </span>
+      ),
+    },
+
+    {
+      key: "status",
+      label: "Status",
+      width: "1fr",
+      align: "center",
+      render: (val) => renderStatusBadge(val),
+    },
+
+    {
+      key: "actions",
+      label: "Actions",
+      width: "1.5fr",
+      align: "right",
+      render: (_, row) => {
+        if (row.status?.toLowerCase() !== "pending") {
+          return (
+            <span
+              className="text-xs italic"
+              style={{ color: colors.textSecondary }}
+            >
+              Processed
+            </span>
+          );
+        }
+
+        return (
+          <div className="flex items-center justify-end gap-2">
+            <Button
+              variant="custom"
+              bg={colors.success}
+              hoverBg="#43A93A"
+              text="#FFFFFF"
+              size="sm"
+              icon={CheckCircle}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleUpdateStatus(row._id || row.id, "approved");
+              }}
+              className="px-3"
+            >
+              Approve
+            </Button>
+
+            <Button
+              variant="custom"
+              bg={colors.danger}
+              hoverBg="#D93B31"
+              text="#FFFFFF"
+              size="sm"
+              icon={XCircle}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleUpdateStatus(row._id || row.id, "rejected");
+              }}
+              className="px-3"
+            >
+              Reject
+            </Button>
+          </div>
+        );
+      },
+    },
+  ];
 
   // return (
   //   <div className="pt-8 border-t border-card-border mt-6 w-full animate-in fade-in">
@@ -530,31 +590,31 @@ export default function OrgLeaves({ refreshTrigger, onOpenBalanceModal }) {
   //   </div>
   // );
   return (
-  <div
-    className="pt-8 mt-6 w-full animate-in fade-in border-t"
-    style={{ borderColor: colors.cardBorder }}
-  >
-    {/* ─── HEADER ─── */}
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-      <div>
-        <h2
-          className="text-2xl font-bold"
-          style={{ color: colors.textPrimary }}
-        >
-          Organization{" "}
-          <span style={{ color: colors.accent }}>Requests</span>
-        </h2>
+    <div
+      className="pt-8 mt-6 w-full animate-in fade-in border-t"
+      style={{ borderColor: colors.cardBorder }}
+    >
+      {/* ─── HEADER ─── */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h2
+            className="text-2xl font-bold"
+            style={{ color: colors.textPrimary }}
+          >
+            Organization{" "}
+            <span style={{ color: colors.accent }}>Requests</span>
+          </h2>
 
-        <p
-          className="text-sm mt-1"
-          style={{ color: colors.textSecondary }}
-        >
-          Manage team leave applications.
-        </p>
-      </div>
+          <p
+            className="text-sm mt-1"
+            style={{ color: colors.textSecondary }}
+          >
+            Manage team leave applications.
+          </p>
+        </div>
 
-      {/* Uncomment when needed */}
-      {/* <Button
+        {/* Uncomment when needed */}
+        {/* <Button
         variant="custom"
         bg={colors.buttonBg}
         hoverBg={colors.buttonHover}
@@ -565,128 +625,128 @@ export default function OrgLeaves({ refreshTrigger, onOpenBalanceModal }) {
       >
         Adjust Balances
       </Button> */}
-    </div>
-
-    {/* ─── STATS GRID ─── */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <StatsCard
-        icon={CalendarDays}
-        iconBg={colors.blueLight}
-        iconColor={colors.blue}
-        value={loading ? "..." : stats.total || 0}
-        label="Total Requests"
-      />
-
-      <StatsCard
-        icon={Clock}
-        iconBg={colors.warningLight}
-        iconColor={colors.warning}
-        value={loading ? "..." : stats.pending || 0}
-        label="Pending Action"
-      />
-
-      <StatsCard
-        icon={CheckCircle}
-        iconBg={colors.successLight}
-        iconColor={colors.success}
-        value={loading ? "..." : stats.approved || 0}
-        label="Approved"
-      />
-
-      <StatsCard
-        icon={XCircle}
-        iconBg={colors.dangerLight}
-        iconColor={colors.danger}
-        value={loading ? "..." : stats.rejected || 0}
-        label="Rejected"
-      />
-    </div>
-
-    {/* ─── FILTER BAR ─── */}
-    <div
-      className="flex flex-col xl:flex-row items-center justify-between gap-4 p-4 rounded-2xl border mb-4"
-      style={{
-        backgroundColor: colors.cardBg,
-        borderColor: colors.cardBorder,
-      }}
-    >
-      <div className="flex items-center gap-3 w-full xl:w-auto">
-        <label
-          className="text-sm font-medium whitespace-nowrap"
-          style={{ color: colors.textSecondary }}
-        >
-          Filter Status:
-        </label>
-
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="w-full sm:w-48 px-4 py-2.5 rounded-xl border text-sm outline-none transition-colors cursor-pointer"
-          style={{
-            backgroundColor: colors.inputBg,
-            borderColor: colors.cardBorder,
-            color: colors.textPrimary,
-          }}
-        >
-          <option value="">All Statuses</option>
-          <option value="pending">Pending</option>
-          <option value="approved">Approved</option>
-          <option value="rejected">Rejected</option>
-        </select>
       </div>
 
-      <div className="w-full xl:w-[450px] flex justify-end">
-        <SearchBar
-          placeholder="Search employee..."
-          value={searchQuery}
-          onChange={(val) => setSearchQuery(val)}
-          width="100%"
+      {/* ─── STATS GRID ─── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <StatsCard
+          icon={CalendarDays}
+          iconBg={colors.blueLight}
+          iconColor={colors.blue}
+          value={loading ? "..." : stats.total || 0}
+          label="Total Requests"
+        />
+
+        <StatsCard
+          icon={Clock}
+          iconBg={colors.warningLight}
+          iconColor={colors.warning}
+          value={loading ? "..." : stats.pending || 0}
+          label="Pending Action"
+        />
+
+        <StatsCard
+          icon={CheckCircle}
+          iconBg={colors.successLight}
+          iconColor={colors.success}
+          value={loading ? "..." : stats.approved || 0}
+          label="Approved"
+        />
+
+        <StatsCard
+          icon={XCircle}
+          iconBg={colors.dangerLight}
+          iconColor={colors.danger}
+          value={loading ? "..." : stats.rejected || 0}
+          label="Rejected"
         />
       </div>
-    </div>
 
-    {/* ─── TABLE ─── */}
-    <div className="flex-1 -mt-4">
-      {records.length === 0 && !loading ? (
-        <div
-          className="flex flex-col items-center justify-center py-16 rounded-xl border border-dashed mt-8"
-          style={{
-            backgroundColor: colors.cardBg,
-            borderColor: colors.cardBorder,
-          }}
-        >
-          <Inbox
-            size={48}
-            className="mb-4 opacity-50"
-            style={{ color: colors.textMuted }}
-          />
-
-          <p
-            className="text-lg font-bold"
-            style={{ color: colors.textPrimary }}
-          >
-            No requests found
-          </p>
-
-          <p
-            className="text-sm mt-1"
+      {/* ─── FILTER BAR ─── */}
+      <div
+        className="flex flex-col xl:flex-row items-center justify-between gap-4 p-4 rounded-2xl border mb-4"
+        style={{
+          backgroundColor: colors.cardBg,
+          borderColor: colors.cardBorder,
+        }}
+      >
+        <div className="flex items-center gap-3 w-full xl:w-auto">
+          <label
+            className="text-sm font-medium whitespace-nowrap"
             style={{ color: colors.textSecondary }}
           >
-            Adjust your search or filter criteria.
-          </p>
+            Filter Status:
+          </label>
+
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full sm:w-48 px-4 py-2.5 rounded-xl border text-sm outline-none transition-colors cursor-pointer"
+            style={{
+              backgroundColor: colors.inputBg,
+              borderColor: colors.cardBorder,
+              color: colors.textPrimary,
+            }}
+          >
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
         </div>
-      ) : (
-        <DataTable
-          columns={columns}
-          data={records}
-          loading={loading}
-          paginationMode="server"
-          page={page}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
-      )}
+
+        <div className="w-full xl:w-[450px] flex justify-end">
+          <SearchBar
+            placeholder="Search employee..."
+            value={searchQuery}
+            onChange={(val) => setSearchQuery(val)}
+            width="100%"
+          />
+        </div>
+      </div>
+
+      {/* ─── TABLE ─── */}
+      <div className="flex-1 -mt-4">
+        {records.length === 0 && !loading ? (
+          <div
+            className="flex flex-col items-center justify-center py-16 rounded-xl border border-dashed mt-8"
+            style={{
+              backgroundColor: colors.cardBg,
+              borderColor: colors.cardBorder,
+            }}
+          >
+            <Inbox
+              size={48}
+              className="mb-4 opacity-50"
+              style={{ color: colors.textMuted }}
+            />
+
+            <p
+              className="text-lg font-bold"
+              style={{ color: colors.textPrimary }}
+            >
+              No requests found
+            </p>
+
+            <p
+              className="text-sm mt-1"
+              style={{ color: colors.textSecondary }}
+            >
+              Adjust your search or filter criteria.
+            </p>
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={records}
+            loading={loading}
+            paginationMode="server"
+            page={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
 }
