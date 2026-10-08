@@ -32,6 +32,12 @@ import Button from "../ui/Button"; // Reusable Button component
 
 
 // Reusable Button component
+
+
+// Reusable Button component
+
+
+// Reusable Button component
 // ─────────────────────────────────────────────────────────────────────────────
 export default function OrgAttendance() {
   const notify = useNotification();
@@ -193,20 +199,128 @@ export default function OrgAttendance() {
       ),
     },
 
+    // {
+    //   key: "date",
+    //   label: "Date",
+    //   width: "1fr",
+    //   align: "left",
+    //   render: (_, row) => (
+    //     <span
+    //       className="text-sm"
+    //       style={{ color: colors.textPrimary }}
+    //     >
+    //       {new Date(row.date).toLocaleDateString()}
+    //     </span>
+    //   ),
+    // },
     {
-      key: "date",
-      label: "Date",
-      width: "1fr",
-      align: "left",
-      render: (_, row) => (
+  key: "createdAt",
+  label: "Created At",
+  width: "1.5fr",
+  align: "center",
+  render: (_, row) => {
+    if (!row.createdAt) {
+      return (
         <span
-          className="text-sm"
+          className="text-xs"
+          style={{ color: colors.textSecondary }}
+        >
+          --
+        </span>
+      );
+    }
+
+    return (
+      <div className="flex flex-col items-center gap-1">
+        <span
+          className="text-sm font-medium"
           style={{ color: colors.textPrimary }}
         >
-          {new Date(row.date).toLocaleDateString()}
+          {new Date(row.createdAt).toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })}
         </span>
-      ),
-    },
+
+        <span
+          className="text-xs"
+          style={{ color: colors.textSecondary }}
+        >
+          {new Date(row.createdAt).toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          })}
+        </span>
+      </div>
+    );
+  },
+},
+    {
+  key: "leaveDuration",
+  label: "Leave From / To",
+  width: "1.5fr",
+  align: "center",
+  render: (_, row) => {
+    if (
+      row.status?.toLowerCase() !== "on_leave" ||
+      (!row.leaveFrom && !row.leaveTo)
+    ) {
+      return (
+        <span
+          className="text-xs"
+          style={{ color: colors.textSecondary }}
+        >
+          --
+        </span>
+      );
+    }
+
+    const formatDate = (date) => {
+      if (!date) return "--";
+
+      return new Date(`${date.slice(0, 10)}T00:00:00`).toLocaleDateString(
+        "en-IN",
+        {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }
+      );
+    };
+
+    return (
+      <div className="flex flex-col items-center gap-1 min-w-[130px]">
+        <span
+          className="text-xs font-medium"
+          style={{ color: colors.textPrimary }}
+        >
+          From: {formatDate(row.leaveFrom)}
+        </span>
+
+        <span
+          className="text-xs font-medium"
+          style={{ color: colors.textSecondary }}
+        >
+          To: {formatDate(row.leaveTo)}
+        </span>
+
+        {row.leaveDays && (
+          <span
+            className="text-[10px] px-2 py-0.5 rounded-md"
+            style={{
+              background: colors.accentLight,
+              color: colors.accentDark,
+            }}
+          >
+            {row.leaveDays} days
+          </span>
+        )}
+      </div>
+    );
+  },
+},
 
     {
       key: "times",
