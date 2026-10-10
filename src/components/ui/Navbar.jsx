@@ -326,6 +326,12 @@ const Navbar = ({ callName, toggleSidebar }) => {
             Attendence <AccentText>View</AccentText>
           </>
         );
+         case "/deactivated":
+        return (
+          <>
+            Deacti<AccentText>vated</AccentText>
+          </>
+        );
 
       case "/resignations":
         return <AccentText>Resignations</AccentText>;

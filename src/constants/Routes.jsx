@@ -19,6 +19,7 @@ const ROUTES = {
   OFFER_LETTERS: "/offer-letters",
   ANNOUNCEMENTS: "/announcements",
   AUDIT_LOGS:"/audit-logs",
+  DEACTIVATED:"/deactivated",
   UNAUTHORIZED: "/unauthorized",
 };
 

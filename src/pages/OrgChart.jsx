@@ -68,6 +68,14 @@ const OrgChart = () => {
       setLoadingTree(false);
     }
   };
+  const managerMap = React.useMemo(() => {
+    if (!treeData) return {};
+
+    return treeData.reduce((acc, item) => {
+      acc[item.userId] = item;
+      return acc;
+    }, {});
+  }, [treeData]);
 
   const handleToggleTree = () => {
     setActiveView("tree");
@@ -193,7 +201,7 @@ const OrgChart = () => {
           </p>
         </div>
 
-        <Button
+        {/* <Button
           variant="custom"
           bg={colors.blue}
           text="#FFF"
@@ -202,7 +210,7 @@ const OrgChart = () => {
           onClick={() => setIsModalOpen(true)}
         >
           Create Node
-        </Button>
+        </Button> */}
       </div>
 
       {/* Stats */}
@@ -337,6 +345,26 @@ const OrgChart = () => {
               {dept.members.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {dept.members.map((member) => (
+                    // <ProfileCard
+                    //   key={member._id}
+                    //   data={mapMemberToProfile(
+                    //     member,
+                    //     dept.departmentName
+                    //   )}
+                    //   variant="employee"
+                    //   onEdit={() =>
+                    //     console.log(
+                    //       "Edit clicked for",
+                    //       member.firstName
+                    //     )
+                    //   }
+                    //   onDelete={() =>
+                    //     console.log(
+                    //       "Delete clicked for",
+                    //       member.firstName
+                    //     )
+                    //   }
+                    // />
                     <ProfileCard
                       key={member._id}
                       data={mapMemberToProfile(
@@ -344,18 +372,7 @@ const OrgChart = () => {
                         dept.departmentName
                       )}
                       variant="employee"
-                      onEdit={() =>
-                        console.log(
-                          "Edit clicked for",
-                          member.firstName
-                        )
-                      }
-                      onDelete={() =>
-                        console.log(
-                          "Delete clicked for",
-                          member.firstName
-                        )
-                      }
+                      hideActions={true}
                     />
                   ))}
                 </div>
@@ -399,12 +416,21 @@ const OrgChart = () => {
             //   ))}
             // </div>
             <div className="min-w-max flex flex-col gap-24 items-center pb-10">
-              {treeData.map((rootNode) => (
+              {/* {treeData.map((rootNode) => (
                 <OrgNode
                   key={rootNode._id}
                   node={rootNode}
                 />
-              ))}
+              ))} */}
+              {treeData
+                .filter((x) => x.level === 1)
+                .map((rootNode) => (
+                  <OrgNode
+                    key={rootNode.userId}
+                    node={rootNode}
+                    managerMap={managerMap}
+                  />
+                ))}
             </div>
           ) : (
             <div

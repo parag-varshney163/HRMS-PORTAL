@@ -250,6 +250,7 @@ import UpdatePassword from "./pages/UpdatePassword";
 import colors from "./constants/colors";
 import AuditLogs from "./pages/AuditLogs";
 import AttendanceView from "./pages/AttendanceView";
+import Deactivated from "./pages/Deactivated";
 
 // ─── Lazy-loaded Public Pages ───
 const WelcomePage = lazy(() => import("./pages/WelcomePage"));
@@ -440,6 +441,17 @@ function App() {
                 permissionKey="chatbotTemplate"
               >
                 <Attendence />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.DEACTIVATED}
+            element={
+              <ProtectedRoute
+                section="moderationDashboard"
+                permissionKey="moderationPanel"
+              >
+                <Deactivated />
               </ProtectedRoute>
             }
           />
