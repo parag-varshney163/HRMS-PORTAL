@@ -20,6 +20,7 @@ const ROUTES = {
   ANNOUNCEMENTS: "/announcements",
   AUDIT_LOGS:"/audit-logs",
   DEACTIVATED:"/deactivated",
+  MANAGE_LEAVES:"/manage-leaves",
   UNAUTHORIZED: "/unauthorized",
 };
 

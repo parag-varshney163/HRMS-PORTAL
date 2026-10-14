@@ -251,6 +251,7 @@ import colors from "./constants/colors";
 import AuditLogs from "./pages/AuditLogs";
 import AttendanceView from "./pages/AttendanceView";
 import Deactivated from "./pages/Deactivated";
+import ManageLeaves from "./pages/ManageLeaves";
 
 // ─── Lazy-loaded Public Pages ───
 const WelcomePage = lazy(() => import("./pages/WelcomePage"));
@@ -452,6 +453,17 @@ function App() {
                 permissionKey="moderationPanel"
               >
                 <Deactivated />
+              </ProtectedRoute>
+            }
+          />
+           <Route
+            path={ROUTES.MANAGE_LEAVES}
+            element={
+              <ProtectedRoute
+                section="moderationDashboard"
+                permissionKey="moderationPanel"
+              >
+                <ManageLeaves />
               </ProtectedRoute>
             }
           />
