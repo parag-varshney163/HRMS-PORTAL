@@ -148,9 +148,26 @@ export default function TaskCard({
   const description = task?.description || "No description provided.";
 
   // ─── ASSIGNEE ───
-  const assigneeName = task?.assignTo?.firstName
-    ? `${task.assignTo.firstName} ${task.assignTo.lastName || ""}`.trim()
-    : "Unassigned";
+  // const assigneeName = task?.assignTo?.firstName
+  //   ? `${task.assignTo.firstName} ${task.assignTo.lastName || ""}`.trim()
+  //   : "Unassigned";
+  // ASSIGNEES
+  const assignees = Array.isArray(task?.assignTo)
+    ? task.assignTo
+    : task?.assignTo
+      ? [task.assignTo]
+      : [];
+
+  const assigneeNames = assignees
+    .map((user) =>
+      `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
+    )
+    .filter(Boolean);
+
+  const assigneeName =
+    assigneeNames.length > 0
+      ? assigneeNames.join(", ")
+      : "Unassigned";
 
   // ─── DATE ───
   const dueDate = task?.due_date
@@ -440,143 +457,143 @@ export default function TaskCard({
   // );
 
   return (
-  <div
-    className="rounded-xl p-4 border transition-all duration-200 flex flex-col relative backdrop-blur-sm"
-    style={cardStyle}
-  >
-    {/* HEADER */}
-    <div className="flex items-start justify-between mb-3">
-      <div className="flex flex-wrap items-center gap-2 pr-2">
-        {/* Priority */}
-        <span
-          className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider"
-          style={priorityStyle}
-        >
-          {priority}
-        </span>
-
-        {/* Status */}
-        <span
-          className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider"
-          style={getStatusBadgeStyle()}
-        >
-          {status.replace("_", " ")}
-        </span>
-
-        {/* Team */}
-        {task?.team && (
+    <div
+      className="rounded-xl p-4 border transition-all duration-200 flex flex-col relative backdrop-blur-sm"
+      style={cardStyle}
+    >
+      {/* HEADER */}
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex flex-wrap items-center gap-2 pr-2">
+          {/* Priority */}
           <span
-            className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider truncate max-w-[100px]"
-            style={{
-              backgroundColor: colors.inputBg,
-              color: colors.textSecondary,
-            }}
+            className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider"
+            style={priorityStyle}
           >
-            {task.team}
+            {priority}
           </span>
-        )}
+
+          {/* Status */}
+          <span
+            className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider"
+            style={getStatusBadgeStyle()}
+          >
+            {status.replace("_", " ")}
+          </span>
+
+          {/* Team */}
+          {task?.team && (
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider truncate max-w-[100px]"
+              style={{
+                backgroundColor: colors.inputBg,
+                color: colors.textSecondary,
+              }}
+            >
+              {task.team}
+            </span>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div
+          className="flex items-center gap-1 shrink-0 rounded-lg p-0.5 shadow-sm"
+          style={{
+            backgroundColor: colors.cardBg,
+            border: `1px solid ${colors.cardBorder}`,
+          }}
+        >
+          {/* View */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onView?.(task);
+            }}
+            className="p-1.5 rounded-md transition-colors"
+            style={{ color: colors.textSecondary }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = colors.blue;
+              e.currentTarget.style.backgroundColor = colors.blueLight;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = colors.textSecondary;
+              e.currentTarget.style.backgroundColor = "transparent";
+            }}
+            title="View Task"
+          >
+            <Eye size={14} />
+          </button>
+
+          {/* Edit */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onEdit?.();
+            }}
+            className="p-1.5 rounded-md transition-colors"
+            style={{ color: colors.textSecondary }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = colors.blue;
+              e.currentTarget.style.backgroundColor = colors.blueLight;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = colors.textSecondary;
+              e.currentTarget.style.backgroundColor = "transparent";
+            }}
+            title="Edit Task"
+          >
+            <Edit2 size={14} />
+          </button>
+
+          {/* Delete */}
+          {!isEmployee && (<button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onDelete?.();
+            }}
+            className="p-1.5 rounded-md transition-colors"
+            style={{ color: colors.textSecondary }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = colors.danger;
+              e.currentTarget.style.backgroundColor = colors.dangerLight;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = colors.textSecondary;
+              e.currentTarget.style.backgroundColor = "transparent";
+            }}
+            title="Delete Task"
+          >
+            <Trash2 size={14} />
+          </button>)}
+        </div>
       </div>
 
-      {/* Actions */}
+      {/* Title */}
+      <h4
+        className="text-sm font-bold mb-1 line-clamp-1"
+        style={{ color: colors.textPrimary }}
+      >
+        {title}
+      </h4>
+
+      {/* Description */}
+      <p
+        className="text-xs line-clamp-2 mb-4 min-h-[32px]"
+        style={{ color: colors.textSecondary }}
+      >
+        {description}
+      </p>
+
+      {/* Footer */}
       <div
-        className="flex items-center gap-1 shrink-0 rounded-lg p-0.5 shadow-sm"
+        className="flex items-center justify-between pt-3 mt-auto"
         style={{
-          backgroundColor: colors.cardBg,
-          border: `1px solid ${colors.cardBorder}`,
+          borderTop: `1px solid ${colors.cardBorder}`,
         }}
       >
-        {/* View */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onView?.(task);
-          }}
-          className="p-1.5 rounded-md transition-colors"
-          style={{ color: colors.textSecondary }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.blue;
-            e.currentTarget.style.backgroundColor = colors.blueLight;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = colors.textSecondary;
-            e.currentTarget.style.backgroundColor = "transparent";
-          }}
-          title="View Task"
-        >
-          <Eye size={14} />
-        </button>
-
-        {/* Edit */}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onEdit?.();
-          }}
-          className="p-1.5 rounded-md transition-colors"
-          style={{ color: colors.textSecondary }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.blue;
-            e.currentTarget.style.backgroundColor = colors.blueLight;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = colors.textSecondary;
-            e.currentTarget.style.backgroundColor = "transparent";
-          }}
-          title="Edit Task"
-        >
-          <Edit2 size={14} />
-        </button>
-
-        {/* Delete */}
-        { !isEmployee && (<button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onDelete?.();
-          }}
-          className="p-1.5 rounded-md transition-colors"
-          style={{ color: colors.textSecondary }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.danger;
-            e.currentTarget.style.backgroundColor = colors.dangerLight;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = colors.textSecondary;
-            e.currentTarget.style.backgroundColor = "transparent";
-          }}
-          title="Delete Task"
-        >
-          <Trash2 size={14} />
-        </button>)}
-      </div>
-    </div>
-
-    {/* Title */}
-    <h4
-      className="text-sm font-bold mb-1 line-clamp-1"
-      style={{ color: colors.textPrimary }}
-    >
-      {title}
-    </h4>
-
-    {/* Description */}
-    <p
-      className="text-xs line-clamp-2 mb-4 min-h-[32px]"
-      style={{ color: colors.textSecondary }}
-    >
-      {description}
-    </p>
-
-    {/* Footer */}
-    <div
-      className="flex items-center justify-between pt-3 mt-auto"
-      style={{
-        borderTop: `1px solid ${colors.cardBorder}`,
-      }}
-    >
-      {/* Assignee */}
-      <div className="flex items-center gap-2">
+        {/* Assignee */}
+        {/* <div className="flex items-center gap-2">
         <div
           className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold uppercase shrink-0"
           style={{
@@ -595,58 +612,81 @@ export default function TaskCard({
         >
           {assigneeName}
         </span>
-      </div>
-
-      {/* Metrics */}
-      <div
-        className="flex items-center gap-3"
-        style={{ color: colors.textSecondary }}
-      >
-        {/* Due Date */}
-        <div className="flex items-center gap-1 text-xs">
-          <Calendar size={12} />
+      </div> */}
+        {/* Assignees */}
+        <div className="flex items-center gap-2 min-w-0">
+          <div
+            className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold uppercase shrink-0"
+            style={{
+              backgroundColor: colors.accentLight,
+              color: colors.accentDark,
+            }}
+            title={assigneeName}
+          >
+            {assignees.length > 0
+              ? (assignees[0]?.firstName?.charAt(0) || "?").toUpperCase()
+              : "?"}
+          </div>
 
           <span
-            style={{
-              color:
-                task?.due_date &&
-                new Date(task.due_date) < new Date()
-                  ? colors.danger
-                  : colors.textSecondary,
-              fontWeight:
-                task?.due_date &&
-                new Date(task.due_date) < new Date()
-                  ? 600
-                  : 400,
-            }}
+            className="text-xs font-medium truncate max-w-[140px]"
+            style={{ color: colors.textPrimary }}
+            title={assigneeName}
           >
-            {dueDate}
+            {assigneeName}
           </span>
         </div>
 
-        {/* Comments */}
+        {/* Metrics */}
         <div
-          className="flex items-center gap-1 text-xs cursor-pointer transition-colors"
-          onClick={() => onCommentClick?.(task)}
+          className="flex items-center gap-3"
           style={{ color: colors.textSecondary }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.accentDark;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = colors.textSecondary;
-          }}
         >
-          <MessageSquare size={12} />
-          <span>{commentCount}</span>
-        </div>
+          {/* Due Date */}
+          <div className="flex items-center gap-1 text-xs">
+            <Calendar size={12} />
 
-        {/* Attachments */}
-        <div className="flex items-center gap-1 text-xs">
-          <Paperclip size={12} />
-          <span>{attachmentCount}</span>
+            <span
+              style={{
+                color:
+                  task?.due_date &&
+                    new Date(task.due_date) < new Date()
+                    ? colors.danger
+                    : colors.textSecondary,
+                fontWeight:
+                  task?.due_date &&
+                    new Date(task.due_date) < new Date()
+                    ? 600
+                    : 400,
+              }}
+            >
+              {dueDate}
+            </span>
+          </div>
+
+          {/* Comments */}
+          <div
+            className="flex items-center gap-1 text-xs cursor-pointer transition-colors"
+            onClick={() => onCommentClick?.(task)}
+            style={{ color: colors.textSecondary }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = colors.accentDark;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = colors.textSecondary;
+            }}
+          >
+            <MessageSquare size={12} />
+            <span>{commentCount}</span>
+          </div>
+
+          {/* Attachments */}
+          <div className="flex items-center gap-1 text-xs">
+            <Paperclip size={12} />
+            <span>{attachmentCount}</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
 }

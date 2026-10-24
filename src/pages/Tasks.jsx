@@ -180,35 +180,70 @@ export default function Tasks() {
   }, [fetchDashboardData]);
 
   // ─── ACTIONS (CREATE / UPDATE / DELETE) ───
-  const handleSaveTask = async (formData, taskId) => {
-    try {
-      let response;
-      if (taskId) {
-        response = await axiosInstance.put(`/api/v1/task/${taskId}`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      } else {
-        response = await axiosInstance.post("/api/v1/task", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      }
+  // const handleSaveTask = async (formData, taskId) => {
+  //   try {
+  //     let response;
+  //     if (taskId) {
+  //       response = await axiosInstance.put(`/api/v1/task/${taskId}`, formData, {
+  //         headers: { "Content-Type": "multipart/form-data" },
+  //       });
+  //     } else {
+  //       response = await axiosInstance.post("/api/v1/task", formData, {
+  //         headers: { "Content-Type": "multipart/form-data" },
+  //       });
+  //     }
 
-      if (response.data?.success) {
-        notify.success(
-          taskId ? "Task Updated" : "Task Created",
-          "The board has been updated.",
-        );
-        fetchDashboardData();
-        return { success: true };
-      }
-    } catch (error) {
-      notify.error(
-        "Action Failed",
-        error.response?.data?.message || "Could not save task.",
+  //     if (response.data?.success) {
+  //       notify.success(
+  //         taskId ? "Task Updated" : "Task Created",
+  //         "The board has been updated.",
+  //       );
+  //       fetchDashboardData();
+  //       return { success: true };
+  //     }
+  //   } catch (error) {
+  //     notify.error(
+  //       "Action Failed",
+  //       error.response?.data?.message || "Could not save task.",
+  //     );
+  //     return { success: false };
+  //   }
+  // };
+  const handleSaveTask = async (formData, taskId) => {
+  try {
+    const response = taskId
+      ? await axiosInstance.put(`/api/v1/task/${taskId}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+      : await axiosInstance.post("/api/v1/task", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+    if (response.data?.success) {
+      notify.success(
+        taskId ? "Task Updated" : "Task Created",
+        "The board has been updated."
       );
-      return { success: false };
+
+      await fetchDashboardData();
+
+      return { success: true };
     }
-  };
+
+    return { success: false };
+  } catch (error) {
+    notify.error(
+      "Action Failed",
+      error.response?.data?.message || "Could not save task."
+    );
+
+    return { success: false };
+  }
+};
 
   const handleDeleteTask = async (taskId) => {
     if (!window.confirm("Are you sure you want to delete this task?")) return;
