@@ -27,8 +27,41 @@ const AttendenceCalendar = ({ employee, attendance = [], loading, holidays = [] 
     return getMonthDays(month, year);
   }, [month, year]);
 
+  // const attendanceByDate = useMemo(() => {
+  //   return attendanceMap(attendance);
+  // }, [attendance]);
   const attendanceByDate = useMemo(() => {
-    return attendanceMap(attendance);
+    const map = attendanceMap(attendance);
+
+    attendance.forEach((record) => {
+      if (
+        record.status === "on_leave" &&
+        record.leaveFrom &&
+        record.leaveTo
+      ) {
+        const start = new Date(`${record.leaveFrom}T00:00:00`);
+        const end = new Date(`${record.leaveTo}T00:00:00`);
+
+        const current = new Date(start);
+
+        while (current <= end) {
+          const year = current.getFullYear();
+          const month = String(current.getMonth() + 1).padStart(2, "0");
+          const day = String(current.getDate()).padStart(2, "0");
+
+          const dateKey = `${year}-${month}-${day}`;
+
+          map[dateKey] = {
+            ...record,
+            date: dateKey,
+          };
+
+          current.setDate(current.getDate() + 1);
+        }
+      }
+    });
+
+    return map;
   }, [attendance]);
 
   const holidayMap = useMemo(() => {
