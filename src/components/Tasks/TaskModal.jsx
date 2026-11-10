@@ -556,8 +556,8 @@ export default function TaskModal({
     description: "",
     assignTo: [],
     priority: "high",
-    department: "",
-    team: "Frontend",
+    // department: "",
+    // team: "Frontend",
     status: "to_do",
     due_date: "",
   });
@@ -569,9 +569,19 @@ export default function TaskModal({
   const [employees, setEmployees] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
+  const [employeeSearch, setEmployeeSearch] = useState("");
 
   const isEditMode = !!initialData;
   const employeeEditMode = isEmployee && isEditMode;
+  const filteredEmployees = employees.filter((employee) => {
+    const isActive = employee.status === "active";
+
+    const matchesSearch = employee.name
+      ?.toLowerCase()
+      .includes(employeeSearch.trim().toLowerCase());
+
+    return isActive && matchesSearch;
+  });
 
   // Normalize assigned employees into an array of IDs
   const normalizeAssignees = (assignees) => {
@@ -593,6 +603,55 @@ export default function TaskModal({
 
     let cancelled = false;
 
+    // const fetchModalData = async () => {
+    //   setLoadingData(true);
+
+    //   try {
+    //     const results = await Promise.allSettled([
+    //       axiosInstance.get("/api/v1/user/all-users"),
+    //       axiosInstance.get("/api/v1/department"),
+    //     ]);
+
+    //     if (cancelled) return;
+
+    //     const [usersRes, deptsRes] = results;
+
+    //     if (
+    //       usersRes.status === "fulfilled" &&
+    //       usersRes.value.data?.success
+    //     ) {
+    //       setEmployees(usersRes.value.data.data || []);
+    //     } else {
+    //       console.error(
+    //         "Failed to fetch employees:",
+    //         usersRes.status === "rejected"
+    //           ? usersRes.reason
+    //           : "Employee API returned an unsuccessful response"
+    //       );
+    //     }
+
+    //     if (
+    //       deptsRes.status === "fulfilled" &&
+    //       deptsRes.value.data?.success
+    //     ) {
+    //       setDepartments(deptsRes.value.data.data || []);
+    //     } else {
+    //       console.error(
+    //         "Failed to fetch departments:",
+    //         deptsRes.status === "rejected"
+    //           ? deptsRes.reason
+    //           : "Department API returned an unsuccessful response"
+    //       );
+    //     }
+    //   } catch (error) {
+    //     console.error("Failed to fetch modal data:", error);
+    //   } finally {
+    //     if (!cancelled) {
+    //       setLoadingData(false);
+    //     }
+    //   }
+    // };
+
     const fetchModalData = async () => {
       setLoadingData(true);
 
@@ -606,11 +665,23 @@ export default function TaskModal({
 
         const [usersRes, deptsRes] = results;
 
+        // ===========================
+        // Employees
+        // ===========================
         if (
           usersRes.status === "fulfilled" &&
           usersRes.value.data?.success
         ) {
-          setEmployees(usersRes.value.data.data || []);
+          const activeEmployees = (usersRes.value.data.data || []).filter(
+            (user) => user.status === "active"
+          );
+
+          // Optional: sort alphabetically
+          activeEmployees.sort((a, b) =>
+            a.name.localeCompare(b.name)
+          );
+
+          setEmployees(activeEmployees);
         } else {
           console.error(
             "Failed to fetch employees:",
@@ -620,11 +691,33 @@ export default function TaskModal({
           );
         }
 
+        // ===========================
+        // Departments
+        // ===========================
         if (
           deptsRes.status === "fulfilled" &&
           deptsRes.value.data?.success
         ) {
-          setDepartments(deptsRes.value.data.data || []);
+          const activeDepartments = (deptsRes.value.data.data || []).filter(
+            (dept) => dept.status === "active"
+          );
+
+          setDepartments(activeDepartments);
+
+          // Default Department = Tech
+          if (!initialData) {
+            const defaultDepartment =
+              activeDepartments.find(
+                (dept) => dept.name.toLowerCase() === "tech"
+              ) || activeDepartments[0];
+
+            if (defaultDepartment) {
+              setForm((prev) => ({
+                ...prev,
+                department: defaultDepartment._id,
+              }));
+            }
+          }
         } else {
           console.error(
             "Failed to fetch departments:",
@@ -641,7 +734,6 @@ export default function TaskModal({
         }
       }
     };
-
     fetchModalData();
 
     return () => {
@@ -657,11 +749,11 @@ export default function TaskModal({
         description: initialData.description || "",
         assignTo: normalizeAssignees(initialData.assignTo),
         priority: initialData.priority || "high",
-        department:
-          typeof initialData.department === "object"
-            ? initialData.department?._id || ""
-            : initialData.department || "",
-        team: initialData.team || "",
+        // department:
+        //   typeof initialData.department === "object"
+        //     ? initialData.department?._id || ""
+        //     : initialData.department || "",
+        // team: initialData.team || "",
         status: initialData.status || "to_do",
         due_date: initialData.due_date
           ? new Date(initialData.due_date).toISOString().split("T")[0]
@@ -735,10 +827,10 @@ export default function TaskModal({
         return;
       }
 
-      if (!form.department) {
-        alert("Please select a department.");
-        return;
-      }
+      // if (!form.department) {
+      //   alert("Please select a department.");
+      //   return;
+      // }
     }
 
     setIsSubmitting(true);
@@ -926,7 +1018,7 @@ export default function TaskModal({
             </div>
 
             {/* Assign To - Multi Employee Selection */}
-            <div>
+            {/* <div>
               <label
                 className="mb-1.5 flex items-center gap-2 text-sm font-semibold"
                 style={{ color: colors.textPrimary }}
@@ -955,6 +1047,7 @@ export default function TaskModal({
                   Loading employees...
                 </div>
               ) : (
+                
                 <div
                   className="max-h-48 space-y-1 overflow-y-auto rounded-[10px] p-3"
                   style={{
@@ -1002,7 +1095,7 @@ export default function TaskModal({
                 </div>
               )}
 
-              {/* Selected employees */}
+              
               <div className="mt-2 flex flex-wrap gap-2">
                 {selectedEmployees.map((employee) => (
                   <span
@@ -1021,6 +1114,130 @@ export default function TaskModal({
               <p
                 className="mt-1.5 text-xs"
                 style={{ color: colors.textSecondary }}
+              >
+                {form.assignTo.length} employee(s) selected
+              </p>
+            </div> */}
+            <div>
+              <label
+                className="mb-1.5 flex items-center gap-2 text-sm font-semibold"
+                style={{ color: colors.textPrimary }}
+              >
+                Assign To{" "}
+                <span style={{ color: colors.danger }}>*</span>
+
+                {loadingData && (
+                  <Loader2
+                    size={13}
+                    className="animate-spin"
+                    style={{ color: colors.accent }}
+                  />
+                )}
+              </label>
+
+              {loadingData ? (
+                <div
+                  className="w-full rounded-[10px] px-3.5 py-2.5 text-sm"
+                  style={{
+                    backgroundColor: colors.inputBg,
+                    border: `1px solid ${colors.cardBorder}`,
+                    color: colors.textSecondary,
+                  }}
+                >
+                  Loading employees...
+                </div>
+              ) : (
+                <>
+                  {/* Employee Search */}
+                  <input
+                    type="text"
+                    placeholder="Search employee..."
+                    value={employeeSearch}
+                    disabled={employeeEditMode}
+                    onChange={(e) => setEmployeeSearch(e.target.value)}
+                    className="mb-3 w-full rounded-[10px] p-2.5 text-sm focus:outline-none"
+                    style={{
+                      backgroundColor: colors.inputBg,
+                      border: `1px solid ${colors.cardBorder}`,
+                      color: colors.textPrimary,
+                    }}
+                  />
+
+                  {/* Employee List */}
+                  <div
+                    className="max-h-48 space-y-1 overflow-y-auto rounded-[10px] p-3"
+                    style={{
+                      backgroundColor: colors.inputBg,
+                      border: `1px solid ${colors.cardBorder}`,
+                    }}
+                  >
+                    {filteredEmployees.map((employee) => {
+                      const employeeId = String(employee._id);
+                      const checked = form.assignTo.includes(employeeId);
+
+                      return (
+                        <label
+                          key={employee._id}
+                          className={`flex items-center gap-3 rounded-lg px-2 py-2 text-sm ${employeeEditMode
+                              ? "cursor-not-allowed opacity-60"
+                              : "cursor-pointer"
+                            }`}
+                          style={{
+                            color: colors.textPrimary,
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            disabled={employeeEditMode}
+                            onChange={() =>
+                              handleAssignToChange(employeeId)
+                            }
+                            className="h-4 w-4 shrink-0 accent-blue-600"
+                          />
+
+                          <span>
+                            {employee.name || "Unnamed Employee"}
+                          </span>
+                        </label>
+                      );
+                    })}
+
+                    {filteredEmployees.length === 0 && (
+                      <p
+                        className="py-2 text-sm"
+                        style={{
+                          color: colors.textSecondary,
+                        }}
+                      >
+                        No active employees found.
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* Selected employees */}
+              <div className="mt-2 flex flex-wrap gap-2">
+                {selectedEmployees.map((employee) => (
+                  <span
+                    key={employee._id}
+                    className="rounded-full px-2.5 py-1 text-xs font-medium"
+                    style={{
+                      backgroundColor: colors.blueLight,
+                      color: colors.blue,
+                    }}
+                  >
+                    {employee.name}
+                  </span>
+                ))}
+              </div>
+
+              <p
+                className="mt-1.5 text-xs"
+                style={{
+                  color: colors.textSecondary,
+                }}
               >
                 {form.assignTo.length} employee(s) selected
               </p>
@@ -1088,7 +1305,7 @@ export default function TaskModal({
             </div>
 
             {/* Department and Team */}
-            <div className="grid grid-cols-2 gap-4">
+            {/* <div className="grid grid-cols-2 gap-4">
               <div>
                 <label
                   className="mb-1.5 block text-sm font-semibold"
@@ -1159,7 +1376,7 @@ export default function TaskModal({
                   }}
                 />
               </div>
-            </div>
+            </div> */}
 
             {/* Due Date */}
             <div>

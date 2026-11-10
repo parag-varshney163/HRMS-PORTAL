@@ -128,10 +128,21 @@ export default function TaskViewModal({ open, onClose, taskId }) {
                 <b style={{ color: colors.textPrimary }}>Department:</b> {task.department?.name || "N/A"}
               </p>
 
-              <p style={{ color: colors.textSecondary }}>
+              {/* <p style={{ color: colors.textSecondary }}>
                 <b style={{ color: colors.textPrimary }}>Assigned To:</b>{" "}
                 {task.assignTo
                   ? `${task.assignTo.firstName} ${task.assignTo.lastName}`
+                  : "Unassigned"}
+              </p> */}
+              <p style={{ color: colors.textSecondary }}>
+                <b style={{ color: colors.textPrimary }}>Assigned To:</b>{" "}
+                {task.assignTo?.length
+                  ? task.assignTo
+                    .map(
+                      (user) =>
+                        `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim()
+                    )
+                    .join(", ")
                   : "Unassigned"}
               </p>
 
