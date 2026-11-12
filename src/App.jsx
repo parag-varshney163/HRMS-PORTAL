@@ -252,6 +252,7 @@ import AuditLogs from "./pages/AuditLogs";
 import AttendanceView from "./pages/AttendanceView";
 import Deactivated from "./pages/Deactivated";
 import ManageLeaves from "./pages/ManageLeaves";
+import CheckInCheckOut from "./pages/CheckInCheckOut";
 
 // ─── Lazy-loaded Public Pages ───
 const WelcomePage = lazy(() => import("./pages/WelcomePage"));
@@ -464,6 +465,17 @@ function App() {
                 permissionKey="moderationPanel"
               >
                 <ManageLeaves />
+              </ProtectedRoute>
+            }
+          />
+           <Route
+            path={ROUTES.CHECKIN}
+            element={
+              <ProtectedRoute
+                section="moderationDashboard"
+                permissionKey="moderationPanel"
+              >
+                <CheckInCheckOut />
               </ProtectedRoute>
             }
           />

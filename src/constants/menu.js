@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, CalendarOff, Clock, Wallet, FileSignature, Receipt, Megaphone, Banknote, ClipboardList, Files, Network, Settings, LogOut, UserMinus, UserPlus, Activity, AlertCircle, Delete, DessertIcon, LeafIcon } from "lucide-react";
+import { LayoutDashboard, Users, CalendarOff, Clock, Wallet, FileSignature, Receipt, Megaphone, Banknote, ClipboardList, Files, Network, Settings, LogOut, UserMinus, UserPlus, Activity, AlertCircle, Delete, DessertIcon, LeafIcon, Check } from "lucide-react";
 
 
 const MENU_ITEMS = [
@@ -70,6 +70,12 @@ const MENU_ITEMS = [
     name: "Deactivated",
     icon: DessertIcon, 
     path: "/deactivated",
+    allowedRoles: ["admin", "hr"],
+  },
+  {
+    name: "CheckIn/CheckOut",
+    icon: Check, 
+    path: "/check-in",
     allowedRoles: ["admin", "hr"],
   },
   {

@@ -332,6 +332,12 @@ const Navbar = ({ callName, toggleSidebar }) => {
             Deacti<AccentText>vated</AccentText>
           </>
         );
+         case "/check-in":
+        return (
+          <>
+            CheckIn<AccentText>CheckOut</AccentText>
+          </>
+        );
 
       case "/resignations":
         return <AccentText>Resignations</AccentText>;
